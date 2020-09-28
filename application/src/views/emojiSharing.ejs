@@ -101,6 +101,12 @@
         left: 380;
     }
 
+    .switchLabel{
+        position: absolute;
+        left: 450;
+       
+    }
+
     .switch input {
         opacity: 0;
         width: 0;
@@ -160,11 +166,14 @@
 
 <div>
     <h2 class="text-center text-info">Emoji Sharing!</h2>
+
     <label class="switch">
         <input type="checkbox" checked>
         <span class="slider round"></span>
     </label>
-   
+   <label class="switchLabel">
+       Anonymouse user
+   </label>
 
     <form class="form-group" action="/play" method="post">
         <div>
@@ -180,39 +189,61 @@
 
 
                     <tr>
-                        <td><input type="text" name="image" value="&#128512;" alt="" height=100 width=100 readonly />
+                        <td><input type="text" style="border: none; display: inline !important; font-size:30px" name="image" value="&#129321;" alt="" height=100 width=100 readonly />
                         </td>
                         <td>
                             <div class="radio">
                                 <input type="radio" id='regular'  name="optradio" value = "1">
                             </div>
                         </td>
-                        <td style="width:550px; outline: none;"><input type="text" name="caption" value="I am happy" readonly /> </td>
+                        <td style="width:550px; outline: none;"><input style="border: 0" type="text" name="caption" value="I'm Impressed!" readonly /> </td>
                         </td>
 
                     </tr>
 
                     <tr>
-                        <td><input style="border: none" type="text" name="image" value="&#128525;" alt="" height=100 width=100 readonly />
+                        <td><input style="border: none; font-size:30px" type="text" name="image" value="&#128578;" alt="" height=100 width=100 readonly />
                         </td>
                         <td>
                             <div class="radio">
                                 <input type="radio" id='regular'  name="optradio" value = "2"> 
                             </div>
                         </td>
-                        <td style="width:550px;"><input type="text" name="caption" value="I am happy" readonly /> </td>
+                        <td style="width:550px;"><input style="border: 0" type="text" name="caption" value="I'm getting it" readonly /> </td>
                         </td>
 
                     </tr>
 
                     <tr>
                         <td>
-                            <input type="text" name="image" value="&#128151;" alt="" height=100 width=100 readonly />
+                            <input type="text" style="border: none; font-size:30px" name="image" value="&#128528;" alt="" height=100 width=100 readonly />
+                        </td>
+                        <td>
+                            <input type="radio" id='regular'  name="optradio" value = "3" checked="checked">
+                        </td>
+                        <td style="width:550px;"><input style="border: 0" type="text" name="caption" value="Neutral" readonly /> </td>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" style="border: none; font-size:30px" name="image" value="&#129300;" alt="" height=100 width=100 readonly />
                         </td>
                         <td>
                             <input type="radio" id='regular'  name="optradio" value = "3">
                         </td>
-                        <td style="width:550px;"><input type="text" name="caption" value="I am happy" readonly /> </td>
+                        <td style="width:550px;"><input style="border: 0" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" style="border: none; font-size:30px" name="image" value="&#129327;" alt="" height=100 width=100 readonly />
+                        </td>
+                        <td>
+                            <input type="radio" id='regular'  name="optradio" value = "3">
+                        </td>
+                        <td style="width:550px;"><input style="border: 0" type="text" name="caption" value="I'm Frustrated!" readonly /> </td>
                         </td>
                     </tr>
 

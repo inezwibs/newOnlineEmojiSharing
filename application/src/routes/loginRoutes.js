@@ -6,128 +6,192 @@ Description: API for user registration, Login, Logout and authentication.
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/user.js");
-const { validationResult } = require("express-validator/check");
 const passport = require("passport");
-var expressValidator = require("express-validator");
 const db = require("../models/database.js");
-var classID;
+const bcrypt = require('bcryptjs');
+const url = require('url');
+const saltRounds = 10;
+
 
 // Gets registration page
 router.get("/register", function(req, res, next) {
   console.log("raya_query: " + req.query.classID);
-  classID = req.query.classID;
-  // console.log("10 : " + req.isAuthenticated());
   res.render("register", {
-    title: "Form Validation"
-    // errors: errors
+    title: "Form Validation",
+    classID: req.query.classID   
 
   });
   req.session.errors = null;
 });
 
-async function registerFunc(req, res, next) {
-  console.log("raya_query2: " + req.classID);
+// async function registerFunc(req, res, next) {
+//     req.check('password', 'password not match').equals(req.body.passwordMatch);
 
-  req
-    .check("username", "username must be between  6 and 18 character")
-    .isLength({ min: 1, max: 25 }),
-    req
-      .check("email", "invalid email adress")
-      .exists()
-      .isEmail()
-      // .contains("mail.sfsu.edu");
-  req.check('email', 'Please enter your email');
-  req
-    .check("password", "password must be between  6 and 18 character")
-    .isLength({ min: 6, max: 18 }),
-    req.check('password', 'password not match').equals(req.body.passwordMatch);
-  //   req.check("terms", "You must accept the terms and conditions.").equals("1");
-  // req.check("privacy", "You must accept the privacy policy").equals("1");
+//   var errors = req.validationErrors();
+//   console.log("errors: "+errors);
 
-  var errors = req.validationErrors();
-  // const errors = validationResult(req).array({ onlyFirstError: true });
-  if (errors) {
-    // console.log(`errors: ${JSON.stringify(errors)}`);
+//   if (errors) {
 
-    // res.json(JSON.stringify({ errors: errors }));
-    // res.render("register", {
-    //   title: "Registeration Error",
-    //   errors: errors
-    // });
-  } else {
-    const { username, email, password , passwordMatch} = req.body;
-    // console.log("email is: " + req.body.email);
-    // console.log("username is: " + req.body.username);
-    User.checkValid(email).then(isValid => {
-      //if there is no similar user in the the user table--> insert the user
-      if (isValid) {
-        console.log("valid");
+//   } else {
+//     const { username, email, password , passwordMatch} = req.body;
+//     User.checkValid(email).then(isValid => {
+//       //if there is no similar user in the the user table--> insert the user
+//       if (isValid) {
+//         console.log("valid");
 
-        User.register(username, email, password).then(userID => {
-          const user_id = userID;
-          req.login({ id: userID }, () => res.render("emojiSharing"));
-          console.log("goes here ..."+user_id);
-          console.log("user register post: " + req.user.id);
-          console.log("isAthenticated: "+req.isAuthenticated());
-        });
+//         User.register(username, email, password).then(userID => {
+//           req.login({ id: userID }, () => res.render("emojiSharing"));
+//         });
 
-        //if there is similar user exists in the table --> show error
-      } else {
-        console.log("not valid");
-        res.send('<script>alert("Hello")</script>');
-        res.render("register", {
-          title: "Error : Similar user exists",
-          // errors: errors
-          // isLoggedIn: req.isAuthenticated()
-        });
-      }
-    });
-  }
-  next();
-}
-async function checkIsInstructor(req, res, next) {
+//         //if there is similar user exists in the table --> show error
+//       } else {
+//         console.log("not valid");
 
-  let query = " Select * from emoji_db.users where id = "+req.user.id;
-  await db.execute(query, (err, res) => {
-    console.log("myQuery: "+query);
-    req.isInstructor = res[0].isInstructor;
-      if (err) throw err;
-      next();
-  });
-}
+//         res.render("errorPage", {
+//           title: "Error : Similar user exists",
+
+//         });
+//       }
+//     });
+//   }
+//   next();
+// }
+
 
 //first check if same classes_id && users_id is not exists then insert
-async function inner(req, res, next) {
+async function insertToRegisteration(req, res, next) {
 
-  let query = " INSERT INTO emoji_db.registerations (classes_id, users_id, isInstructor) VALUES ( " +classID+ ", "+req.user.id+", "+req.isInstructor+" )";
+  let query = " INSERT INTO emoji_db.registerations (classes_id, users_id) VALUES ( " +req.body.classID+ ", "+req.userID+" )";
   await db.execute(query, (err, res) => {
     console.log("myQuery: "+query);
       if (err) throw err;
       next();
   });
 }
+async function getUserID(req, res, next) {
 
-async function insertToRegisteration(req, res, next) {
-  let query = " SELECT * FROM emoji_db.registerations where classes_id = "+classID+ " and users_id = "+req.user.id;
-  // console.log("content");
-
-
+  let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
   await db.execute(query, (err, res) => {
-    console.log(query);
-    console.log(res);
-      if (res !== undefined) {
-          inner(req, res, next)
-      }
+      console.log(query); 
       if (err) throw err;
+      
+      req.userID = res[0].id;
+      console.log(req.userID);    
+      next();
+  });
+}
+//check user is user is valid, no email like that is exists-> userValid = true/false
+//if userValid == false -> pass error message to req.errorMessage
+//if userValid ==true -> (add user to users table) (get the user number) (get classID) (add to registeration)
+// Verifies that new user has filled in the signup form correctly and creates user
+async function checkUserIsValid(req, res, next) {
+
+  let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
+  await db.execute(query, (err, res) => {
+      console.log(query); 
+      if (err) throw err;
+      let userIsValid;
+      let errorMsg;
+      if(res.length > 0){
+        console.log("res.length > 0");
+        userIsValid = 0;
+        errorMsg = 'the user exists';      
+      }else{
+        console.log("res.length == 0");
+        userIsValid = 1;
+      }  
+      req.userIsValid = userIsValid; 
+      req.errorMsg = errorMsg;  
+      req.class_id = req.body.classID;   
       next();
   });
 }
 
-// Verifies that new user has filled in the signup form correctly and creates user
-router.post("/register", registerFunc, checkIsInstructor, insertToRegisteration, function(req, res, next) {
-  classID = req.query.classID;
-  // console.log("classID: "+classID);
-  // console.log("class_id: "+req.body);
+async function insertUser(req, res, next) {
+    if(req.userIsValid === 1){
+      const hash = bcrypt.hashSync(req.body.password, saltRounds);
+      let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.username+ "' , '"+ req.body.email +"' , '"+ hash +"', 0)";
+      await db.execute(query, (err, res) => {
+          console.log(query); 
+          if (err) throw err;    
+          next();
+      });
+    }else{
+      next();
+    }
+}
+
+async function getUserID(req, res, next) {
+
+  let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
+  await db.execute(query, (err, res) => {
+      console.log(query); 
+      if (err) throw err; 
+      req.user_id = res[0].id; 
+      next();
+  });
+}
+async function checkRegisteration(req, res, next) {
+
+  let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.class_id+" and users_id = "+req.user_id;
+  await db.execute(query, (err, res) => {
+      console.log(query); 
+      if (err) throw err;
+      let duplicateRegisteration; 
+      if(res.length > 0){
+        duplicateRegisteration = 1;
+      }else{
+        duplicateRegisteration = 0;
+      } 
+      req.duplicateRegisteration = duplicateRegisteration;
+      next();     
+  });
+}
+
+async function insertRegisteration(req, res, next) {
+  if(req.duplicateRegisteration === 0){
+      let query = " INSERT INTO emoji_db.registerations (classes_id, users_id, isInstructor) VALUES ( " +req.class_id+ " ," +req.user_id+ " , 0 )";
+      await db.execute(query, (err, res) => {
+          console.log(query); 
+          if (err) throw err;
+          let duplicateRegisteration; 
+          if(res.length > 0){
+            duplicateRegisteration = 1;
+          }else{
+            duplicateRegisteration = 0;
+          } 
+          req.duplicateRegisteration = duplicateRegisteration;
+          next();     
+      });
+  }else{
+    next();
+  }
+}
+
+async function getRegisterationID(req, res, next) {
+
+  let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.class_id+" and users_id = "+req.user_id;
+  await db.execute(query, (err, res) => {
+      console.log(query); 
+      if (err) throw err;
+      req.reg_id = res[0].id;
+      next();     
+  });
+}
+
+router.post("/register", checkUserIsValid, insertUser, getUserID, checkRegisteration, insertRegisteration, getRegisterationID, function(req, res, next) {
+  console.log("req.userIsValid: "+req.userIsValid);
+  console.log("req.errorMsg: "+req.errorMsg);
+  console.log("req.class_id: "+req.class_id);
+  console.log("req.user_id: "+req.user_id);
+  req.login({ id: req.user_id }, () => res.redirect(url.format({
+    pathname: "/sendEmoji",
+    query: {
+        "reg_id": req.reg_id
+    }
+  })));
+
+
 });
 
 //if login failed remove the Registrations added row
@@ -143,24 +207,52 @@ router.get("/login/failed", (req, res) => {
 
 // Get login page
 router.get("/login", function(req, res) {
-  classID = req.query.classID;
   res.render("login", {
     error_msg :'',
     title: "Login",
+    classID: req.query.classID,
     isLoggedIn: req.isAuthenticated()
   });
 
 });
 
 
+// // Logs in user
+// router.post("/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/sendEmoji",
+//     failureRedirect: "/login/failed",
+//     failureFlash: false
+//   })
+// );
+
+async function getRegistrationID_login(req, res, next) {
+
+  let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.body.classID+" and users_id = "+req.user.id;
+  await db.execute(query, (err, res) => {
+      console.log(query); 
+      if (err) res.redirect("/home");;
+      req.reg_id = res[0].id;
+      next();     
+  });
+}
+
 // Logs in user
-router.post("/login",
-  passport.authenticate("local", {
-    successRedirect: "/emojiSharing",
-    failureRedirect: "/login/failed",
-    failureFlash: false
-  })
-);
+router.post("/login", passport.authenticate("local", {
+      failureRedirect: "/fail",
+      failureFlash: false,
+    }), getRegistrationID_login, function(req, res) {
+  // console.log("req.user.id: "+req.user.id);
+  // console.log("req.query.classID: "+req.body.classID);
+
+  res.redirect(url.format({
+    pathname: "/sendEmoji",
+    query: {
+        "reg_id": req.reg_id,
+    }
+}));
+});
+
 
 // Logs out user
 router.get("/logout", function(req, res) {
