@@ -61,9 +61,13 @@ app.use(passport.session());
 const loginRouter = require("./src/routes/loginRoutes");
 const InstructorHomeRoutes = require("./src/routes/InstructorHomeRoutes");
 const generateLink = require("./src/routes/generalRoutes");
+const sendEmojis = require("./src/routes/sendEmojiRoutes");
+const historyRouter = require("./src/routes/historyRoutes");
 app.use("/", InstructorHomeRoutes);
 app.use("/", generateLink);
 app.use("/", loginRouter);
+app.use("/", sendEmojis);
+app.use("/", historyRouter);
 
 
 

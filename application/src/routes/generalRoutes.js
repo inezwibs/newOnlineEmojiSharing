@@ -19,22 +19,21 @@ router.get("/fail",(req, res) => {
 
 });
 
-router.get("/sendEmoji",(req, res) => {
-    console.log("the class id is: "+req.query.classID);
-    const passRegID = req.query.reg_id;
-        res.render("emojiSharing", {
-            reg_id: passRegID
-        });
+
+// router.get("/history",(req, res) => {
+
+//     res.render("history", {
 
 
-});
+//     });
+// });
 
 router.get("/generateLink",(req, res) => {
     console.log(req.query);
     let classID = req.query.classID;
     let pasClassID = "http://localhost:3000/EmojiSharing/?classID="+classID;
 
-    res.render("history", {
+    res.render("generateLink", {
         classID: pasClassID
 
 

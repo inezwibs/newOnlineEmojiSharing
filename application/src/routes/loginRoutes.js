@@ -231,7 +231,7 @@ async function getRegistrationID_login(req, res, next) {
   let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.body.classID+" and users_id = "+req.user.id;
   await db.execute(query, (err, res) => {
       console.log(query); 
-      if (err) res.redirect("/home");;
+      if (err) throw err;
       req.reg_id = res[0].id;
       next();     
   });
