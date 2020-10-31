@@ -133,7 +133,7 @@ async function insertRecordPerMinute (req, res, next) {
 
 
 router.post("/sendEmoji", getClassID, getClassStartTime, insertEmojiRecord, getInsertedEmojiTime, checkRecordExists, insertRecordPerMinute, (req, res) => {
-        res.render("emojiSharing", {
+        res.redirect("emojiSharing", {
             reg_id: req.query.reg_id,
         });
 
