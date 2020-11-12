@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models/database.js");
-
+const url = require('url');
 
 
 
@@ -91,12 +91,37 @@ async function checkRecordExists (req, res, next) {
     });
 }
 
+async function getClassRegisteredStudentsCount (req, res, next) {
+    let query = " SELECT count(*) as count FROM emoji_db.registerations where classes_id = "+ req.class_id;
+    await db.execute(query, (err, res) => {  
+        console.log(query); 
+        
+        req.classRegisteredStudentsCount = res[0].count;
+        console.log("req.classRegisteredStudentsCount: "+req.classRegisteredStudentsCount); 
+        next();     
+    });
+}
+
+async function getContributedStudentsCount (req, res, next) {
+    let query = " select count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = "+ req.class_id;
+    await db.execute(query, (err, res) => {  
+        console.log(query); 
+        
+        let contributedStudentsCount = res[0].count;
+        req.studentNotContributed = req.classRegisteredStudentsCount - contributedStudentsCount;
+        console.log("req.studentNotContributed: "+req.studentNotContributed); 
+        next();     
+    });
+}
+
+// select  count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = 130
+
 async function insertRecordPerMinute (req, res, next) {
     var minute = req.insertedEmojiMinutes - req.classStartMinutes;
     if(req.recordExists === true){
         var minute = req.insertedEmojiMinutes - req.classStartMinutes;
         //update count
-        let query = " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji"+req.emojies_id+" = count_emoji"+req.emojies_id+"+1 where min = " + minute +" and classes_id = "+req.class_id; 
+        let query = " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji"+req.emojies_id+" = count_emoji"+req.emojies_id+"+1, count_notParticipated = "+req.studentNotContributed+" where min = " + minute +" and classes_id = "+req.class_id; 
         await db.execute(query, (err, res) => {  
             console.log(query); 
     
@@ -104,7 +129,7 @@ async function insertRecordPerMinute (req, res, next) {
         });
     }else{
          //insert record
-        let query = " INSERT INTO emoji_db.emojiRecordsPerMinute(min, count_emoji"+req.emojies_id+", classes_id) VALUES ( "+ minute +", 1 , "+ req.class_id + ") ";
+        let query = " INSERT INTO emoji_db.emojiRecordsPerMinute (min, count_emoji"+req.emojies_id+", count_notParticipated, classes_id) VALUES ( "+ minute +", 1 , "+req.studentNotContributed+", "+ req.class_id + ") ";
         await db.execute(query, (err, res) => {  
             console.log(query); 
     
@@ -132,10 +157,16 @@ async function insertRecordPerMinute (req, res, next) {
           //insert the row and count 1 for that emoji
 
 
-router.post("/sendEmoji", getClassID, getClassStartTime, insertEmojiRecord, getInsertedEmojiTime, checkRecordExists, insertRecordPerMinute, (req, res) => {
-        res.redirect("emojiSharing", {
-            reg_id: req.query.reg_id,
-        });
+router.post("/sendEmoji", getClassID, getClassStartTime, insertEmojiRecord, getInsertedEmojiTime, checkRecordExists,getClassRegisteredStudentsCount, getContributedStudentsCount,  insertRecordPerMinute, (req, res) => {
+        // res.redirect("emojiSharing", {
+        //     reg_id: req.query.reg_id
+        // });
+        res.redirect(url.format({
+            pathname: "/sendEmoji",
+            query: {
+                "reg_id": req.query.reg_id,
+            }
+        }));
 
     // console.log("isAnonymouse: "+req.body.isAnonymouse);
     // console.log("text: "+req.body.fname);

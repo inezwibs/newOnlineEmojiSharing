@@ -4,6 +4,17 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <style>
+    table{
+        width:100%;
+        border-collapse: collapse;
+    }
+    td.first{
+        width:auto;
+        }
+       input.hello[type="text"] {
+           width: 80px; 
+
+      }
     .center {
         display: block;
         margin-left: auto;
@@ -86,27 +97,9 @@
 
     .table {
         margin: auto;
-        width: 37% !important;
+        width: 10px ;
         font-size: 12;
     }
-      
-      tr {
-        width: 0vw;
-      }
-      
-      td {
-        display:inline-block;
-
-        /* changing the value of the width will work with min width bro*/
-      }
-      th {
-        display:inline-block;
-
-        /* changing the value of the width will work with min width bro*/
-      }
-
-
-
 
     .switch {
         position: relative;
@@ -197,80 +190,74 @@
        <label class="switchLabel">
            Anonymouse user
        </label>
-        <div>
+        <div style="overflow-x:auto;">
             <table class="table table-bordered">
                 
-                <thead class="thead-light">
-                    <tr>
-                        <th width="120px" scope="colgroup">emoji</th>
-                        <th width="120px" scope="colgroup">selection</th>
-                        <th width="332px" scope="colgroup">Description</th>
-                    </tr>
-                </thead>
+
                 <tbody>
                     <input type="hidden" id='regID'  name="regID" value = "<%=reg_id%>">
 
 
                     <tr>
-                        <td width="120px"  style="border: none;">
-                            <input type="text" style="border: none; display: inline !important; font-size:30px" name="image" value="&#x1f601;" alt="" height=100 width=100 readonly />
+                        <td class="first">
+                            <input class="hello"  type="text" style="border: none; display: inline !important; font-size:30px" name="image" value="&#x1f601;" readonly />
                         </td>
-                        <td width="120px" style="border: none;">
+                        <td >
                             <div class="radio">
                                 <input type="radio" id='regular'  name="optradio" value = "1">
                             </div>
-                        </td width="332px" > 
-                        <td style="border: none;">
+                        </td > 
+                        <td >
                             <input style="border: 0" type="text" size="35" name="caption" value="I completely understand!" readonly /> </td>
                         </td>
 
                     </tr>
 
                     <tr>
-                        <td width="120px" style="border: none;">
-                            <input style="border: none; font-size:30px" type="text" name="image" value="&#128578;" alt="" height=100 width=100 readonly />
+                        <td class="first">
+                            <input class="hello"  style="border: none; font-size:30px" type="text" name="image" value="&#128578;" readonly />
                         </td>
-                        <td width="120px" style="border: none;">
+                        <td >
                             <div class="radio">
                                 <input type="radio" id='regular'  name="optradio" value = "2"> 
                             </div>
-                        </td width="332px">
-                        <td style="border: none;">
+                        </td >
+                        <td >
                             <input style="border: 0" type="text" size="35" name="caption" value="I think I’m getting it" readonly /> </td>
                         </td>
 
                     </tr>
 
                     <tr>
-                        <td width="120px" style="border: none;">
-                            <input type="text" style="border: none; font-size:30px" name="image" value="&#128528;" alt="" height=100 width=100 readonly />
+                        <td class="first">
+                            <input class="hello"  type="text" style="border: none; font-size:30px" name="image" value="&#128528;" readonly />
                         </td>
-                        <td width="120px" style="border: none;">
+                        <td >
                             <input type="radio" id='regular'  name="optradio" value = "3" checked="checked">
-                        </td width="332px">
-                        <td style="border: none;"><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly /> </td>
+                        </td >
+                        <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly /> </td>
                         </td>
                     </tr>
 
                     <tr>
-                        <td width="120px" style="border: none;">
-                            <input type="text" style="border: none; font-size:30px" name="image" value="&#129300;" alt="" height=100 width=100 readonly />
+                        <td class="first">
+                            <input class="hello"  type="text" style="border: none; font-size:30px" name="image" value="&#129300;"  readonly />
                         </td>
-                        <td width="120px" style="border: none;">
+                        <td >
                             <input type="radio" id='regular'  name="optradio" value = "4">
-                        </td width="332px">
-                        <td  style="border: none;"><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
+                        </td >
+                        <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
                         </td>
                     </tr>
 
                     <tr>
-                        <td width="120px" style="border: none;">
-                            <input type="text" style="border: none; font-size:30px" name="image" value="&#128534;" alt="" height=100 width=100 readonly />
+                        <td  >
+                            <input class="hello"  type="text" style="border: none; font-size:30px" name="image" value="&#128534;" readonly />
                         </td>
-                        <td width="120px" style="border: none;"> 
+                        <td > 
                             <input type="radio" id='regular'  name="optradio" value = "5">
-                        </td width="332px" style="border: none;">
-                        <td style="border: none;"><input style="border: 0" size="45" type="text" name="caption" value="I completely don’t understand what’s going on!" readonly /> </td>
+                        </td  >
+                        <td ><input style="border: 0" size="45" type="text" name="caption" value="I completely don’t understand what’s going on!" readonly /> </td>
                         </td>
                     </tr>
 

@@ -12,21 +12,51 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="/js/my.js"></script>
 
 <head>
-       <script type="text/javascript">
+    <script type="text/javascript">
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
-            [//colorSet Array   
-            "#D3D3D3",         
-            "#FF0000",
-            "#FFA500",
-            "#ffff00",
-            '#17cbe3',
-            "#3CB371",
-            
-                            
-            ]);
+                [//colorSet Array   
+                    "#D3D3D3",
+                    "#FF0000",
+                    "#FFA500",
+                    "#ffff00",
+                    '#17cbe3',
+                    "#3CB371",
+
+
+                ]);
+
+
+            var dps1 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+
+            var dps2 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+            var dps3 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+            var dps4 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+            var dps5 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+            var dps6 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+
             var chart = new CanvasJS.Chart("chartContainer",
                 {
                     colorSet: "myShades",
@@ -37,107 +67,101 @@
                         {
                             //gray
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 11, label: "1" },
-                                { y: 9, label: "2" },
-                                { y: 12, label: "3" },
-                                { y: 10, label: "4" },
-                                { y: 18, label: "5" },
-                                { y: 8, label: "6" },
-                                { y: 9, label: "7" },
-                                { y: 3, label: "8" }
-
-                            ]
+                            dataPoints: dps1
                         },
                         {
                             //red
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 5, label: "1" },
-                                { y: 10, label: "2" },
-                                { y: 8, label: "3" },
-                                { y: 3, label: "4" },
-                                { y: 9, label: "5" },
-                                { y: 7, label: "6" },
-                                { y: 12, label: "7" },
-                                { y: 1, label: "8" }
-
-                            ]
+                            dataPoints: dps2
                         },
                         {
                             //orange
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 3, label: "1" },
-                                { y: 10, label: "2" },
-                                { y: 1, label: "3" },
-                                { y: 3, label: "4" },
-                                { y: 9, label: "5" },
-                                { y: 0, label: "6" },
-                                { y: 2, label: "7" },
-                                { y: 2, label: "8" }
-
-                            ]
+                            dataPoints: dps3
                         },
                         {
                             //yellow
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 7, label: "1" },
-                                { y: 10, label: "2" },
-                                { y: 5, label: "3" },
-                                { y: 13, label: "4" },
-                                { y: 3, label: "5" },
-                                { y: 10, label: "6" },
-                                { y: 12, label: "7" },
-                                { y: 10, label: "8" }
-
-                            ]
+                            dataPoints: dps4
                         },
                         {
                             //blue
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 3, label: "1" },
-                                { y: 10, label: "2" },
-                                { y: 22, label: "3" },
-                                { y: 13, label: "4" },
-                                { y: 19, label: "5" },
-                                { y: 10, label: "6" },
-                                { y: 20, label: "7" },
-                                { y: 10, label: "8" }
-
-                            ]
+                            dataPoints: dps5
                         },
                         {
                             //green
                             type: "stackedColumn",
-                            dataPoints: [
-                                { y: 3, label: "1" },
-                                { y: 10, label: "2" },
-                                { y: 22, label: "3" },
-                                { y: 13, label: "4" },
-                                { y: 19, label: "5" },
-                                { y: 10, label: "6" },
-                                { y: 20, label: "7" },
-                                { y: 10, label: "8" }
-
-                            ]
+                            dataPoints: dps6
                         }
                     ]
+
                 });
 
             chart.render();
         }
+
+
+
     </script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
 
 
-    <script> 
-        document.getElementById("Geeks").innerHTML =  
-                             "Hello GeeksforGeeks!"; 
-    </script> 
+    <script>
+        function update_chart_visibility(chk_bx) {
+            const params = new URLSearchParams(document.location.search);
+            const reg_id = params.get("reg_id");
+            const myurl = "/history/?reg_id=" + reg_id;
+            var isChecked = 0;
+            if (chk_bx.checked) {
+                isChecked = 1;
+            }
+            $.ajax({
+                type: "POST",
+                url: myurl,
+                data: {
+                    "history_chart_access": isChecked,
+                },
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("successfully authenticated!")
+                    } else if (data.status == "failed") {
+                        alert("failed authentication!")
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+
+        function update_text_visibility(chk_bx) {
+            const params = new URLSearchParams(document.location.search);
+            const reg_id = params.get("reg_id");
+            const myurl = "/history/?reg_id=" + reg_id;
+            var isChecked = 0;
+            if (chk_bx.checked) {
+                isChecked = 1;
+            }
+            $.ajax({
+                type: "POST",
+                url: myurl,
+                data: {
+                    "history_text_access": isChecked,
+                },
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("successfully authenticated!")
+                    } else if (data.status == "failed") {
+                        alert("failed authentication!")
+                    }
+                }
+            });
+        }
+
+    </script>
+
 </head>
 <style>
     .table-center {
@@ -220,7 +244,13 @@
         border-radius: 50%;
     }
 
-
+    div.ex1 {
+        background-color: rgb(235, 235, 235);
+        height: 400px;
+        width: 100%;
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
 
 
 
@@ -260,29 +290,15 @@
 <div class="container">
     <div class="row table-center">
         <br><br><br><br>
-        <p id="Geeks"></p> 
-        <div class="col-md-6 col-sm-6 middle">
+        <p id="Geeks"></p>
+        <div class="col-md-10 col-sm-10 middle">
 
-              <%if (isInstructor === true) { %>
+            <%if (isInstructor === true && history_chart_access === 0) { %>
 
-                <div>
-                    <label class="switch">
-                        <input type="checkbox" name="isAnonymouse">
-                        <span class="slider round"></span>
-                    </label>
-                    <label class="switchLabel">
-                        visible
-                    </label>
-                </div>
-                <% } %>
-
-            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-        </div>
-        <div class="col-md-6 col-sm-6 middle pull-right">
-            <%if (isInstructor === true) { %>
             <div>
                 <label class="switch">
-                    <input type="checkbox" name="isAnonymouse">
+
+                    <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" unchecked>
                     <span class="slider round"></span>
                 </label>
                 <label class="switchLabel">
@@ -290,110 +306,75 @@
                 </label>
             </div>
 
+
+
+            <% } else if (isInstructor === true && history_chart_access === 1) { %>
+
+            <div>
+                <label class="switch">
+
+                    <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" checked>
+                    <span class="slider round"></span>
+                </label>
+                <label class="switchLabel">
+                    visible
+                </label>
+            </div>
             <% } %>
+            <%if (isInstructor === true || (isInstructor === false && history_chart_access === 1)) { %>
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+            <% } %>
+        </div>
+
+        <div class="col-md-10 col-sm-10 middle">
+            <br><br>
+            <%if (isInstructor === true && history_text_access === 0) { %>
+
+            <div>
+                <label class="switch">
+
+                    <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" unchecked>
+                    <span class="slider round"></span>
+                </label>
+                <label class="switchLabel">
+                    visible
+                </label>
+            </div>
+
+
+
+            <% } else if (isInstructor === true && history_text_access === 1) { %>
+
+            <div>
+                <label class="switch">
+
+                    <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" checked>
+                    <span class="slider round"></span>
+                </label>
+                <label class="switchLabel">
+                    visible
+                </label>
+            </div>
+            <% } %>
+            <span id="result"></span>
+            <%if (isInstructor === true || (isInstructor === false && history_text_access === 1)) { %>
             <div>
                 <div class="row">
-
-                    <div class="message-wrap col-lg-8">
-                        <div class="msg-wrap">
-
-
-                            <div class="media msg ">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-                                    <h5 class="media-heading">Naimish Sakhpara</h5>
-                                    <small class="col-lg-10">Location H-2, Ayojan Nagar, Near Gate-3, Near
-                                        Shreyas Crossing Dharnidhar Derasar,
-                                        Paldi, Ahmedabad 380007, Ahmedabad,
-                                        India
-                                        Phone 091 37 669307
-                                        Email aapamdavad.district@gmail.com</small>
-                                </div>
+                    <div class="ex1">
+                        <% for(var i=0; i < userInfo.length; i++) { %>
+                        <div>
+                            <div>
+                                <small style="color:rgb(214, 136, 19)">
+                                    <i class="fa fa-clock-o"></i> 12:10am</small>
+                                <h5><%= userInfo[i].full_name %></h5>
+                                <small class="col-lg-10"><%= userInfo[i].text %></small>
                             </div>
-                            <div class="media msg">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-
-                                    <h5 class="media-heading">Naimish Sakhpara</h5>
-                                    <small class="col-lg-10">Helooooooooooooooo</small>
-                                </div>
-                            </div>
-                            <div class="media msg">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-
-                                    <h5 class="media-heading">Naimish Sakhpara</h5>
-                                    <small class="col-lg-10">hi my name is Sara!</small>
-                                </div>
-                            </div>
-
-                            <div class="media msg">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-                                    <h5 class="media-heading">Sarah rosana</h5>
-
-                                    <small class="col-lg-10">Arnab Goswami: "Some people close to Congress Party and
-                                        close to the government had a #secret #meeting in a farmhouse in Maharashtra in
-                                        which Anna Hazare send some representatives and they had a meeting in the
-                                        discussed how to go about this all fast and how eventually this will
-                                        end."</small>
-                                </div>
-                            </div>
-
-
-                            <div class="media msg">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-                                    <h5 class="media-heading">Sarah rosana</h5>
-
-                                    <small class="col-lg-10">Arnab Goswami: "Some people close to Congress Party and
-                                        close to the government had a #secret #meeting in a farmhouse in Maharashtra in
-                                        which Anna Hazare send some representatives and they had a meeting in the
-                                        discussed how to go about this all fast and how eventually this will
-                                        end."</small>
-                                </div>
-                            </div>
-
-
-                            <div class="media msg">
-
-                                <div class="media-body">
-                                    <small class="pull-right time" style="color:rgb(214, 136, 19)"><i
-                                            class="fa fa-clock-o"></i> 12:10am</small>
-                                    <h5 class="media-heading">Sarah rosana</h5>
-
-                                    <small class="col-lg-10">Arnab Goswami: "Some people close to Congress Party and
-                                        close to the government had a #secret #meeting in a farmhouse in Maharashtra in
-                                        which Anna Hazare send some representatives and they had a meeting in the
-                                        discussed how to go about this all fast and how eventually this will
-                                        end."</small>
-                                </div>
-                            </div>
-
                         </div>
-
+                        <% } %>
                     </div>
                 </div>
             </div>
+            <% } %>
         </div>
     </div>
-</div>
-
-
-
-
-
-<div class="row">
-    <div class="col-12 col-md-8">.col-12 .col-md-8</div>
-    <div class="col-6 col-md-4">.col-6 .col-md-4</div>
 </div>

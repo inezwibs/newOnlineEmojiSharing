@@ -1,8 +1,4 @@
-<link
-  href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
-  rel="stylesheet"
-  id="bootstrap-css"
-/>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <style>
@@ -46,32 +42,22 @@
   margin-right: 250px; */
   }
 </style>
-<div>
-  <br />
-  <h2 class="text-center text-info">Welcome to Emoji Sharing app!</h2>
-  <br />
-  <img
-    src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz"
-    width="450"
-    height="350"
-    class="center"
-  />
 
- 
-  <div style="display: flex">
-    <form method="GET" action="/register" class="form-group">
-      <input type="hidden" name="classID" value="<%=classID%>"/>
-      <input
-        type="submit"
-        name="submit"
-        class="button_register"
-        value="Register"
-      />
-      
-    </form>
-    <form method="GET" action="/login" class="form-group">
-      <input type="hidden" name="classID" value="<%=classID%>"/>
-      <input type="submit" name="submit" class="button_login" value="Login" />
-    </form>
-  </div>
+
+<br />
+<h2 class="text-center text-info">Welcome to Emoji Sharing app!</h2>
+<br />
+
+<img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
+  class="center" />
+
+<div style="display: flex">
+  <form method="GET" action="/register" class="form-group">
+    <input type="hidden" name="classID" value="<%=classID%>" />
+    <input type="submit" name="submit" class="button_register" value="Register" />
+  </form>
+  <form method="GET" action="/login" class="form-group">
+    <input type="hidden" name="classID" value="<%=classID%>" />
+    <input type="submit" name="submit" class="button_login" value="Login" />
+  </form>
 </div>
