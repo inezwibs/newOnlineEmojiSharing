@@ -2,7 +2,7 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <title>Play</title>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+<meta http-equiv="Refresh" content="300">
 <style>
     table{
         width:100%;
@@ -169,13 +169,10 @@
     }
 </style>
 <script type="text/javascript">
-    function myFunction () {
-        console.log('Executed!');
-    }
-    
-    var interval = setInterval(function () { myFunction(); }, 6000);
+    setTimeout(function(){
+        $("#topScroll").fadeOut();
+    }, 4000)
     </script>
-
 
 <div>
     <form action="/history/?reg_id=<%=reg_id%>" method="post">
@@ -235,8 +232,13 @@
                         <td >
                             <input type="radio" id='regular'  name="optradio" value = "3" checked="checked">
                         </td >
-                        <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly /> </td>
+                        <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly />
+                            <div id="topScroll" style="color:chocolate; font-weight: bold;">
+                                <a>Selected Emoji changed back to Neutral!</a>
+                            </div> 
                         </td>
+    
+                    </td>
                     </tr>
 
                     <tr>
@@ -246,8 +248,8 @@
                         <td >
                             <input type="radio" id='regular'  name="optradio" value = "4">
                         </td >
-                        <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
-                        </td>
+                        <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td> 
+                    </td>
                     </tr>
 
                     <tr>
