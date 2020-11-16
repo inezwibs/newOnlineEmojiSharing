@@ -5,18 +5,14 @@ const pool = mysql.createPool({
   user: "raya1",
   port:3306,
   password: "Qwer$3976",
-  // host: "52.53.161.36",
-  // host: "127.0.0.1",
-  
-host: "13.57.196.89",
-// host: "18.144.19.235",
+  host: "13.57.196.89",
 
   
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 
-});
+}); 
 
   pool.getConnection(err => {
     if (err) throw err;

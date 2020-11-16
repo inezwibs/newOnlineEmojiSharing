@@ -16,7 +16,7 @@ const saltRounds = 10;
 
 async function insertInstructure(req, res, next) {
     const hash = bcrypt.hashSync(req.body.password, saltRounds);
-
+    console.log("hellloooo1"); 
     let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.name+ "' , '"+ req.body.email +"' , '"+ hash +"', 1)";
     await db.execute(query, (err, res) => {
         // console.log(query); 
@@ -30,6 +30,7 @@ async function insertInstructure(req, res, next) {
 async function getInstructorID(req, res, next) {
 
     let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
+    console.log("hellloooo2"); 
     await db.execute(query, (err, res) => {
         if (err) throw err;
         // console.log(query); 
@@ -81,10 +82,6 @@ async function insertToRegisteration(req, res, next) {
 }
 
 router.post("/home", insertInstructure, getInstructorID, insertClasses, getClassID, insertToRegisteration, (req, res) => {
-    let name = req.body;
-    let name2 = req.params;
-    // console.log(name);
-    // console.log(name2);
     // console.log("req.classID: ");
     // console.log(req.classID);
     // res.redirect("/generateLink/"+req.classID, {
