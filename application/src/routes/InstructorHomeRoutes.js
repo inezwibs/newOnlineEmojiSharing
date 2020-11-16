@@ -19,7 +19,7 @@ async function insertInstructure(req, res, next) {
     console.log("hellloooo1"); 
     let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.name+ "' , '"+ req.body.email +"' , '"+ hash +"', 1)";
     await db.execute(query, (err, res) => {
-        // console.log(query); 
+        console.log(query); 
         
         // you can show alert if the user is already exists
         if (err) throw err;
