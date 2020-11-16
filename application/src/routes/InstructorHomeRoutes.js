@@ -22,7 +22,7 @@ async function insertInstructure(req, res, next) {
         // console.log(query); 
         
         // you can show alert if the user is already exists
-        if (err) console.log(err);
+        if (err) throw err;
         next();
     });
 }
