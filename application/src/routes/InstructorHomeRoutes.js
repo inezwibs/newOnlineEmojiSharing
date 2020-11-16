@@ -20,6 +20,7 @@ async function insertInstructure(req, res, next) {
     console.log(hash);
     console.log(req.body.name);
     let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.name+ "' , '"+ req.body.email +"' , '"+ hash +"', 1)";
+    console.log(query);
     await db.execute(query, (err, res) => {
         console.log(query); 
         
