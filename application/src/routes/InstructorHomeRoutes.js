@@ -19,7 +19,7 @@ async function insertInstructure(req, res, next) {
 
     let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.name+ "' , '"+ req.body.email +"' , '"+ hash +"', 1)";
     await db.execute(query, (err, res) => {
-        console.log(query); 
+        // console.log(query); 
         
         // you can show alert if the user is already exists
         if (err) console.log(err);
@@ -32,9 +32,9 @@ async function getInstructorID(req, res, next) {
     let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
     await db.execute(query, (err, res) => {
         if (err) throw err;
-        console.log(query); 
+        // console.log(query); 
         req.instructorID = res[0].id;
-        console.log(req.instructorID);    
+        // console.log(req.instructorID);    
         next();
     });
 }
@@ -43,7 +43,7 @@ async function insertClasses(req, res, next) {
     // let query = " SELECT * FROM emoji_db.instructors where email = '"+req.body.email+"'";
     let query = " INSERT INTO emoji_db.classes (id, class_name, datetime, startTime ) VALUES ( " +req.instructorID+ " ,'" +req.body.className+ "' , '"+ req.body.weekday+ "-" + req.body.startTime + ","+req.body.endTime+ "' , '"+ req.body.startTime  +"')";
     await db.execute(query, (err, res) => {
-        console.log(query);
+        // console.log(query);
         if (err) throw err;
         next();
     });
@@ -51,9 +51,9 @@ async function insertClasses(req, res, next) {
 async function getClassID(req, res, next) {
     let query = " SELECT * FROM emoji_db.classes where datetime = '"+req.body.weekday+ "-" + req.body.startTime + ","+req.body.endTime+"'";
     await db.execute(query, (err, res) => {
-        console.log(query);
+        // console.log(query);
         req.classID = res[0].id;
-        console.log(req.classID);
+        // console.log(req.classID);
         // you can show alert if the user is already exists
         if (err) throw err;
         next();
@@ -74,7 +74,7 @@ async function insertToRegisteration(req, res, next) {
     let query = " INSERT INTO emoji_db.registerations (classes_id, users_id, isInstructor) VALUES ( " +req.classID+ " ," +req.instructorID+ " , 1 )";
   
     await db.execute(query, (err, res) => {
-        console.log(query);
+        // console.log(query);
         if (err) throw err;
         next();
     });
@@ -83,10 +83,10 @@ async function insertToRegisteration(req, res, next) {
 router.post("/home", insertInstructure, getInstructorID, insertClasses, getClassID, insertToRegisteration, (req, res) => {
     let name = req.body;
     let name2 = req.params;
-    console.log(name);
+    // console.log(name);
     // console.log(name2);
-    console.log("req.classID: ");
-    console.log(req.classID);
+    // console.log("req.classID: ");
+    // console.log(req.classID);
     // res.redirect("/generateLink/"+req.classID, {
 
 
