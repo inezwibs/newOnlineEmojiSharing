@@ -45,9 +45,9 @@ async function getInstructorID(req, res, next) {
 
 async function insertClasses(req, res, next) {
     // let query = " SELECT * FROM emoji_db.instructors where email = '"+req.body.email+"'";
-    let query = " INSERT INTO emoji_db.classes (id, class_name, datetime, startTime ) VALUES ( " +req.instructorID+ " ,'" +req.body.className+ "' , '"+ req.body.weekday+ "-" + req.body.startTime + ","+req.body.endTime+ "' , '"+ req.body.startTime  +"')";
+    let query = " INSERT INTO emoji_db.classes (id, class_name, datetime, startTime, endTime ) VALUES ( " +req.instructorID+ " ,'" +req.body.className+ "' , '"+ req.body.weekday+ "-" + req.body.startTime + ","+req.body.endTime+ "' , '"+ req.body.startTime  +"', '"+ req.body.endTime+"' )";
     await db.execute(query, (err, res) => {
-        // console.log(query);
+        console.log(query);
         if (err) throw err;
         next();
     });

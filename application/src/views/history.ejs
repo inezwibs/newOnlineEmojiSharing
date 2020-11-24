@@ -18,6 +18,8 @@
 
 <head>
     <script type="text/javascript">
+
+ 
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
                 [//colorSet Array   
@@ -102,11 +104,8 @@
             chart.render();
         }
 
-
-
     </script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
 
 
     <script>
@@ -358,7 +357,7 @@
             </div>
             <% } %>
             <span id="result"></span>
-            <%if (isInstructor === true || (isInstructor === false && history_text_access === 1)) { %>
+            <%if ((isInstructor === true || (isInstructor === false && history_text_access === 1))) { %>
             <div>
                 <div class="row">
                     <div class="ex1">
@@ -366,8 +365,13 @@
                         <div>
                             <div>
                                 <small style="color:rgb(214, 136, 19)">
-                                    <i class="fa fa-clock-o"></i> 12:10am</small>
-                                <h5><%= userInfo[i].full_name %></h5>
+                                <i class="fa fa-clock-o"></i> <%=userInfo[i].record_time%></small>
+                                <%if (userInfo[i].isAnonymous === 0) { %>
+                                <h5 ><%= userInfo[i].full_name %></h5> 
+                                <% }else{ %>  
+                                    
+                                    <h5 >Anonymous user</h5> 
+                                <% } %>                            
                                 <small class="col-lg-10"><%= userInfo[i].text %></small>
                             </div>
                         </div>
