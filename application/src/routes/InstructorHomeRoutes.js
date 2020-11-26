@@ -67,6 +67,7 @@ async function getInstructorID(req, res, next) {
         console.log("test: "+test); 
         console.log(test[0]);
         console.log("test[0]: "+test[0]); 
+        console.log(test[0].email);
         console.log("test.id: "+test.id); 
         next();
     }
