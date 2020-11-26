@@ -62,8 +62,8 @@ async function getInstructorID(req, res, next) {
     try{
         res = await db.execute(query);
         console.log(query); 
-        req.instructorID = res[0].id;
-        console.log(req.instructorID); 
+        test = res[0].id;
+        console.log(test); 
         next();
     }
     catch(e) {
