@@ -9,7 +9,7 @@ var expressValidator = require("express-validator");
 
 
 
-const PORT = 3000;
+const PORT = 4000;
 
 var options = {
     database: "emoji_db",
