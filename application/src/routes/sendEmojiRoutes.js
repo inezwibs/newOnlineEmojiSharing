@@ -23,95 +23,170 @@ async function insertEmojiRecord(req, res, next) {
         isAnonymous = 1;
     }
     let query = " INSERT INTO emoji_db.posted_emojies (isAnonymous, emojies_id, registeration_id, class_id, text) VALUES ( " +isAnonymous+ " ,"+req.body.optradio+", " +req.query.reg_id+ " ,"+req.class_id+ " , '" +req.body.fname+ "')";
-    await db.execute(query, (err, res) => {
-        // console.log(query); 
-        // console.log("res[0].id: "+res.insertId);
-        req.posted_record_id = res.insertId;
-        // console.log(query); 
+    // await db.execute(query, (err, res) => {
+    //     // console.log(query); 
+    //     // console.log("res[0].id: "+res.insertId);
+    //     req.posted_record_id = res.insertId;
+    //     // console.log(query); 
 
-        next();     
-    });
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
+        console.log(query); 
+        req.posted_record_id = res.insertId;
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 async function getClassID(req, res, next) {
     let query = " SELECT * FROM emoji_db.registerations where id = "+req.query.reg_id;    
-    await db.execute(query, (err, res) => {
-        // console.log(query); 
+    // await db.execute(query, (err, res) => {
+    //     // console.log(query); 
+    //     req.class_id = res[0].classes_id;
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
+        console.log(query); 
         req.class_id = res[0].classes_id;
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 
 async function getClassStartTime(req, res, next) {
     let query = " SELECT startTime as startTime FROM emoji_db.classes where id =  "+req.class_id;    
-    await db.execute(query, (err, res) => {   
+    // await db.execute(query, (err, res) => {   
+    //     console.log("startTime: "+res[0].startTime);
+    //     var tmp = (res[0].startTime).split(':');
+    //     var classStartMinutes = (parseFloat(tmp[0]*60)) + (parseFloat(tmp[1]));
+    //     console.log("classStartMinutes: "+classStartMinutes);
+    //     req.classStartMinutes = classStartMinutes;
+
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
         console.log("startTime: "+res[0].startTime);
         var tmp = (res[0].startTime).split(':');
         var classStartMinutes = (parseFloat(tmp[0]*60)) + (parseFloat(tmp[1]));
         console.log("classStartMinutes: "+classStartMinutes);
         req.classStartMinutes = classStartMinutes;
-
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 
 async function getInsertedEmojiTime (req, res, next) {
     let query = " SELECT Time(date_time) as insertedEmojiTime, emojies_id, date_time FROM emoji_db.posted_emojies where id = "+req.posted_record_id;    
-    await db.execute(query, (err, res) => {   
-        // console.log(query); 
+    // await db.execute(query, (err, res) => {   
+    //     // console.log(query); 
+    //     console.log("insertedEmojiTime: "+res[0].insertedEmojiTime);
+    //     var tmp = (res[0].insertedEmojiTime).split(':');
+    //     var insertedEmojiMinutes = (parseFloat(tmp[0]*60)) + (parseFloat(tmp[1]));
+    //     req.insertedEmojiMinutes = insertedEmojiMinutes;
+        
+    //     req.emojies_id = res[0].emojies_id;
+    //     req.datetime = res[0].date_time.toISOString().slice(0,10) + ' ' + res[0].date_time.toLocaleTimeString().slice(0,7);
+    //     console.log("insertedEmojiMinutes: "+insertedEmojiMinutes);
+    //     // console.log("req.emojies_id: "+req.emojies_id);
+    //     console.log("req.datetime: "+req.datetime);
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
         console.log("insertedEmojiTime: "+res[0].insertedEmojiTime);
         var tmp = (res[0].insertedEmojiTime).split(':');
         var insertedEmojiMinutes = (parseFloat(tmp[0]*60)) + (parseFloat(tmp[1]));
         req.insertedEmojiMinutes = insertedEmojiMinutes;
-        
         req.emojies_id = res[0].emojies_id;
         req.datetime = res[0].date_time.toISOString().slice(0,10) + ' ' + res[0].date_time.toLocaleTimeString().slice(0,7);
         console.log("insertedEmojiMinutes: "+insertedEmojiMinutes);
-        // console.log("req.emojies_id: "+req.emojies_id);
         console.log("req.datetime: "+req.datetime);
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 async function checkRecordExists (req, res, next) {
     var minute = req.insertedEmojiMinutes - req.classStartMinutes; 
     let query = " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " + minute +" and classes_id = "+req.class_id;  
-    await db.execute(query, (err, res) => {  
-        // console.log(query); 
+    // await db.execute(query, (err, res) => {  
+    //     // console.log(query); 
+    //     var recordExists = false;
+    //     if(res.length !== 0){
+    //         recordExists = true;
+    //     }
+    //     req.recordExists = recordExists;
+    //     // console.log("res: "+res.length); 
+    //     // console.log("recordExists: "+req.recordExists); 
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
         var recordExists = false;
         if(res.length !== 0){
             recordExists = true;
         }
         req.recordExists = recordExists;
-        // console.log("res: "+res.length); 
-        // console.log("recordExists: "+req.recordExists); 
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 async function getClassRegisteredStudentsCount (req, res, next) {
     let query = " SELECT count(*) as count FROM emoji_db.registerations where classes_id = "+ req.class_id;
-    await db.execute(query, (err, res) => {  
-        console.log(query); 
+    // await db.execute(query, (err, res) => {  
+    //     console.log(query); 
         
+    //     req.classRegisteredStudentsCount = res[0].count;
+    //     // console.log("req.classRegisteredStudentsCount: "+req.classRegisteredStudentsCount); 
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
+        console.log(query); 
         req.classRegisteredStudentsCount = res[0].count;
-        // console.log("req.classRegisteredStudentsCount: "+req.classRegisteredStudentsCount); 
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 async function getContributedStudentsCount (req, res, next) {
     let query = " select count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = "+ req.class_id;
-    await db.execute(query, (err, res) => {  
-        // console.log(query); 
+    // await db.execute(query, (err, res) => {  
+    //     // console.log(query); 
         
+    //     let contributedStudentsCount = res[0].count;
+    //     req.studentNotContributed = req.classRegisteredStudentsCount - contributedStudentsCount;
+    //     // console.log("req.studentNotContributed: "+req.studentNotContributed); 
+    //     next();     
+    // });
+    try{
+        const[res, err]  = await db.execute(query);
         let contributedStudentsCount = res[0].count;
         req.studentNotContributed = req.classRegisteredStudentsCount - contributedStudentsCount;
-        // console.log("req.studentNotContributed: "+req.studentNotContributed); 
-        next();     
-    });
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
 }
 
 // select  count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = 130
@@ -122,19 +197,28 @@ async function insertRecordPerMinute (req, res, next) {
         var minute = req.insertedEmojiMinutes - req.classStartMinutes;
         //update count
         let query = " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji"+req.emojies_id+" = count_emoji"+req.emojies_id+"+1, count_notParticipated = "+req.studentNotContributed+" where min = " + minute +" and classes_id = "+req.class_id; 
-        await db.execute(query, (err, res) => {  
-            // console.log(query); 
+        // await db.execute(query, (err, res) => {  
+        //     // console.log(query); 
     
-            next();     
-        });
+        //     next();     
+        // });
+        try{
+            await db.execute(query);
+            next();
+        }
+        catch(e) {
+            console.log('Catch an error: ', e)
+        }
     }else{
          //insert record
         let query = " INSERT INTO emoji_db.emojiRecordsPerMinute (min, count_emoji"+req.emojies_id+", count_notParticipated, classes_id) VALUES ( "+ minute +", 1 , "+req.studentNotContributed+", "+ req.class_id + ") ";
-        await db.execute(query, (err, res) => {  
-            // console.log(query); 
-    
-            next();     
-        });
+        try{
+            await db.execute(query);
+            next();
+        }
+        catch(e) {
+            console.log('Catch an error: ', e)
+        }
     }
 
 }
