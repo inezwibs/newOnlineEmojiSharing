@@ -23,41 +23,41 @@
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
                 [//colorSet Array   
-                    "#D3D3D3",
-                    "#FF0000",
-                    "#FFA500",
-                    "#ffff00",
-                    '#17cbe3',
-                    "#3CB371",
+                    "#D3D3D3",//gray
+                    "#FF0000",//red
+                    "#FFA500",//orange
+                    "#ffff00",//yellow
+                    '#17cbe3',//blue
+                    "#3CB371",//green
 
 
                 ]);
 
 
-            var dps1 = [];
+            var dps6 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].min%>" });
             " <% } %>"
 
-            var dps2 = [];
+            var dps5 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].min%>" });
-            " <% } %>"
-            var dps3 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].min%>" });
             " <% } %>"
             var dps4 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].min%>" });
             " <% } %>"
-            var dps5 = [];
+            var dps3 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].min%>" });
             " <% } %>"
-            var dps6 = [];
+            var dps2 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].min%>" });
+            " <% } %>"
+            var dps1 = [];
+            "<% for(var i=0; i < records.length; i++) { %>"
+            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].min%>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
