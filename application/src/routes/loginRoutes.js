@@ -15,7 +15,7 @@ const saltRounds = 10;
 
 // Gets registration page
 router.get("/register", function(req, res, next) {
-  console.log("raya_query: " + req.query.classID);
+  // console.log("raya_query: " + req.query.classID);
   res.render("register", {
     title: "Form Validation",
     classID: req.query.classID   
@@ -126,11 +126,11 @@ async function checkUserIsValid(req, res, next) {
     let userIsValid;
     let errorMsg;
     if(res.length > 0){
-      console.log("res.length > 0");
+      // console.log("res.length > 0");
       userIsValid = 0;
       errorMsg = 'the user exists'; 
     }else{
-      console.log("res.length == 0");
+      // console.log("res.length == 0");
       userIsValid = 1;
     }
     req.userIsValid = userIsValid; 
@@ -199,7 +199,7 @@ async function checkRegisteration(req, res, next) {
   // });
   try{
     const[res, err]  = await db.execute(query);
-    console.log(query); 
+    // console.log(query); 
     let duplicateRegisteration;
     if(res.length > 0){
       duplicateRegisteration = 1;
@@ -231,7 +231,7 @@ async function insertRegisteration(req, res, next) {
       // });
       try{
         const[res, err]  = await db.execute(query);
-        console.log(query);
+        // console.log(query);
         let duplicateRegisteration;
         if(res.length > 0){
           duplicateRegisteration = 1;
@@ -260,7 +260,7 @@ async function getRegisterationID(req, res, next) {
   // });
   try{
     const[res, err]  = await db.execute(query);
-    console.log(query);  
+    // console.log(query);  
     req.reg_id = res[0].id;
     next();
 }
@@ -270,10 +270,10 @@ catch(e) {
 }
 
 router.post("/register", checkUserIsValid, insertUser, getUserID, checkRegisteration, insertRegisteration, getRegisterationID, function(req, res, next) {
-  console.log("req.userIsValid: "+req.userIsValid);
-  console.log("req.errorMsg: "+req.errorMsg);
-  console.log("req.class_id: "+req.class_id);
-  console.log("req.user_id: "+req.user_id);
+  // console.log("req.userIsValid: "+req.userIsValid);
+  // console.log("req.errorMsg: "+req.errorMsg);
+  // console.log("req.class_id: "+req.class_id);
+  // console.log("req.user_id: "+req.user_id);
   req.login({ id: req.user_id }, () => res.redirect(url.format({
     pathname: "/sendEmoji",
     query: {
@@ -288,7 +288,7 @@ router.post("/register", checkUserIsValid, insertUser, getUserID, checkRegistera
 // Redirect for failed login
 router.get("/login/failed", (req, res) => {
 
-  console.log('login failed');
+  // console.log('login failed');
   res.render("login", {
     error_msg : 'login failed',
     isLoggedIn: req.isAuthenticated()
@@ -327,7 +327,7 @@ async function getRegistrationID_login(req, res, next) {
   // });
   try{
     const[res, err]  = await db.execute(query);
-    console.log(query); 
+    // console.log(query); 
     req.reg_id = res[0].id;
     next();
 }

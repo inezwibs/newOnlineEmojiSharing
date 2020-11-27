@@ -33,7 +33,7 @@ async function insertEmojiRecord(req, res, next) {
     // });
     try{
         const[res, err]  = await db.execute(query);
-        console.log(query); 
+        // console.log(query); 
         req.posted_record_id = res.insertId;
         next();
     }
@@ -51,7 +51,7 @@ async function getClassID(req, res, next) {
     // });
     try{
         const[res, err]  = await db.execute(query);
-        console.log(query); 
+        // console.log(query); 
         req.class_id = res[0].classes_id;
         next();
     }
@@ -159,7 +159,7 @@ async function getClassRegisteredStudentsCount (req, res, next) {
     // });
     try{
         const[res, err]  = await db.execute(query);
-        console.log(query); 
+        // console.log(query); 
         req.classRegisteredStudentsCount = res[0].count;
         next();
     }

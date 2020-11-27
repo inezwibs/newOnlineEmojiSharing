@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/EmojiSharing",(req, res) => {
-    console.log("the class id is: "+req.query.classID);
+    // console.log("the class id is: "+req.query.classID);
     const passClassID = req.query.classID;
         res.render("home", {
             classID: passClassID
@@ -29,7 +29,7 @@ router.get("/fail",(req, res) => {
 // });
 
 router.get("/generateLink",(req, res) => {
-    console.log(req.query);
+    // console.log(req.query);
     let classID = req.query.classID;
     // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
     let pasClassID = "http://13.57.196.89:4000/EmojiSharing/?classID="+classID;
