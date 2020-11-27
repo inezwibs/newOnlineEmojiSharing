@@ -62,23 +62,39 @@ router.get("/register", function(req, res, next) {
 async function insertToRegisteration(req, res, next) {
 
   let query = " INSERT INTO emoji_db.registerations (classes_id, users_id) VALUES ( " +req.body.classID+ ", "+req.userID+" )";
-  await db.execute(query, (err, res) => {
-    console.log("myQuery: "+query);
-      if (err) throw err;
-      next();
-  });
+  // await db.execute(query, (err, res) => {
+  //   console.log("myQuery: "+query);
+  //     if (err) throw err;
+  //     next();
+  // });
+  try{
+    await db.execute(query);
+    // console.log(query); 
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 async function getUserID(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err;
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err;
       
-      req.userID = res[0].id;
-      console.log(req.userID);    
-      next();
-  });
+  //     req.userID = res[0].id;
+  //     console.log(req.userID);    
+  //     next();
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    req.userID = res[0].id; 
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 //check user is user is valid, no email like that is exists-> userValid = true/false
 //if userValid == false -> pass error message to req.errorMessage
@@ -87,35 +103,62 @@ async function getUserID(req, res, next) {
 async function checkUserIsValid(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err;
-      let userIsValid;
-      let errorMsg;
-      if(res.length > 0){
-        console.log("res.length > 0");
-        userIsValid = 0;
-        errorMsg = 'the user exists';      
-      }else{
-        console.log("res.length == 0");
-        userIsValid = 1;
-      }  
-      req.userIsValid = userIsValid; 
-      req.errorMsg = errorMsg;  
-      req.class_id = req.body.classID;   
-      next();
-  });
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err;
+  //     let userIsValid;
+  //     let errorMsg;
+  //     if(res.length > 0){
+  //       console.log("res.length > 0");
+  //       userIsValid = 0;
+  //       errorMsg = 'the user exists';      
+  //     }else{
+  //       console.log("res.length == 0");
+  //       userIsValid = 1;
+  //     }  
+  //     req.userIsValid = userIsValid; 
+  //     req.errorMsg = errorMsg;  
+  //     req.class_id = req.body.classID;   
+  //     next();
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    let userIsValid;
+    let errorMsg;
+    if(res.length > 0){
+      console.log("res.length > 0");
+      userIsValid = 0;
+      errorMsg = 'the user exists'; 
+    }else{
+      console.log("res.length == 0");
+      userIsValid = 1;
+    }
+    req.userIsValid = userIsValid; 
+    req.errorMsg = errorMsg;
+    req.class_id = req.body.classID;
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 
 async function insertUser(req, res, next) {
     if(req.userIsValid === 1){
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
       let query = " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +req.body.username+ "' , '"+ req.body.email +"' , '"+ hash +"', 0)";
-      await db.execute(query, (err, res) => {
-          console.log(query); 
-          if (err) throw err;    
-          next();
-      });
+      // await db.execute(query, (err, res) => {
+      //     console.log(query); 
+      //     if (err) throw err;    
+      //     next();
+      // });
+      try{
+        await db.execute(query);
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
     }else{
       next();
     }
@@ -124,45 +167,83 @@ async function insertUser(req, res, next) {
 async function getUserID(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.users where email = '"+req.body.email+"'";
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err; 
-      req.user_id = res[0].id; 
-      next();
-  });
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err; 
+  //     req.user_id = res[0].id; 
+  //     next();
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    req.user_id = res[0].id; 
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 async function checkRegisteration(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.class_id+" and users_id = "+req.user_id;
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err;
-      let duplicateRegisteration; 
-      if(res.length > 0){
-        duplicateRegisteration = 1;
-      }else{
-        duplicateRegisteration = 0;
-      } 
-      req.duplicateRegisteration = duplicateRegisteration;
-      next();     
-  });
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err;
+  //     let duplicateRegisteration; 
+  //     if(res.length > 0){
+  //       duplicateRegisteration = 1;
+  //     }else{
+  //       duplicateRegisteration = 0;
+  //     } 
+  //     req.duplicateRegisteration = duplicateRegisteration;
+  //     next();     
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    console.log(query); 
+    let duplicateRegisteration;
+    if(res.length > 0){
+      duplicateRegisteration = 1;
+    }else{
+      duplicateRegisteration = 0;
+    }
+    req.duplicateRegisteration = duplicateRegisteration;
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 
 async function insertRegisteration(req, res, next) {
   if(req.duplicateRegisteration === 0){
       let query = " INSERT INTO emoji_db.registerations (classes_id, users_id, isInstructor) VALUES ( " +req.class_id+ " ," +req.user_id+ " , 0 )";
-      await db.execute(query, (err, res) => {
-          console.log(query); 
-          if (err) throw err;
-          let duplicateRegisteration; 
-          if(res.length > 0){
-            duplicateRegisteration = 1;
-          }else{
-            duplicateRegisteration = 0;
-          } 
-          req.duplicateRegisteration = duplicateRegisteration;
-          next();     
-      });
+      // await db.execute(query, (err, res) => {
+      //     console.log(query); 
+      //     if (err) throw err;
+      //     let duplicateRegisteration; 
+      //     if(res.length > 0){
+      //       duplicateRegisteration = 1;
+      //     }else{
+      //       duplicateRegisteration = 0;
+      //     } 
+      //     req.duplicateRegisteration = duplicateRegisteration;
+      //     next();     
+      // });
+      try{
+        const[res, err]  = await db.execute(query);
+        console.log(query);
+        let duplicateRegisteration;
+        if(res.length > 0){
+          duplicateRegisteration = 1;
+        }else{
+          duplicateRegisteration = 0;
+        }
+        req.duplicateRegisteration = duplicateRegisteration;
+        next();
+    }
+    catch(e) {
+        console.log('Catch an error: ', e)
+    }
   }else{
     next();
   }
@@ -171,12 +252,21 @@ async function insertRegisteration(req, res, next) {
 async function getRegisterationID(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.class_id+" and users_id = "+req.user_id;
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err;
-      req.reg_id = res[0].id;
-      next();     
-  });
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err;
+  //     req.reg_id = res[0].id;
+  //     next();     
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    console.log(query);  
+    req.reg_id = res[0].id;
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 
 router.post("/register", checkUserIsValid, insertUser, getUserID, checkRegisteration, insertRegisteration, getRegisterationID, function(req, res, next) {
@@ -229,12 +319,21 @@ router.get("/login", function(req, res) {
 async function getRegistrationID_login(req, res, next) {
 
   let query = " SELECT * FROM emoji_db.registerations where classes_id = "+req.body.classID+" and users_id = "+req.user.id;
-  await db.execute(query, (err, res) => {
-      console.log(query); 
-      if (err) throw err;
-      req.reg_id = res[0].id;
-      next();     
-  });
+  // await db.execute(query, (err, res) => {
+  //     console.log(query); 
+  //     if (err) throw err;
+  //     req.reg_id = res[0].id;
+  //     next();     
+  // });
+  try{
+    const[res, err]  = await db.execute(query);
+    console.log(query); 
+    req.reg_id = res[0].id;
+    next();
+}
+catch(e) {
+    console.log('Catch an error: ', e)
+}
 }
 
 // Logs in user
