@@ -91,7 +91,7 @@ async function getInsertedEmojiTime(req, res, next) {
   try {
     const [res, err] = await db.execute(query);
     var insertedEmojiTime = res[0].date_time.split(" ")[4];
-    // console.log("insertedEmojiTime: " + res[0].insertedEmojiTime);
+    console.log("insertedEmojiTime: " + res[0].insertedEmojiTime);
     var splitedInsertedEmojiTime = insertedEmojiTime.split(":");
     var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
     req.insertedEmojiMinutes = insertedEmojiMinutes;
@@ -100,7 +100,7 @@ async function getInsertedEmojiTime(req, res, next) {
     // console.log("insertedEmojiMinutes: " + insertedEmojiMinutes);
     // console.log("req.datetime: " + req.datetime);
     let time_test = Date().split(" ");
-    // console.log("Date.now() " + Date());
+    console.log("Date.now() " + Date());
     // console.log("time_test[4] " + time_test[4]);
     next();
   } catch (e) {
@@ -110,7 +110,7 @@ async function getInsertedEmojiTime(req, res, next) {
 
 async function checkRecordExists(req, res, next) {
   var minute = req.insertedEmojiMinutes - req.classStartMinutes;
-//   console.log("min : "+minute);
+  console.log("min : "+minute);
   let query =
     " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
     minute +
