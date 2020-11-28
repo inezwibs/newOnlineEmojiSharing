@@ -179,9 +179,10 @@ async function getContributedStudentsCount(req, res, next) {
 // select  count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = 130
 
 async function insertRecordPerMinute(req, res, next) {
-  var minute = req.insertedEmojiMinutes - req.classStartMinutes;
+  var minute = req.insertedEmojiMinutes - req.classStartMinutes+8*60;;
   if (req.recordExists === true) {
     var minute = req.insertedEmojiMinutes - req.classStartMinutes;
+    console.log("minute: "+minute);
     //update count
     let query =
       " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji" +
