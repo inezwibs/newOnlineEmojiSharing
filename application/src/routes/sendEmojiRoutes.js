@@ -109,8 +109,8 @@ async function getInsertedEmojiTime(req, res, next) {
 }
 
 async function checkRecordExists(req, res, next) {
-  var minute = req.insertedEmojiMinutes - req.classStartMinutes + 8*60;
-  console.log("min : "+minute);
+  var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
+  console.log("minute1 : "+minute);
   let query =
     " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
     minute +
@@ -179,10 +179,10 @@ async function getContributedStudentsCount(req, res, next) {
 // select  count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = 130
 
 async function insertRecordPerMinute(req, res, next) {
-  var minute = req.insertedEmojiMinutes - req.classStartMinutes+8*60;;
+  var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
   if (req.recordExists === true) {
-    var minute = req.insertedEmojiMinutes - req.classStartMinutes;
-    console.log("minute: "+minute);
+    var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
+    console.log("minute2: "+minute);
     //update count
     let query =
       " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji" +
