@@ -73,13 +73,6 @@ async function getText(req, res, next) {
      join emoji_db.users U on U.id = R.users_id where length(text)>0 and class_id = ` +
     req.class_id;
 
-  // await db.execute(query, (err, userInfo) => {
-  //     // console.log(query);
-  //     if (err) throw err;
-  //     req.userInfo = userInfo;
-  //     // console.log("userInfo: "+userInfo);
-  //     next();
-  // });
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
@@ -106,14 +99,6 @@ async function updateUserVisibility(req, res, next) {
     historTextAccess +
     " where id =" +
     req.class_id;
-
-  // await db.execute(query, (err, userInfo) => {
-  //     // console.log(query);
-  //     // console.log("chart: "+req.body.history_chart_access);
-  //     // console.log("text: "+req.body.history_text_access);
-  //     if (err) throw err;
-  //     next();
-  // });
   try {
     await db.execute(query);
     next();

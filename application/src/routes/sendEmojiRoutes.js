@@ -11,43 +11,7 @@ router.get("/sendEmoji", (req, res) => {
   });
 });
 
-async function insertEmojiRecord(req, res, next) {
-  let isAnonymous = 0;
-  if (req.body.isAnonymouse !== undefined) {
-    isAnonymous = 1;
-  }
-  let query =
-    " INSERT INTO emoji_db.posted_emojies (isAnonymous, date_time, emojies_id, registeration_id, class_id, text) VALUES ( " +
-    isAnonymous +
-    " ,'" +
-    Date() +
-    "', " +
-    req.body.optradio +
-    ", " +
-    req.query.reg_id +
-    " ," +
-    req.class_id +
-    " , '" +
-    req.body.fname +
-    "')";
-  // await db.execute(query, (err, res) => {
-  //     // console.log(query);
-  //     // console.log("res[0].id: "+res.insertId);
-  //     req.posted_record_id = res.insertId;
-  //     // console.log(query);
 
-  //     next();
-  // });
-  try {
-    // console.log(query);
-    const [res, err] = await db.execute(query);
-    // console.log(query);
-    req.posted_record_id = res.insertId;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
-  }
-}
 
 async function getClassID(req, res, next) {
   let query =
@@ -84,6 +48,48 @@ async function getClassStartTime(req, res, next) {
   }
 }
 
+async function insertEmojiRecord(req, res, next) {
+    let isAnonymous = 0;
+    if (req.body.isAnonymouse !== undefined) {
+      isAnonymous = 1;
+    }
+    //calculate the minute of inserted record using req.classStartMinutes
+    var tmp = Date().split(" ")[4];
+    var splitedInsertedEmojiTime = tmp.split(":");
+    var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
+    // console.log("insertedEmojiMinutes***: "+insertedEmojiMinutes);
+    req.minute = insertedEmojiMinutes - req.classStartMinutes - 8*60;
+    // console.log("minute***: "+req.minute);
+
+
+    let query =
+      " INSERT INTO emoji_db.posted_emojies (isAnonymous, date_time, emojies_id, registeration_id, class_id, text, minute) VALUES ( " +
+      isAnonymous +
+      " ,'" +
+      Date() +
+      "', " +
+      req.body.optradio +
+      ", " +
+      req.query.reg_id +
+      " ," +
+      req.class_id +
+      " , '" +
+      req.body.fname +
+      "', "+
+      req.minute+
+      ")";
+
+    try {
+    //   console.log(query);
+      const [res, err] = await db.execute(query);
+      // console.log(query);
+      req.posted_record_id = res.insertId;
+      next();
+    } catch (e) {
+      console.log("Catch an error: ", e);
+    }
+  }
+
 async function getInsertedEmojiTime(req, res, next) {
   let query =
     " SELECT  emojies_id, date_time FROM emoji_db.posted_emojies where id = " +
@@ -113,7 +119,7 @@ async function checkRecordExists(req, res, next) {
 //   console.log("minute1 : "+minute);
   let query =
     " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
-    minute +
+    req.minute +
     " and classes_id = " +
     req.class_id;
   // await db.execute(query, (err, res) => {
@@ -163,8 +169,8 @@ async function getClassRegisteredStudentsCount(req, res, next) {
 
 async function getContributedStudentsCount(req, res, next) {
   let query =
-    " select count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = " +
-    req.class_id;
+    " SELECT count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = " +
+    req.class_id + " and minute = "+req.minute;
   try {
     const [res, err] = await db.execute(query);
     let contributedStudentsCount = res[0].count;
@@ -192,7 +198,7 @@ async function insertRecordPerMinute(req, res, next) {
       "+1, count_notParticipated = " +
       req.studentNotContributed +
       " where min = " +
-      minute +
+      req.minute +
       " and classes_id = " +
       req.class_id;
     
@@ -209,7 +215,7 @@ async function insertRecordPerMinute(req, res, next) {
       " INSERT INTO emoji_db.emojiRecordsPerMinute (min, count_emoji" +
       req.emojies_id +
       ", count_notParticipated, classes_id) VALUES ( " +
-      minute +
+      req.minute +
       ", 1 , " +
       req.studentNotContributed +
       ", " +
