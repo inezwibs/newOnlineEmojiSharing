@@ -109,7 +109,7 @@ async function getInsertedEmojiTime(req, res, next) {
 }
 
 async function checkRecordExists(req, res, next) {
-  var minute = req.insertedEmojiMinutes - req.classStartMinutes;
+  var minute = req.insertedEmojiMinutes - req.classStartMinutes + 8*60;
   console.log("min : "+minute);
   let query =
     " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
