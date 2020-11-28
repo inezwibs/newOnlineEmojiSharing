@@ -165,14 +165,6 @@ async function getContributedStudentsCount(req, res, next) {
   let query =
     " select count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = " +
     req.class_id;
-  // await db.execute(query, (err, res) => {
-  //     // console.log(query);
-
-  //     let contributedStudentsCount = res[0].count;
-  //     req.studentNotContributed = req.classRegisteredStudentsCount - contributedStudentsCount;
-  //     // console.log("req.studentNotContributed: "+req.studentNotContributed);
-  //     next();
-  // });
   try {
     const [res, err] = await db.execute(query);
     let contributedStudentsCount = res[0].count;
