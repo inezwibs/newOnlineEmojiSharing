@@ -175,7 +175,7 @@ async function getContributedStudentsCount(req, res, next) {
     const [res, err] = await db.execute(query);
     let contributedStudentsCount = res[0].count;
     req.studentNotContributed =
-      req.classRegisteredStudentsCount - contributedStudentsCount;
+      req.classRegisteredStudentsCount - contributedStudentsCount - 1;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
