@@ -76,7 +76,7 @@ async function getClassStartTime(req, res, next) {
     // console.log("startTime: " + res[0].startTime);
     var splitedClassStartTime = res[0].startTime.split(":");
     var classStartMinutes = parseFloat(splitedClassStartTime[0] * 60) + parseFloat(splitedClassStartTime[1]);
-    console.log("classStartMinutes: " + classStartMinutes);
+    // console.log("classStartMinutes: " + classStartMinutes);
     req.classStartMinutes = classStartMinutes;
     next();
   } catch (e) {
@@ -91,7 +91,7 @@ async function getInsertedEmojiTime(req, res, next) {
   try {
     const [res, err] = await db.execute(query);
     var insertedEmojiTime = res[0].date_time.split(" ")[4];
-    console.log("insertedEmojiTime: " + res[0].insertedEmojiTime);
+    // console.log("insertedEmojiTime: " + res[0].insertedEmojiTime);
     var splitedInsertedEmojiTime = insertedEmojiTime.split(":");
     var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
     req.insertedEmojiMinutes = insertedEmojiMinutes;
@@ -100,7 +100,7 @@ async function getInsertedEmojiTime(req, res, next) {
     // console.log("insertedEmojiMinutes: " + insertedEmojiMinutes);
     // console.log("req.datetime: " + req.datetime);
     let time_test = Date().split(" ");
-    console.log("Date.now() " + Date());
+    // console.log("Date.now() " + Date());
     // console.log("time_test[4] " + time_test[4]);
     next();
   } catch (e) {
@@ -110,7 +110,7 @@ async function getInsertedEmojiTime(req, res, next) {
 
 async function checkRecordExists(req, res, next) {
   var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
-  console.log("minute1 : "+minute);
+//   console.log("minute1 : "+minute);
   let query =
     " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
     minute +
@@ -182,7 +182,7 @@ async function insertRecordPerMinute(req, res, next) {
   var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
   if (req.recordExists === true) {
     var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
-    console.log("minute2: "+minute);
+    // console.log("minute2: "+minute);
     //update count
     let query =
       " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji" +
@@ -198,7 +198,7 @@ async function insertRecordPerMinute(req, res, next) {
     
     try {
       await db.execute(query);
-      console.log("first: "+query);
+    //   console.log("first: "+query);
       next();
     } catch (e) {
       console.log("Catch an error: ", e);
@@ -218,7 +218,7 @@ async function insertRecordPerMinute(req, res, next) {
       
     try {
       await db.execute(query);
-      console.log("second: "+query);
+    //   console.log("second: "+query);
       next();
     } catch (e) {
       console.log("Catch an error: ", e);

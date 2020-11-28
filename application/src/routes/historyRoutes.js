@@ -67,7 +67,7 @@ async function getEmojiRecordsPerMinute(req, res, next) {
 
 async function getText(req, res, next) {
   let query =
-    ` SELECT P.date_time, P.emojies_id, P.text, U.full_name, P.isAnonymous, CAST(date_time AS time) as record_time
+    ` SELECT P.date_time, P.emojies_id, P.text, U.full_name, P.isAnonymous, SUBSTRING(date_time, 16,6) as record_time
     FROM emoji_db.posted_emojies P
      join emoji_db.registerations R on P.registeration_id = R.id
      join emoji_db.users U on U.id = R.users_id where length(text)>0 and class_id = ` +
