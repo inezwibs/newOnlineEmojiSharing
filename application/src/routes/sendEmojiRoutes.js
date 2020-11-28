@@ -195,13 +195,10 @@ async function insertRecordPerMinute(req, res, next) {
       minute +
       " and classes_id = " +
       req.class_id;
-    // await db.execute(query, (err, res) => {
-    //     // console.log(query);
-
-    //     next();
-    // });
+    
     try {
       await db.execute(query);
+      console.log("first: "+query);
       next();
     } catch (e) {
       console.log("Catch an error: ", e);
@@ -218,31 +215,16 @@ async function insertRecordPerMinute(req, res, next) {
       ", " +
       req.class_id +
       ") ";
+      
     try {
       await db.execute(query);
+      console.log("second: "+query);
       next();
     } catch (e) {
       console.log("Catch an error: ", e);
     }
   }
 }
-
-//get class start time & end time
-//getRecordTime
-//calculate the class start time as minutes = classStartMinutes
-//calculate the insertedEmojiTime as minute = insertedEmojiMinutes
-// min = insertedEmojiMinutes - classStartMinutes.
-//search for class id and minute ->
-//if exists:
-//if emoji1 -> update count1,
-//if emoji2 -> update count2
-//if emoji3 -> update count3
-//if emoji4 -> update count4
-//if emoji5 -> update count5
-
-//if not exists:
-//check which emoji number student insert then
-//insert the row and count 1 for that emoji
 
 router.post(
   "/sendEmoji",
