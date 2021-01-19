@@ -12,11 +12,11 @@ var expressValidator = require("express-validator");
 const PORT = 4000;
 
 var options = {
-    database: "emoji_db",
-    user: "raya1",
-    port:3306,
-    password: "Qwer$3976",
-    host: "13.57.196.89",
+    database: "emojidatabase",
+    user: "publicadmin",
+    port:"3306",
+    password: "1600holloway",
+    host: "54.215.121.49",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

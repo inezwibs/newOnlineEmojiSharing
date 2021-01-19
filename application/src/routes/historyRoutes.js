@@ -4,7 +4,7 @@ const db = require("../models/database.js");
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.registerations where id = " + req.query.reg_id;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.reg_id;
 
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
@@ -24,7 +24,7 @@ async function checkIfUserIsInstructor(req, res, next) {
 
 async function getClassID(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.registerations where id = " + req.query.reg_id;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.reg_id;
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
   //     req.class_id = res[0].classes_id;
@@ -42,7 +42,7 @@ async function getClassID(req, res, next) {
 
 async function getEmojiRecordsPerMinute(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.emojiRecordsPerMinute where classes_id = " +
+    " SELECT * FROM emojidatabase.emojiRecordsPerMinute where classes_id = " +
     req.class_id;
 
   // await db.execute(query, (err, records) => {
@@ -67,10 +67,10 @@ async function getEmojiRecordsPerMinute(req, res, next) {
 
 async function getText(req, res, next) {
   let query =
-    ` SELECT P.date_time, P.emojies_id, P.text, U.full_name, P.isAnonymous, SUBSTRING(date_time, 16,6) as record_time
-    FROM emoji_db.posted_emojies P
-     join emoji_db.registerations R on P.registeration_id = R.id
-     join emoji_db.users U on U.id = R.users_id where length(text)>0 and class_id = ` +
+    ` SELECT P.date_time, P.emojis_id, P.text, U.full_name, P.isAnonymous, SUBSTRING(date_time, 16,6) as record_time
+    FROM emojidatabase.posted_emojis P
+     join emojidatabase.registrations R on P.registration_id = R.id
+     join emojidatabase.users U on U.id = R.users_id where length(text)>0 and class_id = ` +
     req.class_id;
 
   try {
@@ -93,7 +93,7 @@ async function updateUserVisibility(req, res, next) {
     historTextAccess = req.body.history_text_access;
   }
   let query =
-    " UPDATE emoji_db.classes set history_chart_access = " +
+    " UPDATE emojidatabase.classes set history_chart_access = " +
     historChartAccess +
     ", history_text_access = " +
     historTextAccess +
@@ -108,7 +108,7 @@ async function updateUserVisibility(req, res, next) {
 }
 
 async function getUserVisibility(req, res, next) {
-  let query = " select * from emoji_db.classes where id =" + req.class_id;
+  let query = " select * from emojidatabase.classes where id =" + req.class_id;
 
   // await db.execute(query, (err, classInfo) => {
   //     // console.log(query);

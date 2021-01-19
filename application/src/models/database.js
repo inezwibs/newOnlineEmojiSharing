@@ -1,11 +1,11 @@
 const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
-  database: "emoji_db",
-  user: "raya1",
+  database: "emojidatabase",
+  user: "publicadmin",
   port:3306,
-  password: "Qwer$3976",
-  host: "13.57.196.89",
+  password: "1600holloway",
+  host: "54.215.121.49",
 
   
   waitForConnections: true,
@@ -17,7 +17,7 @@ const pool = mysql.createPool({
   pool.getConnection(err => {
     if (err) throw err;
     console.log("My database is connected!");
-    pool.query('emoji_db');
+    pool.query('emojidatabase');
     // connection.release();
   });
   

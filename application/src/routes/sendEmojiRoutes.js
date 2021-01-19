@@ -15,7 +15,7 @@ router.get("/sendEmoji", (req, res) => {
 
 async function getClassID(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.registerations where id = " + req.query.reg_id;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.reg_id;
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
   //     req.class_id = res[0].classes_id;
@@ -33,7 +33,7 @@ async function getClassID(req, res, next) {
 
 async function getClassStartTime(req, res, next) {
   let query =
-    " SELECT startTime as startTime FROM emoji_db.classes where id =  " +
+    " SELECT startTime as startTime FROM emojidatabase.classes where id =  " +
     req.class_id;
   try {
     const [res, err] = await db.execute(query);
@@ -63,7 +63,7 @@ async function insertEmojiRecord(req, res, next) {
 
 
     let query =
-      " INSERT INTO emoji_db.posted_emojies (isAnonymous, date_time, emojies_id, registeration_id, class_id, text, minute) VALUES ( " +
+      " INSERT INTO emojidatabase.posted_emojis (isAnonymous, date_time, emojis_id, registration_id, class_id, text, minute) VALUES ( " +
       isAnonymous +
       " ,'" +
       Date() +
@@ -92,7 +92,7 @@ async function insertEmojiRecord(req, res, next) {
 
 async function getInsertedEmojiTime(req, res, next) {
   let query =
-    " SELECT  emojies_id, date_time FROM emoji_db.posted_emojies where id = " +
+    " SELECT  emojis_id, date_time FROM emojidatabase.posted_emojis where id = " +
     req.posted_record_id;
   try {
     const [res, err] = await db.execute(query);
@@ -101,7 +101,7 @@ async function getInsertedEmojiTime(req, res, next) {
     var splitedInsertedEmojiTime = insertedEmojiTime.split(":");
     var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
     req.insertedEmojiMinutes = insertedEmojiMinutes;
-    req.emojies_id = res[0].emojies_id;
+    req.emojis_id = res[0].emojis_id;
     // req.datetime = res[0].date_time.split(" ")[4];
     // console.log("insertedEmojiMinutes: " + insertedEmojiMinutes);
     // console.log("req.datetime: " + req.datetime);
@@ -118,7 +118,7 @@ async function checkRecordExists(req, res, next) {
   var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
 //   console.log("minute1 : "+minute);
   let query =
-    " SELECT * FROM emoji_db.emojiRecordsPerMinute where min = " +
+    " SELECT * FROM emojidatabase.emojiRecordsPerMinute where min = " +
     req.minute +
     " and classes_id = " +
     req.class_id;
@@ -148,7 +148,7 @@ async function checkRecordExists(req, res, next) {
 
 async function getClassRegisteredStudentsCount(req, res, next) {
   let query =
-    " SELECT count(*) as count FROM emoji_db.registerations where classes_id = " +
+    " SELECT count(*) as count FROM emojidatabase.registrations where classes_id = " +
     req.class_id;
   // await db.execute(query, (err, res) => {
   //     console.log(query);
@@ -169,7 +169,7 @@ async function getClassRegisteredStudentsCount(req, res, next) {
 
 async function getContributedStudentsCount(req, res, next) {
   let query =
-    " SELECT count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = " +
+    " SELECT count(distinct registration_id) as count FROM emojidatabase.posted_emojis where class_id = " +
     req.class_id + " and minute = "+req.minute;
   try {
     const [res, err] = await db.execute(query);
@@ -182,7 +182,7 @@ async function getContributedStudentsCount(req, res, next) {
   }
 }
 
-// select  count(distinct registeration_id) as count FROM emoji_db.posted_emojies where class_id = 130
+// select  count(distinct registration_id) as count FROM emojidatabase.posted_emojis where class_id = 130
 
 async function insertRecordPerMinute(req, res, next) {
   var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8*60;
@@ -191,10 +191,10 @@ async function insertRecordPerMinute(req, res, next) {
     // console.log("minute2: "+minute);
     //update count
     let query =
-      " UPDATE emoji_db.emojiRecordsPerMinute SET count_emoji" +
-      req.emojies_id +
+      " UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji" +
+      req.emojis_id +
       " = count_emoji" +
-      req.emojies_id +
+      req.emojis_id +
       "+1, count_notParticipated = " +
       req.studentNotContributed +
       " where min = " +
@@ -212,8 +212,8 @@ async function insertRecordPerMinute(req, res, next) {
   } else {
     //insert record
     let query =
-      " INSERT INTO emoji_db.emojiRecordsPerMinute (min, count_emoji" +
-      req.emojies_id +
+      " INSERT INTO emojidatabase.emojiRecordsPerMinute (min, count_emoji" +
+      req.emojis_id +
       ", count_notParticipated, classes_id) VALUES ( " +
       req.minute +
       ", 1 , " +

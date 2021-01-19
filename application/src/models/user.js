@@ -9,7 +9,7 @@ class User {
     static async register(username, email, pass){
         const hash = bcrypt.hashSync(pass, saltRounds);
         // console.log(username);
-        return db.query('Insert Into emoji_db.users (full_name, email, password) VALUES (?, ?, ?) ',
+        return db.query('Insert Into emojidatabase.users (full_name, email, password) VALUES (?, ?, ?) ',
             [username, email, hash])
             .then((results) => {
                 return results[0].insertId;
@@ -17,7 +17,7 @@ class User {
     }
 
     static async checkValid(email){
-        return db.query('SELECT * from emoji_db.users where email = ?', email)
+        return db.query('SELECT * from emojidatabase.users where email = ?', email)
             .then(([rows, fields]) => {
                 if(!email) return false;
                 if(!rows || rows == null || rows.length === 0){
@@ -29,7 +29,7 @@ class User {
     }
 
     static async findUser(email, pass) {
-        return db.query('SELECT * FROM emoji_db.users WHERE email = ?', email)
+        return db.query('SELECT * FROM emojidatabase.users WHERE email = ?', email)
             .then(([rows, fields]) => {
                 // console.log(rows.length+rows.email);
                 if (!rows || rows == null || rows.length !== 1) {

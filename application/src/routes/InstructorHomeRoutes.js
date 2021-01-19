@@ -20,7 +20,7 @@ async function insertInstructure(req, res, next) {
   // console.log(hash);
   // console.log(req.body.name);
   let query =
-    " INSERT INTO emoji_db.users (full_name, email, password, isInstructor) VALUES ( '" +
+    " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
     req.body.name +
     "' , '" +
     req.body.email +
@@ -39,7 +39,7 @@ async function insertInstructure(req, res, next) {
 
 async function getInstructorID(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.users where email = '" + req.body.email + "'";
+    " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
   // console.log("hellloooo2");
 
   try {
@@ -54,10 +54,10 @@ async function getInstructorID(req, res, next) {
 }
 
 async function insertClasses(req, res, next) {
-  // let query = " SELECT * FROM emoji_db.instructors where email = '"+req.body.email+"'";
+  // let query = " SELECT * FROM emojidatabase.instructors where email = '"+req.body.email+"'";
 
   let query =
-    " INSERT INTO emoji_db.classes (id, class_name, datetime, startTime, endTime ) VALUES ( " +
+    " INSERT INTO emojidatabase.classes (id, class_name, datetime, startTime, endTime ) VALUES ( " +
     req.instructorID +
     " ,'" +
     req.body.className +
@@ -88,7 +88,7 @@ async function insertClasses(req, res, next) {
 }
 async function getClassID(req, res, next) {
   let query =
-    " SELECT * FROM emoji_db.classes where datetime = '" +
+    " SELECT * FROM emojidatabase.classes where datetime = '" +
     req.body.weekday +
     "-" +
     req.body.startTime +
@@ -110,9 +110,9 @@ router.get("/home", (req, res) => {
   res.render("instructor", {});
 });
 
-async function insertToRegisteration(req, res, next) {
+async function insertToregistration(req, res, next) {
   let query =
-    " INSERT INTO emoji_db.registerations (classes_id, users_id, isInstructor) VALUES ( " +
+    " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
     req.classID +
     " ," +
     req.instructorID +
@@ -134,7 +134,7 @@ router.post(
   getInstructorID,
   insertClasses,
   getClassID,
-  insertToRegisteration,
+  insertToregistration,
   (req, res) => {
     res.redirect(
       url.format({
