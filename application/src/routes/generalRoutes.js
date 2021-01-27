@@ -19,6 +19,11 @@ router.get("/fail",(req, res) => {
 
 });
 
+//instructor login page
+router.get('/', (req,res)=>{
+    res.render('welcome');
+});
+
 
 // router.get("/history",(req, res) => {
 
@@ -36,11 +41,8 @@ router.get("/generateLink",(req, res) => {
 
     res.render("generateLink", {
         classID: pasClassID
-
-
     });
 });
-
 
 
 module.exports = router;

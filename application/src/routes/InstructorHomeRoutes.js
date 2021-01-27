@@ -18,7 +18,7 @@ async function insertInstructure(req, res, next) {
   const hash = bcrypt.hashSync(req.body.password, saltRounds);
   // console.log("hellloooo1");
   // console.log(hash);
-  // console.log(req.body.name);
+  console.log("req body name:" , req.body.name);
   let query =
     " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
     req.body.name +

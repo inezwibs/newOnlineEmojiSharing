@@ -14,9 +14,9 @@ const PORT = 4000;
 var options = {
     database: "emojidatabase",
     user: "publicadmin",
-    port:"3306",
+    port:"3307",
     password: "1600holloway",
-    host: "54.215.121.49",
+    host: "127.0.0.1",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -34,7 +34,8 @@ app.use(morgan("tiny"));
 // sets view engine for ejs
 app.set('views', path.join(__dirname, './src/views'));
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, "public")));
+const publicDirectory = path.join(__dirname, './public');
+app.use(express.static(publicDirectory));
 
 // allows to parse body in http post requests
 const bodyParser = require("body-parser");
@@ -54,17 +55,17 @@ app.use(
     })
   );
 
-app.use(passport.initialize());
+app.use(passport.initialize());var mysql = require('mysql');
 app.use(passport.session());
 
 
 const loginRouter = require("./src/routes/loginRoutes");
 const InstructorHomeRoutes = require("./src/routes/InstructorHomeRoutes");
-const generateLink = require("./src/routes/generalRoutes");
+const generalRoutes = require("./src/routes/generalRoutes");
 const sendEmojis = require("./src/routes/sendEmojiRoutes");
 const historyRouter = require("./src/routes/historyRoutes");
 app.use("/", InstructorHomeRoutes);
-app.use("/", generateLink);
+app.use("/", generalRoutes);
 app.use("/", loginRouter);
 app.use("/", sendEmojis);
 app.use("/", historyRouter);
@@ -79,7 +80,7 @@ passport.use(
       },
       function(email, password, done) {
         const isValid = User.findUser(email, password);
-        console.log("isvalis? "+isValid);
+        console.log("isvalid? "+isValid);
         console.log('email is: '+email);
         console.log('password is: '+password);
 
