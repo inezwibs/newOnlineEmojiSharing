@@ -1,11 +1,3 @@
-/*
-1. get the form data 
-2. check instructure name not exist
-2. fill the instructor table
-3. check class table not exists
-3. fill the class table
-4. show class link in the page
-*/
 
 const express = require("express");
 const router = express.Router();

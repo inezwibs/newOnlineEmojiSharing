@@ -1,0 +1,17 @@
+<br />
+<h2 class="text-center text-info">Welcome to the Emotion Thermometer Instructor Account</h2>
+<br />
+
+<img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
+     class="center" />
+
+<div style="display: flex">
+  <form method="GET" action="/createClass" class="form-group">
+    <input type="hidden" name="classID" value="<%=classID%>" />
+    <input type="submit" name="submit" class="button_register" value="Create New Class Link" />
+  </form>
+  <form method="GET" action="/listClasses" class="form-group">
+    <input type="hidden" name="classID" value="<%=classID%>" />
+    <input type="submit" name="submit" class="button_login" value="List Existing Classes" />
+  </form>
+</div>
