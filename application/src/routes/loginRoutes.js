@@ -5,14 +5,14 @@ Description: API for user registration, Login, Logout and authentication.
 
 const express = require("express");
 const router = express.Router();
-const { User } = require("../models/user.js");
+const { User } = require("../models/user.js"); //User model not being used
 const passport = require("passport");
 const db = require("../models/database.js");
 const bcrypt = require("bcryptjs");
 const url = require("url");
 const saltRounds = 10;
 
-// Gets registration page
+// Gets student registration page
 router.get("/register", function (req, res, next) {
   // console.log("raya_query: " + req.query.classID);
   res.render("register", {
@@ -22,38 +22,6 @@ router.get("/register", function (req, res, next) {
   req.session.errors = null;
 });
 
-// async function registerFunc(req, res, next) {
-//     req.check('password', 'password not match').equals(req.body.passwordMatch);
-
-//   var errors = req.validationErrors();
-//   console.log("errors: "+errors);
-
-//   if (errors) {
-
-//   } else {
-//     const { username, email, password , passwordMatch} = req.body;
-//     User.checkValid(email).then(isValid => {
-//       //if there is no similar user in the the user table--> insert the user
-//       if (isValid) {
-//         console.log("valid");
-
-//         User.register(username, email, password).then(userID => {
-//           req.login({ id: userID }, () => res.render("emojiSharing"));
-//         });
-
-//         //if there is similar user exists in the table --> show error
-//       } else {
-//         console.log("not valid");
-
-//         res.render("errorPage", {
-//           title: "Error : Similar user exists",
-
-//         });
-//       }
-//     });
-//   }
-//   next();
-// }
 
 //first check if same classes_id && users_id is not exists then insert
 async function insertToregistration(req, res, next) {
