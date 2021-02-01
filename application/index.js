@@ -6,6 +6,7 @@ var MySQLStore = require("express-mysql-session")(session);
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
 var expressValidator = require("express-validator");
+const initWebRoutes = require( "./src/routes/web");
 
 
 
@@ -71,6 +72,8 @@ app.use("/", sendEmojis);
 app.use("/", historyRouter);
 
 
+//Init all web routes
+initWebRoutes(app);
 
 passport.use(
     new LocalStrategy(

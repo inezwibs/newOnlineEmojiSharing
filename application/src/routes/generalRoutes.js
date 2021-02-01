@@ -21,7 +21,7 @@ router.get("/fail",(req, res) => {
 
 //instructor login page
 router.get('/', (req,res)=>{
-    res.render('welcome');
+    res.render('instructorAccount');
 });
 
 

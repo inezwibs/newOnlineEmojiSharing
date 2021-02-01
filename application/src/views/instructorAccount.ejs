@@ -1,3 +1,11 @@
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<link
+        href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        rel="stylesheet"
+        id="bootstrap-css"
+/>
+
 <br />
 <h2 class="text-center text-info">Welcome to the Emotion Thermometer Instructor Account</h2>
 <br />
@@ -5,13 +13,88 @@
 <img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
      class="center" />
 
-<div style="display: flex">
-  <form method="GET" action="/createClass" class="form-group">
-    <input type="hidden" name="classID" value="<%=classID%>" />
-    <input type="submit" name="submit" class="button_register" value="Create New Class Link" />
-  </form>
-  <form method="GET" action="/listClasses" class="form-group">
-    <input type="hidden" name="classID" value="<%=classID%>" />
-    <input type="submit" name="submit" class="button_login" value="List Existing Classes" />
-  </form>
+<div id="instructorForm-column" class="col-md-6">
+  <div id="instructorForm-box" class="col-md-12">
+    <form id="instructorForm" class="form" action="/register" method="POST">
+      <h3 class="text-center text-info">Instructor Form</h3>
+      <div class="form-group">
+        <label for="username" class="text-info">Full Name:</label><br />
+        <input
+                type="text"
+                name="username"
+                id="username"
+                class="form-control"
+                placeholder="Enter your first and last name"
+                required
+        />
+        <input
+                type="hidden"
+                name="classID"
+                id="classID"
+                value=""
+        />
+      </div>
+      <div class="form-group">
+        <label for="email" class="text-info">Email:</label><br />
+        <input
+                type="email"
+                name="email"
+                id="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+        />
+      </div>
+      <div class="form-group">
+        <label for="password" class="text-info">Password:</label><br />
+        <input
+                pattern=".{6,18}"
+                title="Should be between 6 and 18 characters!"
+                type="password"
+                name="password"
+                id="password"
+                class="form-control"
+                placeholder="Enter a password that is 6 to 18 characters"
+                required
+        />
+      </div>
+      <div class="form-group">
+        <label for="passwordMatch" class="text-info"
+        >Confirm Password:</label
+        ><br />
+        <input
+                type="password"
+                name="passwordMatch"
+                id="passwordMatch"
+                class="form-control"
+                placeholder="Confirm your password"
+
+                required
+        />
+      </div>
+      <button
+              type="submit"
+              name="submit"
+              class="btn btn-info btn-md"
+              value="Submit"
+      >Register</button>
+      <div id="login-link" class="">
+        <a href="/login?classID=" class="text-info">I am the instructor!</a>
+      </div>
+      <div>If you already have an account, you can <a href="/login">Log in.</a></div>
+      <div>Return to <a href="/">Home Page.</a></div>
+
+    </form>
+  </div>
 </div>
+
+<!--<div style="display: flex">-->
+<!--  <form method="GET" action="/createClass" class="form-group">-->
+<!--    <input type="hidden" name="classID" value="" />-->
+<!--    <input type="submit" name="submit" class="button_register" value="Create New Class Link" />-->
+<!--  </form>-->
+<!--  <form method="GET" action="/listClasses" class="form-group">-->
+<!--    <input type="hidden" name="classID" value=" />-->
+<!--    <input type="submit" name="submit" class="button_login" value="List Existing Classes" />-->
+<!--  </form>-->
+<!--</div>-->
