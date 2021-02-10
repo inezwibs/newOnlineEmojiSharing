@@ -19,10 +19,10 @@ router.get("/fail",(req, res) => {
 
 });
 
-//instructor login page
-router.get('/', (req,res)=>{
-    res.render('instructorAccount');
-});
+// //instructor login page
+// router.get('/', (req,res)=>{
+//     res.render('instructorAccount');
+// });
 
 
 // router.get("/history",(req, res) => {
