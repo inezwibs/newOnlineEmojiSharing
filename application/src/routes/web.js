@@ -6,24 +6,25 @@ let router = express.Router();
 
 
 let initWebRoutes = (app) => {
+    router.get('/instructor', instructorController.getInstructorPage);
+    router.post('/instructor', instructorController.insertInstructure);
+
     router.get("/", instructorController.getWelcomePage);
     router.post("/",
         instructorController.insertInstructure,
         instructorController.getInstructorID,
         (req, res) => {
-            res.redirect(
-                url.format({
-                    //was generate link before /instructor
-                    pathname: "/instructor",
-                    query: {
-                        instructorID: req.instructorID,
-                    },
-                })
+            res.redirect( '/instructor'
+                // url.format({
+                //     //was generate link before /instructor
+                //     pathname: "/instructor",
+                //     query: {
+                //         instructorID: req.instructorID,
+                //     },
+                // })
             );
         }
     );
-    router.get("/instructor", instructorController.getInstructorPage);
-    router.post("/instructor", instructorController.insertInstructure);
 
 
     return app.use("/", router);

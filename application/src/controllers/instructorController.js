@@ -6,10 +6,14 @@ const url = require("url");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const databaseController = require("../controllers/databaseController");
+const registerService = require ("./../services/registerServices");
 
 let getInstructorPage = (req,res) => {
+    console.log(req);
+
     return res.render("instructorAccount.ejs" ,{
-    })
+        newInstructor : req.body.name
+    });
 };
 let getWelcomePage = (req,res) => {
     return res.render("welcome")
@@ -17,22 +21,19 @@ let getWelcomePage = (req,res) => {
 
 //insert instructor to db users
 async function insertInstructure(req, res, next) {
-    const hash = bcrypt.hashSync(req.body.password, saltRounds);
-    // console.log("hellloooo1");
-    // console.log(hash);
-    console.log("req body name:" , req.body.name);
-    let query =
-        " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
-        req.body.name +
-        "' , '" +
-        req.body.email +
-        "' , '" +
-        hash +
-        "', 1)";
+
+
+    let newInstructor = {
+        fullName: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        isInstructor: 1
+    };
 
     try {
-        await db.execute(query);
-        // console.log(query);
+        //create new instructor
+        await registerService.createNewInstructor(newInstructor);
+
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
