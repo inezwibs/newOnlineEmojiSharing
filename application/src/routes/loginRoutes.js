@@ -5,9 +5,9 @@ Description: API for user registration, Login, Logout and authentication.
 
 const express = require("express");
 const router = express.Router();
-const { User } = require("../models/user.js"); //User model not being used
+const { User } = require("../configs/user.js"); //User model not being used
 const passport = require("passport");
-const db = require("../models/database.js");
+const db = require("../configs/database.js");
 const bcrypt = require("bcryptjs");
 const url = require("url");
 const saltRounds = 10;

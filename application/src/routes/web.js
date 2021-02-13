@@ -1,6 +1,9 @@
 const express = require('express');
 const instructorController = require("../controllers/instructorController");
+const initPassportLocal = require( "../controllers/passportController");
 
+// Init all passport
+initPassportLocal();
 
 let router = express.Router();
 
@@ -9,24 +12,9 @@ let initWebRoutes = (app) => {
     router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertInstructure);
 
-    router.get("/", instructorController.getWelcomePage);
-    router.post("/",
-        instructorController.insertInstructure,
-        instructorController.getInstructorID,
-        instructorController.checkedInstructor
-        // (req, res) => {
-        //     res.redirect('/instructor'
-        //         // url.format({
-        //         //     //was generate link before /instructor
-        //         //     pathname: "/instructor",
-        //         //     query: {
-        //         //         instructorID: req.instructorID,
-        //         //     },
-        //         // })
-        //     );
-        // }
-    );
-    // '/instructor'
+    router.get("/", instructorController.getInstructorLoginPage);
+    router.post("/",instructorController.insertInstructure,
+        instructorController.getInstructorID,instructorController.checkedInstructor);
 
     return app.use("/", router);
 };

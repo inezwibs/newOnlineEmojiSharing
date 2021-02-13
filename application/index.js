@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { User } = require("./src/models/user.js");
+const { User } = require("./src/configs/user.js");
 var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
 var passport = require("passport");
@@ -46,19 +46,25 @@ app.use(express.static("./public"));
 app.use(expressValidator());
 app.use(bodyParser.json());
 
-// use express session
+// config express session
 app.use(
     session({
       secret: "CSC Class",
       saveUninitialized: false,
       store: sessionStore,
-      resave: false
+      resave: true,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 // 86400000 1 day
+        }
     })
   );
 
+//Enable flash message
+app.use(connectFlash());
+
+//Config passport middleware
 app.use(passport.initialize());var mysql = require('mysql');
 app.use(passport.session());
-
 
 const loginRouter = require("./src/routes/loginRoutes");
 const InstructorHomeRoutes = require("./src/routes/InstructorHomeRoutes");
@@ -71,32 +77,7 @@ app.use("/", loginRouter);
 app.use("/", sendEmojis);
 app.use("/", historyRouter);
 
-
 //Init all web routes
 initWebRoutes(app);
 
-passport.use(
-    new LocalStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password"
-      },
-      function(email, password, done) {
-        const isValid = User.findUser(email, password);
-        console.log("isvalid? "+isValid);
-        console.log('email is: '+email);
-        console.log('password is: '+password);
-
-
-        isValid.then(res => {
-          if (res != false) {
-            return done(null, res);
-          }
-
-  
-          return done(null, false, { message: "Invalid email or password." });
-        });
-      }
-    )
-  );
 app.listen(PORT, () => console.log("server started on port", PORT));

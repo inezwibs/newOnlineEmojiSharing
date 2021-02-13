@@ -9,7 +9,7 @@
       <div id="instructorForm-column" class="col-md-6">
         <div id="instructorForm-box" class="col-md-12">
 <!--         was /action home-->
-          <form id="instructorForm" class="form" action="/" method="post">
+          <form id="instructorForm" class="form" action="/register" method="POST">
             <h3 class="text-center text-info">Instructor Form</h3>
             <div class="form-group">
               <label for="firstName" class="text-info"
@@ -35,17 +35,29 @@
             </div>
 
             <div class="form-group">
-              <label for="password" class="text-info"
-              >Instructor Password:</label
-              ><br />
+              <label for="password" class="text-info">Password:</label><br />
               <input
+                      pattern=".{6,18}"
+                      title="Should be between 6 and 18 characters!"
                       type="password"
                       name="password"
                       id="password"
                       class="form-control"
-                      required>
+                      required
+              />
             </div>
-
+            <div class="form-group">
+              <label for="passwordMatch" class="text-info"
+              >Confirm Password:</label
+              ><br />
+              <input
+                      type="password"
+                      name="passwordMatch"
+                      id="passwordMatch"
+                      class="form-control"
+                      required
+              />
+            </div>
             <div class="form-group">
               <input
                       type="submit"
@@ -61,3 +73,16 @@
     </div>
   </div>
 </div>
+
+
+<!--<div class="form-group">-->
+<!--  <label for="password" class="text-info"-->
+<!--  >Instructor Password:</label-->
+<!--  ><br />-->
+<!--  <input-->
+<!--          type="password"-->
+<!--          name="password"-->
+<!--          id="password"-->
+<!--          class="form-control"-->
+<!--          required>-->
+<!--</div>-->

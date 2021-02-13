@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../models/database.js");
+const db = require("../configs/database.js");
 const url = require("url");
 
 router.get("/sendEmoji", (req, res) => {

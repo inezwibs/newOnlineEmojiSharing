@@ -1,7 +1,7 @@
 
 const express = require("express");
 const router = express.Router();
-const db = require("../models/database.js");
+const db = require("../configs/database.js");
 const url = require("url");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
@@ -20,8 +20,8 @@ let getInstructorPage = (req,res) => {
         newInstructor : instructorObj.name
     });
 };
-let getWelcomePage = (req,res) => {
-    return res.render("welcome")
+let getInstructorLoginPage = (req,res) => {
+    return res.render("instructorLogin")
 };
 
 //insert instructor to db users
@@ -51,7 +51,7 @@ async function getInstructorID(req, res, next) {
     // console.log("hellloooo2");
 
     try {
-        const [res, err] = await db.execute(query);
+        const [rows, err] = await db.execute(query);
         // console.log(query);
         // console.log("res[0].id: "+res[0].id);
         res.locals = req.body;
@@ -64,7 +64,6 @@ async function getInstructorID(req, res, next) {
 
 async function checkedInstructor(req, res, next) {
     return res.redirect('/instructor');
-    next()
 }
 
 
@@ -148,6 +147,6 @@ module.exports = {
     insertInstructure:insertInstructure,
     getInstructorID: getInstructorID,
     getInstructorPage: getInstructorPage,
-    getWelcomePage:getWelcomePage,
+    getInstructorLoginPage:getInstructorLoginPage,
     checkedInstructor: checkedInstructor
 };

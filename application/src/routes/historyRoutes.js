@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../models/database.js");
+const db = require("../configs/database.js");
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
