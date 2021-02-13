@@ -7,12 +7,17 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const databaseController = require("../controllers/databaseController");
 const registerService = require ("./../services/registerServices");
+let instructorObj ={};
 
 let getInstructorPage = (req,res) => {
     console.log(req);
+    console.log(res.locals);
+    console.log(instructorObj);
+
+
 
     return res.render("instructorAccount.ejs" ,{
-        newInstructor : req.body.name
+        newInstructor : instructorObj.name
     });
 };
 let getWelcomePage = (req,res) => {
@@ -49,12 +54,19 @@ async function getInstructorID(req, res, next) {
         const [res, err] = await db.execute(query);
         // console.log(query);
         // console.log("res[0].id: "+res[0].id);
-        req.instructorID = res[0].id;
+        res.locals = req.body;
+        instructorObj = res.locals;
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
     }
 }
+
+async function checkedInstructor(req, res, next) {
+    return res.redirect('/instructor');
+    next()
+}
+
 
 //create classes
 async function insertClasses(req, res, next) {
@@ -136,5 +148,6 @@ module.exports = {
     insertInstructure:insertInstructure,
     getInstructorID: getInstructorID,
     getInstructorPage: getInstructorPage,
-    getWelcomePage:getWelcomePage
+    getWelcomePage:getWelcomePage,
+    checkedInstructor: checkedInstructor
 };

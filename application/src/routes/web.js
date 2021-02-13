@@ -13,19 +13,20 @@ let initWebRoutes = (app) => {
     router.post("/",
         instructorController.insertInstructure,
         instructorController.getInstructorID,
-        (req, res) => {
-            res.redirect( '/instructor'
-                // url.format({
-                //     //was generate link before /instructor
-                //     pathname: "/instructor",
-                //     query: {
-                //         instructorID: req.instructorID,
-                //     },
-                // })
-            );
-        }
+        instructorController.checkedInstructor
+        // (req, res) => {
+        //     res.redirect('/instructor'
+        //         // url.format({
+        //         //     //was generate link before /instructor
+        //         //     pathname: "/instructor",
+        //         //     query: {
+        //         //         instructorID: req.instructorID,
+        //         //     },
+        //         // })
+        //     );
+        // }
     );
-
+    // '/instructor'
 
     return app.use("/", router);
 };

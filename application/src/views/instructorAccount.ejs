@@ -18,62 +18,61 @@
   <div id="instructorForm-column" class="col-md-6">
     <div id="instructorForm-box" class="col-md-12">
       <form id="instructorForm" class="form" action="/register" method="POST">
-        <h3 class="text-center text-info">Welcome Instructor Form</h3>
+        <h3 class="text-center text-info">Welcome Professor <%=newInstructor%></h3>
+
+<!--        create class-->
         <div class="form-group">
-          <label for="username" class="text-info">Full Name:</label><br />
-          <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  class="form-control"
-                  placeholder="Enter your first and last name"
-                  required
-          />
-          <input
-                  type="hidden"
-                  name="classID"
-                  id="classID"
-                  value=""
-          />
+          <label for="selectDay" class="text-info">Select the day:</label
+          ><br />
+          <select name="weekday" class="right" multiple required>
+            <option value="Monday" selected>Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday" >Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="email" class="text-info">Email:</label><br />
+          <label for="classTime" class="text-info">Class Start Time:</label
+          ><br />
           <input
-                  type="email"
-                  name="email"
-                  id="email"
+                  type="time"
+                  name="startTime"
+                  id="startTime"
                   class="form-control"
-                  placeholder="Enter your email"
-                  required
-          />
+                  required>
         </div>
         <div class="form-group">
-          <label for="password" class="text-info">Password:</label><br />
+          <label for="classTime" class="text-info">Class End Time:</label
+          ><br />
           <input
-                  pattern=".{6,18}"
-                  title="Should be between 6 and 18 characters!"
+                  type="time"
+                  name="endTime"
+                  id="endTime"
+                  class="form-control"
+                  required>
+        </div>
+        <div class="form-group">
+          <label for="password" class="text-info">Class password:</label><br />
+          <input
                   type="password"
                   name="password"
                   id="password"
                   class="form-control"
-                  placeholder="Enter a password that is 6 to 18 characters"
-                  required
-          />
+                  required>
         </div>
         <div class="form-group">
-          <label for="passwordMatch" class="text-info"
-          >Confirm Password:</label
-          ><br />
           <input
-                  type="password"
-                  name="passwordMatch"
-                  id="passwordMatch"
-                  class="form-control"
-                  placeholder="Confirm your password"
-
-                  required
+                  type="submit"
+                  name="submit"
+                  class="btn btn-info btn-md"
+                  value="Generate Link"
           />
         </div>
+
+
         <button
                 type="submit"
                 name="submit"
@@ -101,4 +100,89 @@
 <!--    <input type="hidden" name="classID" value=" />-->
 <!--    <input type="submit" name="submit" class="button_login" value="List Existing Classes" />-->
 <!--  </form>-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!--<div class="form-group">-->
+<!--  <label for="username" class="text-info">Full Name:</label><br />-->
+<!--  <input-->
+<!--          type="text"-->
+<!--          name="username"-->
+<!--          id="username"-->
+<!--          class="form-control"-->
+<!--          placeholder="Enter your first and last name"-->
+<!--          required-->
+<!--  />-->
+<!--  <input-->
+<!--          type="hidden"-->
+<!--          name="classID"-->
+<!--          id="classID"-->
+<!--          value=""-->
+<!--  />-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="email" class="text-info">Email:</label><br />-->
+<!--  <input-->
+<!--          type="email"-->
+<!--          name="email"-->
+<!--          id="email"-->
+<!--          class="form-control"-->
+<!--          placeholder="Enter your email"-->
+<!--          required-->
+<!--  />-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="password" class="text-info">Password:</label><br />-->
+<!--  <input-->
+<!--          pattern=".{6,18}"-->
+<!--          title="Should be between 6 and 18 characters!"-->
+<!--          type="password"-->
+<!--          name="password"-->
+<!--          id="password"-->
+<!--          class="form-control"-->
+<!--          placeholder="Enter a password that is 6 to 18 characters"-->
+<!--          required-->
+<!--  />-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="passwordMatch" class="text-info"-->
+<!--  >Confirm Password:</label-->
+<!--  ><br />-->
+<!--  <input-->
+<!--          type="password"-->
+<!--          name="passwordMatch"-->
+<!--          id="passwordMatch"-->
+<!--          class="form-control"-->
+<!--          placeholder="Confirm your password"-->
+
+<!--          required-->
+<!--  />-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="className" class="text-info">Class Name:</label><br />-->
+<!--  <input-->
+<!--          type="text"-->
+<!--          name="className"-->
+<!--          id="className"-->
+<!--          class="form-control"-->
+<!--          required>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="selectDay" class="text-info">Select the Semester:</label-->
+<!--  ><br />-->
+<!--  <select name="year" class="right"  required>-->
+<!--    <option value="Spring selected">Spring</option>-->
+<!--    <option value="Summer">Summer</option>-->
+<!--    <option value="Fall">Fall</option>-->
+
+<!--  </select>-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--  <label for="selectDay" class="text-info">Select the year:</label-->
+<!--  ><br />-->
+<!--  <select name="year" class="right"  required>-->
+<!--    <option value="2021 selected">2021</option>-->
+<!--    <option value="2022">2022</option>-->
+<!--    <option value="2023">2023</option>-->
+<!--    <option value="2024" >2024</option>-->
+<!--    <option value="2025">2025</option>-->
+<!--  </select>-->
 <!--</div>-->
