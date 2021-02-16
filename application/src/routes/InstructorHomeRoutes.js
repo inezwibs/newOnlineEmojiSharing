@@ -103,7 +103,7 @@ const saltRounds = 10;
 // });
 
 //
-// async function insertToregistration(req, res, next) {
+// async function insertToRegistration(req, res, next) {
 //   let query =
 //     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
 //     req.classID +

@@ -9,12 +9,24 @@ let router = express.Router();
 
 
 let initWebRoutes = (app) => {
-    router.get('/instructor', instructorController.getInstructorPage);
-    router.post('/instructor', instructorController.insertInstructure);
+    router.get('/instructor',  instructorController.getInstructorPage);
+    router.post('/instructor', instructorController.insertClasses, instructorController.getClassID,
+        instructorController.insertToRegistration, instructorController.generateLink,
+        instructorController.generateLinkPage);
 
-    router.get("/", instructorController.getInstructorLoginPage);
+    router.get("/", instructorController.checkLoggedIn);
+    //post / not decided yet
     router.post("/",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);
+
+    router.get("/instructorLogin", instructorController.getInstructorLoginPage);
+   //post /instructorLogin needed
+    router.get("/instructorRegister", instructorController.getInstructorRegisterPage);
+    router.post("/instructorRegister",instructorController.insertInstructure,
+        instructorController.getInstructorID,instructorController.checkedInstructor);
+
+
+
 
     return app.use("/", router);
 };
@@ -27,7 +39,7 @@ module.exports = initWebRoutes
 //     instructorController.getInstructorID,
 //     instructorController.insertClasses,
 //     instructorController.getClassID,
-//     instructorController.insertToregistration,
+//     instructorController.insertToRegistration,
 //     (req, res) => {
 //         res.redirect(
 //             url.format({

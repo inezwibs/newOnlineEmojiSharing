@@ -1,13 +1,11 @@
 const express = require('express');
 const path = require('path');
-const { User } = require("./src/configs/user.js");
 var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
 var passport = require("passport");
-var LocalStrategy = require("passport-local").Strategy;
 var expressValidator = require("express-validator");
 const initWebRoutes = require( "./src/routes/web");
-
+const connectFlash = require( "connect-flash");
 
 
 const PORT = 4000;

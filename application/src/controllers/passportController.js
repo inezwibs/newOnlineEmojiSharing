@@ -1,6 +1,6 @@
-import passportLocal from "passport-local";
-import passport from "passport";
-import loginServices from "../services/loginServices";
+const passportLocal = require( "passport-local");
+const passport = require( "passport");
+const loginServices = require( "../services/loginServices");
 
 let LocalStrategy = passportLocal.Strategy;
 

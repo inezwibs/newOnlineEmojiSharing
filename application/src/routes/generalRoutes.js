@@ -32,17 +32,17 @@ router.get("/fail",(req, res) => {
 
 //     });
 // });
-
-router.get("/generateLink",(req, res) => {
-    // console.log(req.query);
-    let classID = req.query.classID;
-    // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
-    let pasClassID = "http://54.215.121.49:4000/EmojiSharing/?classID="+classID;
-
-    res.render("generateLink", {
-        classID: pasClassID
-    });
-});
+//
+// router.get("/generateLink",(req, res) => {
+//     // console.log(req.query);
+//     let classID = req.query.classID;
+//     // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
+//     let pasClassID = "http://54.215.121.49:4000/EmojiSharing/?classID="+classID;
+//
+//     res.render("generateLink", {
+//         classID: pasClassID
+//     });
+// });
 
 
 module.exports = router;

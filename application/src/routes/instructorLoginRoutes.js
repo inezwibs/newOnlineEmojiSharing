@@ -78,11 +78,8 @@ async function getClassID(req, res, next) {
   }
 }
 
-router.get('/start', (req, res) => {
-  res.render('instructorAccount');
-});
-
-async function insertToregistration(req, res, next) {
+//insert classes and instructor
+async function insertToRegistration(req, res, next) {
   let query =
     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
     req.classID +
@@ -106,7 +103,7 @@ router.post(
   getInstructorID,
   insertClasses,
   getClassID,
-  insertToregistration,
+  insertToRegistration,
   (req, res) => {
     res.redirect(
       url.format({

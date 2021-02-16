@@ -1,11 +1,4 @@
-
-const express = require("express");
-const router = express.Router();
 const db = require("../configs/database.js");
-const url = require("url");
-const bcrypt = require("bcryptjs");
-const saltRounds = 10;
-const databaseController = require("../controllers/databaseController");
 const registerService = require ("./../services/registerServices");
 let instructorObj ={};
 
@@ -13,15 +6,24 @@ let getInstructorPage = (req,res) => {
     console.log(req);
     console.log(res.locals);
     console.log(instructorObj);
-
-
-
     return res.render("instructorAccount.ejs" ,{
-        newInstructor : instructorObj.name
+        newInstructor : instructorObj[0].full_name
     });
 };
+
+let checkLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect("/instructorLogin");
+    }
+    next();
+};
+
 let getInstructorLoginPage = (req,res) => {
     return res.render("instructorLogin")
+};
+
+let getInstructorRegisterPage = (req,res) => {
+    return res.render("instructorRegister")
 };
 
 //insert instructor to db users
@@ -32,7 +34,9 @@ async function insertInstructure(req, res, next) {
         fullName: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        isInstructor: 1
+        isInstructor: 1,
+        instructorID: '',
+        className:''
     };
 
     try {
@@ -53,8 +57,9 @@ async function getInstructorID(req, res, next) {
     try {
         const [rows, err] = await db.execute(query);
         // console.log(query);
-        // console.log("res[0].id: "+res[0].id);
-        res.locals = req.body;
+        console.log(rows);
+        res.locals = rows
+        // res.locals = req.body;
         instructorObj = res.locals;
         next();
     } catch (e) {
@@ -73,7 +78,7 @@ async function insertClasses(req, res, next) {
 
     let query =
         " INSERT INTO emojidatabase.classes (id, class_name, datetime, startTime, endTime ) VALUES ( " +
-        req.instructorID +
+        instructorObj[0].id +
         " ,'" +
         req.body.className +
         "' , '" +
@@ -90,6 +95,8 @@ async function insertClasses(req, res, next) {
 
     // console.log("insertClasses1");
     // console.log(query);
+    res.locals = req.body;
+    instructorObj = res.locals;
 
     try {
         await db.execute(query);
@@ -111,7 +118,8 @@ async function getClassID(req, res, next) {
         "," +
         req.body.endTime +
         "'";
-
+    res.locals = req.body;
+    instructorObj = res.locals;
     try {
         const [res, err] = await db.execute(query);
         // console.log(query);
@@ -122,13 +130,17 @@ async function getClassID(req, res, next) {
     }
 }
 
-async function insertToregistration(req, res, next) {
+async function insertToRegistration(req, res, next) {
     let query =
         " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
         req.classID +
         " ," +
         req.instructorID +
         " , 1 )";
+
+    res.locals = req.body;
+    instructorObj = res.locals;
+    console.log(instructorObj);
 
     try {
         await db.execute(query);
@@ -140,13 +152,43 @@ async function insertToregistration(req, res, next) {
     }
 }
 
+async function generateLink(req, res, next) {
+    currentInstructor = req.instructorID;
+    let query =" SELECT * FROM emojidatabase.classes where ''" + currentInstructor;
+
+    try {
+        const [res, err] = await db.execute(query);
+        // console.log(query);
+        req.classID = res[0].id;
+        res.redirect('/generateLink'+req.classID)
+        next();
+    } catch (e) {
+        console.log("Catch an error: ", e);
+    }
+}
+
+async function generateLinkPage(req, res) {
+    // console.log(req.query);
+    let classID = req.query.classID;
+    // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
+    let pasClassID = "http://54.215.121.49:4000/EmojiSharing/?classID=" + classID;
+
+    res.render("generateLink", {
+        classID: pasClassID
+    });
+}
+
 module.exports = {
-    insertToregistration:insertToregistration,
-    insertClasses:insertClasses,
-    getClassID:getClassID,
     insertInstructure:insertInstructure,
     getInstructorID: getInstructorID,
+    insertClasses:insertClasses,
+    getClassID:getClassID,
+    insertToRegistration:insertToRegistration,
+    generateLink:generateLink,
+    generateLinkPage:generateLinkPage,
     getInstructorPage: getInstructorPage,
     getInstructorLoginPage:getInstructorLoginPage,
-    checkedInstructor: checkedInstructor
+    getInstructorRegisterPage: getInstructorRegisterPage,
+    checkedInstructor: checkedInstructor,
+    checkLoggedIn: checkLoggedIn
 };

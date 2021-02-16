@@ -1,5 +1,5 @@
-import db from "../configs/database";
-import bcrypt from "bcryptjs";
+const db = require( "../configs/database");
+const bcrypt = require ("bcryptjs");
 
 let handleLogin = async (email, password) => {
     //check email is exist or not

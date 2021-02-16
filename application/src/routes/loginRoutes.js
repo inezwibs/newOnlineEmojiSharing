@@ -24,7 +24,7 @@ router.get("/register", function (req, res, next) {
 
 
 //first check if same classes_id && users_id is not exists then insert
-async function insertToregistration(req, res, next) {
+async function insertToRegistration(req, res, next) {
   let query =
     " INSERT INTO emojidatabase.registrations (classes_id, users_id) VALUES ( " +
     req.body.classID +
