@@ -5,7 +5,7 @@ const salt =10;
 let createNewInstructor = async (data) => {
     let isEmailExist = await checkExistEmail(data.email);
     if (isEmailExist) {
-        reject(`This email "${data.email}" has already exist. Please choose an other email`);
+        console.log(`This email "${data.email}" has already exist. Please choose an other email`);
     } else {
         const hashedPassword = bcrypt.hashSync(data.password, salt);
         // console.log("hellloooo1");

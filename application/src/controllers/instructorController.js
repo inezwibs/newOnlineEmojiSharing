@@ -1,6 +1,10 @@
 const db = require("../configs/database.js");
 const registerService = require ("./../services/registerServices");
 let instructorObj ={};
+let instructorClassesObj={};
+let newClassesId = 0;
+let instructorClasses =  new Array();
+
 
 let getInstructorPage = (req,res) => {
     console.log(req);
@@ -96,7 +100,7 @@ async function insertClasses(req, res, next) {
     // console.log("insertClasses1");
     // console.log(query);
     res.locals = req.body;
-    instructorObj = res.locals;
+    instructorClassesObj = res.locals;
 
     try {
         await db.execute(query);
@@ -119,7 +123,7 @@ async function getClassID(req, res, next) {
         req.body.endTime +
         "'";
     res.locals = req.body;
-    instructorObj = res.locals;
+    // instructorObj = res.locals;
     try {
         const [res, err] = await db.execute(query);
         // console.log(query);
@@ -131,21 +135,44 @@ async function getClassID(req, res, next) {
 }
 
 async function insertToRegistration(req, res, next) {
-    let query =
-        " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-        req.classID +
-        " ," +
-        req.instructorID +
-        " , 1 )";
+    let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE classes_id='"+
+        req.classID + "'";
+    let query;
+    try{
+        const [rows, fields] = await db.execute(checkExistingInstructor);
+        if (rows.length !== 0) {
+            newClassesId = rows.length + 1;
+            console.log('found!');
+        }else {
+                console.log('not found');
+                newClassesId++;
+        }
+            query =
+                " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
+                newClassesId +
+                " ," +
+                req.classID +
+                " , 1 )";
+    }catch (e) {
+        console.log("Catch an error: ", e);
+    }
 
-    res.locals = req.body;
-    instructorObj = res.locals;
-    console.log(instructorObj);
+
 
     try {
         await db.execute(query);
         // console.log(query);
         // req.classID = res[0].id;
+        res.locals = req.body;
+        instructorClassesObj = res.locals;
+        if(instructorClasses.indexOf(newClassesId) !== -1){
+            console.log("Value exists!");
+        } else{
+            console.log("Value does not exists!");
+            instructorClasses.push(newClassesId);
+        }
+        console.log(instructorClassesObj);
+        console.log(instructorClasses);
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -153,14 +180,15 @@ async function insertToRegistration(req, res, next) {
 }
 
 async function generateLink(req, res, next) {
-    currentInstructor = req.instructorID;
-    let query =" SELECT * FROM emojidatabase.classes where ''" + currentInstructor;
+    currentInstructor = instructorObj[0].id;
+    let query =" SELECT * FROM emojidatabase.registrations where users_id ='" + currentInstructor +"'";
 
     try {
         const [res, err] = await db.execute(query);
         // console.log(query);
-        req.classID = res[0].id;
-        res.redirect('/generateLink'+req.classID)
+        req.classID = instructorClasses.slice(-1)[0];
+        // res.redirect('/generateLink'+req.classID)
+        res.locals = req.classID;
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -169,7 +197,7 @@ async function generateLink(req, res, next) {
 
 async function generateLinkPage(req, res) {
     // console.log(req.query);
-    let classID = req.query.classID;
+    let classID = newClassesId;
     // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
     let pasClassID = "http://54.215.121.49:4000/EmojiSharing/?classID=" + classID;
 
