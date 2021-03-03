@@ -1,5 +1,6 @@
 const express = require('express');
 const instructorController = require("../controllers/instructorController");
+const passport = require('passport');
 const initPassportLocal = require( "../controllers/passportController");
 
 // Init all passport
@@ -9,18 +10,34 @@ let router = express.Router();
 
 
 let initWebRoutes = (app) => {
-    router.get('/instructor',  instructorController.getInstructorPage);
+    router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertClasses, instructorController.getClassID,
         instructorController.insertToRegistration, instructorController.generateLink,
         instructorController.generateLinkPage);
 
-    router.get("/", instructorController.checkLoggedIn);
+    router.get("/", instructorController.checkLoggedIn, instructorController.getInstructorPage);
     //post / not decided yet
     router.post("/",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);
 
     router.get("/instructorLogin", instructorController.getInstructorLoginPage);
-   //post /instructorLogin needed
+    router.post("/instructorLogin", passport.authenticate("local", {
+        successRedirect: "/instructor",
+        failureRedirect: "/instructorlogin",
+        failureFlash: true,
+        successFlash: true
+    }));
+
+    // // Logs in user
+// router.post("/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/sendEmoji",
+//     failureRedirect: "/login/failed",
+//     failureFlash: false
+//   })
+// );
+
+    //post /instructorLogin needed
     router.get("/instructorRegister", instructorController.getInstructorRegisterPage);
     router.post("/instructorRegister",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);

@@ -12,7 +12,7 @@ let initPassportLocal = () => {
         },
         async (req, email, password, done) => {
             try {
-                await loginServices.findUserByEmail(email).then(async (user) => {
+                await loginServices.findUserByEmail(email,password).then(async (user) => {
                     if (!user) {
                         return done(null, false, req.flash("errors", `This user email "${email}" doesn't exist`));
                     }

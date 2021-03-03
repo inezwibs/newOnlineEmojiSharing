@@ -6,12 +6,20 @@ let newClassesId = 0;
 let instructorClasses =  new Array();
 
 
-let getInstructorPage = (req,res) => {
+async function getInstructorPage (req,res,user) {
     console.log(req);
     console.log(res.locals);
     console.log(instructorObj);
+    let query =
+        " SELECT * FROM emojidatabase.users where id = '" + req.user + "'";
+    try{
+        const [rows, err ] = await db.execute(query);
+        instructorObj = rows[0];
+    }catch(e){
+        console.log('error' , e)
+    }
     return res.render("instructorAccount.ejs" ,{
-        newInstructor : instructorObj[0].full_name
+        newInstructor : instructorObj.full_name
     });
 };
 

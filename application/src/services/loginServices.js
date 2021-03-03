@@ -18,20 +18,41 @@ let handleLogin = async (email, password) => {
     }
 
 };
+// static async findUser(email, pass) {
+//     return db.query('SELECT * FROM emojidatabase.users WHERE email = ?', email)
+//         .then(([rows, fields]) => {
+//             // console.log(rows.length+rows.email);
+//             if (!rows || rows == null || rows.length !== 1) {
+//                 return false;
+//             }
+//             if(bcrypt.compareSync(pass, rows[0].password)){
+//                 console.log("return email"+rows[0].email);
+//                 console.log("return user_id"+rows[0].id);
+//                 return rows[0];
+//             }else{
+//                 return false;
+//             }
+//         });
+// }
 
-
-let findUserByEmail = async (req, email) => {
+let findUserByEmail = async (email, pass) => {
     let queryString =
         " SELECT * FROM emojidatabase.users where email = '" + email + "'";
     // console.log("hellloooo2");
     return db.query(queryString)
         .then(([rows, fields]) => {
-            if(!email) return false;
-            if(!rows || rows.length === 0){
-                console.log("user class: "+rows);
-                return true;
+            if(!email || !rows || rows.length === 0){
+                return false
+            }else{
+                //if email or rows exist compare password
+                if(bcrypt.compareSync(pass, rows[0].password)) {
+                console.log("return email"+rows[0].email);
+                console.log("return user_id"+rows[0].id);
+                return rows[0];
+                }else{
+                    return false
+                }
             }
-            return false;
         });
 };
 
@@ -48,19 +69,14 @@ let findUserById = async (id) => {
 };
 
 let comparePassword = (password, userObject) => {
-    return new Promise(async (resolve, reject) => {
         try {
-            await bcrypt.compare(password, userObject.password).then((isMatch) => {
-                if (isMatch) {
-                    resolve(true);
-                } else {
-                    resolve(`The password that you've entered is incorrect`);
-                }
-            });
+             bcrypt.compareSync(password, userObject.password);
+                    return true
         } catch (e) {
-            reject(e);
+            console.log(`The password that you've entered is incorrect`);
+            console.log(e);
         }
-    });
+
 };
 
 module.exports = {
