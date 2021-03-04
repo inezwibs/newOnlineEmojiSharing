@@ -3,7 +3,19 @@
 <body>
 
 <h1>Link is generated:</h1>
-<a href=<%= classID %>>Go to Emoji Sharing App!</a>
+<a href=<%= newClassLink %>>Go to Emoji Sharing App!</a>
+
+<h2>Here are all your registered classes: </h2>
+<div>
+    <ul>
+        <% for (var i = 0; i < classArr.length ; i++){ %>
+            <li><a href=<%= path+classArr[i].id %>>Go to Emoji Sharing app for
+               class id <%= classArr[i].id %> </a>
+            </li>
+        <% }%>
+    </ul>
+
+</div>
 
 </body>
 </html>

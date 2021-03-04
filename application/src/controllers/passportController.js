@@ -39,11 +39,13 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    loginServices.findUserById(id).then((user) => {
-        return done(null, user);
-    }).catch(error => {
-        return done(error, null)
-    });
+    done(null, id);
+
+    // loginServices.findUserById(id).then((user) => {
+    //     return done(null, user);
+    // }).catch(error => {
+    //     return done(error, null)
+    // });
 });
 
 module.exports = initPassportLocal;

@@ -63,8 +63,9 @@ let findUserById = async (id) => {
 
     try {
         const [rows, fields] = await db.execute(query);
+        return rows;
     } catch (err) {
-        reject(err);
+        console.log(err);
     }
 };
 

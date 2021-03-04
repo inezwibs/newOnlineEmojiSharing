@@ -12,8 +12,7 @@ let router = express.Router();
 let initWebRoutes = (app) => {
     router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertClasses, instructorController.getClassID,
-        instructorController.insertToRegistration, instructorController.generateLink,
-        instructorController.generateLinkPage);
+        instructorController.insertToRegistration, instructorController.generateLink);
 
     router.get("/", instructorController.checkLoggedIn, instructorController.getInstructorPage);
     //post / not decided yet
