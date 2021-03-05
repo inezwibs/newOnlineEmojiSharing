@@ -18,42 +18,24 @@ let handleLogin = async (email, password) => {
     }
 
 };
-// static async findUser(email, pass) {
-//     return db.query('SELECT * FROM emojidatabase.users WHERE email = ?', email)
-//         .then(([rows, fields]) => {
-//             // console.log(rows.length+rows.email);
-//             if (!rows || rows == null || rows.length !== 1) {
-//                 return false;
-//             }
-//             if(bcrypt.compareSync(pass, rows[0].password)){
-//                 console.log("return email"+rows[0].email);
-//                 console.log("return user_id"+rows[0].id);
-//                 return rows[0];
-//             }else{
-//                 return false;
-//             }
-//         });
-// }
 
 let findUserByEmail = async (email, pass) => {
     let queryString =
         " SELECT * FROM emojidatabase.users where email = '" + email + "'";
     // console.log("hellloooo2");
-    return db.query(queryString)
-        .then(([rows, fields]) => {
-            if(!email || !rows || rows.length === 0){
-                return false
-            }else{
-                //if email or rows exist compare password
-                if(bcrypt.compareSync(pass, rows[0].password)) {
-                console.log("return email"+rows[0].email);
-                console.log("return user_id"+rows[0].id);
-                return rows[0];
-                }else{
-                    return false
-                }
-            }
-        });
+    try {
+        const [rows, fields] = await db.execute(queryString);
+
+        console.log(rows);
+        if (!email || !rows || rows.length === 0) {
+            return false
+        } else {
+            return rows[0];
+        }
+    } catch (err) {
+        console.log("Catch an error: ", err);
+        console.log(`There was an error caught while finding user in database. Error message: "${err}"`);
+    }
 };
 
 let findUserById = async (id) => {

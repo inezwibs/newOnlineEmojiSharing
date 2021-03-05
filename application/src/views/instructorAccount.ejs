@@ -19,8 +19,19 @@
     <div id="instructorForm-box" class="col-md-12">
       <form id="instructorForm" class="form" action="/instructor" method="POST">
         <h3 class="text-center text-info">Welcome Professor <%=newInstructor%></h3>
+        <h4>Here are all your registered classes: </h4>
+        <div>
+          <ul>
+            <% for (var i = 0; i < classes.length ; i++){ %>
+              <li><a href=<%= path+classes[i].id %>>Go to Emoji Sharing app for
+                  class id <%= classes[i].id %> </a>
+              </li>
+            <% }%>
+          </ul>
 
+        </div>
 <!--        create class-->
+        <h4>Create a new class: </h4>
         <div class="form-group">
           <label for="className" class="text-info">Class Name:</label><br />
           <input
