@@ -26,17 +26,6 @@ let initWebRoutes = (app) => {
         failureFlash: true,
         successFlash: true
     }));
-
-    // // Logs in user
-// router.post("/login",
-//   passport.authenticate("local", {
-//     successRedirect: "/sendEmoji",
-//     failureRedirect: "/login/failed",
-//     failureFlash: false
-//   })
-// );
-
-    //post /instructorLogin needed
     router.get("/instructorRegister", instructorController.getInstructorRegisterPage);
     router.post("/instructorRegister",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);
@@ -48,22 +37,3 @@ let initWebRoutes = (app) => {
 };
 module.exports = initWebRoutes
 
-//
-//
-// router.post("/",
-//     instructorController.insertInstructure,
-//     instructorController.getInstructorID,
-//     instructorController.insertClasses,
-//     instructorController.getClassID,
-//     instructorController.insertToRegistration,
-//     (req, res) => {
-//         res.redirect(
-//             url.format({
-//                 pathname: "/generateLink",
-//                 query: {
-//                     classID: req.classID,
-//                 },
-//             })
-//         );
-//     }
-// );

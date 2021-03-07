@@ -341,7 +341,7 @@ router.post(
       url.format({
         pathname: "/sendEmoji",
         query: {
-          reg_id: req.reg_id,
+          reg_id: req.query.reg_id,
         },
       })
     );

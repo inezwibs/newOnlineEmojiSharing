@@ -2,8 +2,6 @@ const db = require("../configs/database.js");
 const registerService = require ("./../services/registerServices");
 let instructorObj ={};
 let instructorClassesObj={};
-let newClassesId = 0;
-let instructorClasses =  new Array();
 let path = 'http://emotionthermometer.online/EmojiSharing/?classID=';
 
 
@@ -245,23 +243,11 @@ async function generateLink(req, res, next) {
 
     try {
         const [rows, fields] = await db.execute(query);
-        // console.log(query);
-        // req.classID = instructorClasses.slice(-1)[0];
-        // res.redirect('/generateLink'+req.classID)
-        // let pasClassID = "13.57.196.89:3000/EmojiSharing/?classID="+classID;
-        //if there are more than one
         let numClasses = rows.length;
         let classesArray = rows;
         //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classID=
         // let path = 'http://emotionthermometer.online/EmojiSharing/?classID=';
         let newClassIdLink = "http://emotionthermometer.online/EmojiSharing/?classID=" + rows[numClasses-1].id;
-        // let classDetailsArr=[];
-        //
-        // for (var i =0; i<classesArray.length; i++){
-        //     let query="Select * from emojidatabase.classes where id ='" + classesArray[i].id +"'";
-        //     const[rows,fields] = db.execute(query)
-        //     classDetailsArr.push(rows)
-        // }
 
         res.render("generateLink", {
             newClassLink: newClassIdLink,
@@ -289,29 +275,4 @@ module.exports = {
     checkLoggedIn: checkLoggedIn
 };
 
-// async function getNextClassIdForInstructor(req,res){
-//     let instructorId;
-//     if (req.user){
-//         instructorId = req.user;
-//     }else{
-//         instructorId = instructorObj[0].id;
-//     }
-//     let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE users_id='"+
-//         instructorId + "'";
-//     try {
-//         const [rows, fields] = await db.execute(checkExistingInstructor);
-//         if (rows.length !== 0) {
-//             newClassesId = rows.length + 1;
-//             console.log('found!');
-//
-//         } else {
-//             console.log('not found');
-//             //new classes id would be last record in database + 1
-//             newClassesId++;
-//         }
-//         return newClassesId;
-//     } catch (e) {
-//         console.log("Catch an error: ", e);
-//     }
-//
-// }
+

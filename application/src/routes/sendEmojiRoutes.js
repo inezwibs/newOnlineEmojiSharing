@@ -4,10 +4,11 @@ const db = require("../configs/database.js");
 const url = require("url");
 
 router.get("/sendEmoji", (req, res) => {
+  console.log("***inside sendemoji");
   const passRegID = req.query.reg_id;
-  // console.log("passRegID: "+passRegID);
+  console.log("***passRegID: "+passRegID);
   res.render("emojiSharing", {
-    reg_id: passRegID,
+    reg_id: '197',
   });
 });
 
@@ -201,7 +202,7 @@ async function insertRecordPerMinute(req, res, next) {
       req.minute +
       " and classes_id = " +
       req.class_id;
-    
+
     try {
       await db.execute(query);
     //   console.log("first: "+query);
@@ -221,7 +222,7 @@ async function insertRecordPerMinute(req, res, next) {
       ", " +
       req.class_id +
       ") ";
-      
+
     try {
       await db.execute(query);
     //   console.log("second: "+query);
@@ -247,7 +248,7 @@ router.post(
       url.format({
         pathname: "/sendEmoji",
         query: {
-          reg_id: req.query.reg_id,
+          reg_id: req.reg_id,
         },
       })
     );
