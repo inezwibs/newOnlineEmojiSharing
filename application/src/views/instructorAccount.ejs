@@ -5,7 +5,42 @@
         rel="stylesheet"
         id="bootstrap-css"
 />
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Features</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<nav class="navbar sticky-top navbar-light bg-light">
+  <a class="navbar-brand" href="#">Sticky top</a>
+  <p>Here are all your registered classes: <p>
+  <div>
+    <ul>
+      <% for (var i = 0; i < classes.length ; i++){ %>
+        <li><a target="_blank" href=<%= path+classes[i].id %> >Go to Emoji Sharing app for
+              class id <%= classes[i].id %> <%=classNames[i][0].class_name%> on <%=classNames[i][0].datetime%> </a>
+        </li>
+      <% }%>
+    </ul>
 
+  </div>
+</nav>
 <br />
 <h2 class="text-center text-info">
   <div> Welcome to the Emotion Thermometer</div>
@@ -19,20 +54,11 @@
     <div id="instructorForm-box" class="col-md-12">
       <form id="instructorForm" class="form" action="/instructor" method="POST">
         <h3 class="text-center text-info">Welcome Professor <%=newInstructor%></h3>
-        <h4>Here are all your registered classes: </h4>
-        <div>
-          <ul>
-            <% for (var i = 0; i < classes.length ; i++){ %>
-              <li><a href=<%= path+classes[i].id %>>Go to Emoji Sharing app for
-                  class id <%= classes[i].id %> </a>
-              </li>
-            <% }%>
-          </ul>
 
-        </div>
 <!--        create class-->
-        <h4>Create a new class: </h4>
         <div class="form-group">
+          <h5 class="text-info">Create a new class: </h5>
+
           <label for="className" class="text-info">Class Name:</label><br />
           <input
                   type="text"

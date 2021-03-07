@@ -26,10 +26,12 @@ async function getInstructorPage (req,res,user) {
     }catch(e){
         console.log('error' , e)
     }
-    let instructorClassesArray = Object.assign(getInstructorClasses(instructorId));
+    let instructorClassesArray = await getInstructorClasses(instructorId);
+    let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
     return res.render("instructorAccount.ejs" ,{
         newInstructor : instructorObj.full_name,
         classes : instructorClassesArray,
+        classNames : instructorClassNamesArray,
         path : path
     });
 };
@@ -174,6 +176,33 @@ async function getInstructorClasses(instructorId) {
     } catch (e) {
         console.log("Catch an error: ", e);
     }
+}
+
+async function getInstructorClassNames(classesArrayFromRegDatabase){
+    let classesIdArr = [];
+    let classNamesArr = [];
+    classesArrayFromRegDatabase.forEach( (obj) => {
+        classesIdArr.push(obj.classes_id);
+    });
+    for (let i = 0 ; i<classesIdArr.length; i++){
+        let getClassName = "SELECT class_name, datetime FROM emojidatabase.classes WHERE id='"+
+            classesIdArr[i] + "'";
+        try {
+            const [rows, fields] = await db.execute(getClassName);
+            if (rows.length !== 0) {
+                console.log('found!');
+                classNamesArr.push(rows);
+            } else {
+                console.log('not found');
+                //new classes id would be last record in database + 1
+                return 0;
+            }
+        } catch (e) {
+            console.log("Catch an error: ", e);
+        }
+
+    }
+    return classNamesArr;
 }
 
 
