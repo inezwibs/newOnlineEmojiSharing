@@ -64,15 +64,15 @@ app.use(connectFlash());
 app.use(passport.initialize());var mysql = require('mysql');
 app.use(passport.session());
 
-const loginRouter = require("./src/routes/loginRoutes");
+// const loginRouter = require("./src/routes/loginRoutes");
 const InstructorHomeRoutes = require("./src/routes/InstructorHomeRoutes");
 const generalRoutes = require("./src/routes/generalRoutes");
-const sendEmojis = require("./src/routes/sendEmojiRoutes");
+// const sendEmojis = require("./src/routes/sendEmojiRoutes");
 const historyRouter = require("./src/routes/historyRoutes");
 app.use("/", InstructorHomeRoutes);
 app.use("/", generalRoutes);
-app.use("/", loginRouter);
-app.use("/", sendEmojis);
+// app.use("/", loginRouter);
+// app.use("/", sendEmojis);
 app.use("/", historyRouter);
 
 //Init all web routes

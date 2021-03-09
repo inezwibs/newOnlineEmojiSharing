@@ -1,8 +1,11 @@
 const db = require("../configs/database.js");
 const registerService = require ("./../services/registerServices");
+const {url} = require("url");
+
 let instructorObj ={};
 let instructorClassesObj={};
-let path = 'http://emotionthermometer.online/EmojiSharing/?classID=';
+let path = 'http://emotionthermometer.online:4000/EmojiSharing?classID=';
+let localPath = 'http://localhost:4000/EmojiSharing?classID=';
 
 
 async function getInstructorPage (req,res,user) {
@@ -26,19 +29,46 @@ async function getInstructorPage (req,res,user) {
     }
     let instructorClassesArray = await getInstructorClasses(instructorId);
     let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
+    if (instructorClassNamesArray === 0){
+        return res.redirect("/");
+    }
     return res.render("instructorAccount.ejs" ,{
         newInstructor : instructorObj.full_name,
         classes : instructorClassesArray,
         classNames : instructorClassNamesArray,
-        path : path
+        path : localPath
     });
 };
 
-let checkLoggedIn = (req, res, next) => {
+async function checkLoggedIn (req, res, next) {
     if (!req.isAuthenticated()) {
         return res.redirect("/instructorLogin");
+    }else {
+        //
+        let user = req.user;
+        let query = "SELECT id,isInstructor FROM emojidatabase.registrations where users_id = '" + user + "'";
+        try{
+            const[rows,fields] = await db.execute(query);
+            //check students who are not in registration because they didn't have class link
+            if (rows === undefined || rows.length ===0){
+                return res.redirect('/getClassLink');// students can input instructor name and class date time
+            }else if (rows && rows[0].isInstructor === 1){
+                //for instructor
+                next();
+            }else if (rows && rows[0].isInstructor === 0){
+                //look up class id for this student
+                return res.redirect(url.format({
+                        pathname: "/sendEmoji",
+                        query: {
+                            reg_id: rows[0].id,
+                        },
+                    })
+                );
+            }
+        }catch (e) {
+
+        }
     }
-    next();
 };
 
 let getInstructorLoginPage = (req,res) => {
@@ -179,28 +209,32 @@ async function getInstructorClasses(instructorId) {
 async function getInstructorClassNames(classesArrayFromRegDatabase){
     let classesIdArr = [];
     let classNamesArr = [];
-    classesArrayFromRegDatabase.forEach( (obj) => {
-        classesIdArr.push(obj.classes_id);
-    });
-    for (let i = 0 ; i<classesIdArr.length; i++){
-        let getClassName = "SELECT class_name, datetime FROM emojidatabase.classes WHERE id='"+
-            classesIdArr[i] + "'";
-        try {
-            const [rows, fields] = await db.execute(getClassName);
-            if (rows.length !== 0) {
-                console.log('found!');
-                classNamesArr.push(rows);
-            } else {
-                console.log('not found');
-                //new classes id would be last record in database + 1
-                return 0;
+    if (classesArrayFromRegDatabase !==0 ){
+        classesArrayFromRegDatabase.forEach( (obj) => {
+            classesIdArr.push(obj.classes_id);
+        });
+        for (let i = 0 ; i<classesIdArr.length; i++){
+            let getClassName = "SELECT class_name, datetime FROM emojidatabase.classes WHERE id='"+
+                classesIdArr[i] + "'";
+            try {
+                const [rows, fields] = await db.execute(getClassName);
+                if (rows.length !== 0) {
+                    console.log('found!');
+                    classNamesArr.push(rows);
+                } else {
+                    console.log('not found');
+                    //new classes id would be last record in database + 1
+                    return 0;
+                }
+            } catch (e) {
+                console.log("Catch an error: ", e);
             }
-        } catch (e) {
-            console.log("Catch an error: ", e);
-        }
 
+        }
+        return classNamesArr;
+    }else{
+        return 0;
     }
-    return classNamesArr;
 }
 
 
@@ -247,7 +281,7 @@ async function generateLink(req, res, next) {
         let classesArray = rows;
         //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classID=
         // let path = 'http://emotionthermometer.online/EmojiSharing/?classID=';
-        let newClassIdLink = "http://emotionthermometer.online/EmojiSharing/?classID=" + rows[numClasses-1].id;
+        let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing/?classID=" + rows[numClasses-1].id;
 
         res.render("generateLink", {
             newClassLink: newClassIdLink,
