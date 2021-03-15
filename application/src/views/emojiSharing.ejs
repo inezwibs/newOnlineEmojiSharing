@@ -176,11 +176,11 @@
     </script>
 
 <div>
-    <form action="/history/?reg_id=<%=classId%>" method="post">
+    <form action="/history?regId=<%=regId%>" method="post">
         <input type="submit" value="History" />
     </form>
     <h2 class="text-center text-info">Emoji Sharing!</h2>
-    <form class="form-group" action="/sendEmoji/?reg_id=<%=classId%>" method="post">
+    <form class="form-group" action="/sendEmoji?regId=<%=regId%>?userId=<%=userId%>" method="post">
         <label class="switch">
             <input type="checkbox" name="isAnonymouse">
             <span class="slider round"></span>
@@ -193,7 +193,7 @@
                 
 
                 <tbody>
-                    <input type="hidden" id='regID'  name="regID" value = "<%=classId%>">
+                    <input type="hidden" id='regID'  name="regId" value = "<%=regId%>">
 
 
                     <tr>

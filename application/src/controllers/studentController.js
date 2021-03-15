@@ -12,20 +12,20 @@ async function getClassLinkPage (req, res, next) {
 }
 
 async function listClassLinks (req,res,user) {
-    let classIdQuery = " SELECT classes_id FROM emojidatabase.registrations where id = '"+ req.body.id + "'" ;
-    let classObj;
-    try{
-        const [rows, err ] = await db.execute(classIdQuery);
-        if (rows === undefined || rows.length ===0) {
-            throw ErrorEvent("ER_KEY_NOT_FOUND")
-        }else{
-            classObj = rows[0];
-        }
-    }catch(e){
-        console.log('error' , e)
-    }
+    // let classIdQuery = " SELECT classes_id FROM emojidatabase.registrations where id = '"+ req.body.classId + "'" ;
+    // let classObj;
+    // try{
+    //     const [rows, err ] = await db.execute(classIdQuery);
+    //     if (rows === undefined || rows.length ===0) {
+    //         throw ErrorEvent("ER_KEY_NOT_FOUND")
+    //     }else{
+    //         classObj = rows[0];
+    //     }
+    // }catch(e){
+    //     console.log('error' , e)
+    // }
     return res.render("generateLink.ejs" ,{
-        classArr : classObj,
+        classId : req.body.classId,
         path : localPath
     });
 };

@@ -8,7 +8,7 @@ router.get("/sendEmoji", (req, res) => {
   const passRegID = req.query.reg_id;
   console.log("***passRegID: "+passRegID);
   res.render("emojiSharing", {
-    reg_id: '197',
+    reg_id: passRegID,
   });
 });
 
