@@ -29,7 +29,7 @@ async function getInstructorPage (req,res,user) {
     }
     let instructorClassesArray = await getInstructorClasses(instructorId);
     let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
-    if (instructorClassNamesArray === 0){
+    if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
         return res.redirect("/");
     }
     return res.render("instructorAccount.ejs" ,{
@@ -105,7 +105,6 @@ async function insertInstructure(req, res, next) {
 async function getInstructorID(req, res, next) {
     let query =
         " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
-    // console.log("hellloooo2");
 
     try {
         const [rows, err] = await db.execute(query);
@@ -123,7 +122,6 @@ async function getInstructorID(req, res, next) {
 async function checkedInstructor(req, res, next) {
     return res.redirect('/instructor');
 }
-
 
 //create classes
 async function insertClasses(req, res, next) {

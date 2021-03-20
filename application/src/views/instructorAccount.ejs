@@ -29,7 +29,10 @@
 </nav>
 <nav class="navbar sticky-top navbar-light bg-light">
   <a class="navbar-brand" href="#">Sticky top</a>
-  <p>Here are all your registered classes: <p>
+   <% if (classes.length !== 'undefined' ) {%>
+    <p>Here are all your registered classes: <p>
+    <%}else {%>
+    <%}%>
   <div>
     <ul>
       <% for (var i = 0; i < classes.length ; i++){ %>

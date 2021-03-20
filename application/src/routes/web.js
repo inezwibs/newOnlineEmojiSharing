@@ -49,7 +49,8 @@ let initWebRoutes = (app) => {
     router.post("/getClassLink", studentController.listClassLinks);
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage )
-    router.post("/sendEmoji" ,emojiController.getStudentClassId, emojiController.getSendEmojiPage)
+    router.post("/sendEmoji" ,emojiController.getStudentClassId,
+        emojiController.getClassStartTime, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,)
 
     return app.use("/", router);
 };
