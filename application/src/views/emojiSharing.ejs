@@ -194,6 +194,7 @@
 
                 <tbody>
                     <input type="hidden" id='regID'  name="regId" value = "<%=regId%>">
+                    <input type="hidden" id='userObj'  name="userObj" value = "<%=userObj%>">
 
 
                     <tr>
@@ -269,9 +270,12 @@
         </div>
 
         <div>
-            <input type="text" id="fname" name="fname" class="button_next" placeholder="type text here ...">
-            <input type="submit" name="submit" class="button_next" value="Submit">
-
+            <form method="GET" action="/sendEmoji" class="form-group">
+                <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
+                <input type="hidden" name="classID" value="<%=classID%>" />
+                <input type="text" id="fname" name="fname" class="button_next" placeholder="type text here ...">
+                <input type="submit" name="submit" class="button_next" value="Submit">
+            </form>
         </div>
     </form>
 </div>

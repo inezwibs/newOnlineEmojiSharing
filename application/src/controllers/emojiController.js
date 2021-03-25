@@ -18,7 +18,7 @@ async function getStudentClassId(req, res, next) {
     try {
         const [rows, fields] = await db.execute(query);
         // console.log(query);
-        req.user = req.user;
+        req.user = req.userId;
         req.class_id = rows[0].classes_id;
         // console.log('Reg Id',req.reg_id)
         next();
@@ -65,7 +65,9 @@ async function getSendEmojiPage(req,res,next) {
         }
         // req.classId = rows[0].incorrectd
         res.render("emojiSharing", {
-                regId: localRegId,
+                classLinkID: localRegId,
+                regId : localRegId,
+                classID: rowsObj.id,//id shows undefined?
                 userId: userId,
                 userObj: rowsObj
             }
