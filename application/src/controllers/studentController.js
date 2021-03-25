@@ -201,22 +201,13 @@ async function getRegistrationId(req, res, next) {
         const [res, err] = await db.execute(query);
         // console.log(query);
         req.reg_id = res[0].id;
+        req.classLinkID = req.body.classLinkID;
+        req.classID = req.body.classID;
         console.log('Reg Id',req.reg_id)
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
     }
-}
-
-async function redirectToSendEmoji(req, res, next) {
-        return res.redirect(url.format({
-          pathname: "/sendEmoji",
-          query: {
-            classLinkID: req.body.classLinkID,
-            classID: req.body.classID
-          },
-        })
-        );
 }
 
 module.exports = {
@@ -228,7 +219,6 @@ module.exports = {
     getUserId:getUserId,
     checkRegistration:checkRegistration,
     insertRegistration:insertRegistration,
-    redirectToSendEmoji:redirectToSendEmoji,
     getClassLinkPage:getClassLinkPage,
     listClassLinks:listClassLinks
 }

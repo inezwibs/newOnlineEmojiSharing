@@ -36,12 +36,14 @@ async function getSendEmojiPage(req,res,next) {
     if (req.user) {
         // let userQuery = "SELECT * FROM emojidatabase.users where '" + req.user + "'";
         userId = req.user;
-        userQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, c.id " +
-            "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
-            "WHERE u.id = r.users_id " +
-            "AND c.id = r.classes_id " +
-            "AND r.users_id = '" + userId + "'";
+    }else if(req.user_id){
+        userId = req.user_id;
     }
+    userQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, c.id " +
+        "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+        "WHERE u.id = r.users_id " +
+        "AND c.id = r.classes_id " +
+        "AND r.users_id = '" + userId + "'";
     try {
         const [rows, fields] = await db.execute(userQuery);
         if (rows === undefined || rows.length === 0) {
@@ -64,7 +66,7 @@ async function getSendEmojiPage(req,res,next) {
         // req.classId = rows[0].incorrectd
         res.render("emojiSharing", {
                 regId: localRegId,
-                userId: req.user,
+                userId: userId,
                 userObj: rowsObj
             }
         )

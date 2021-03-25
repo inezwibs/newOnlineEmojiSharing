@@ -43,7 +43,7 @@ let initWebRoutes = (app) => {
     router.get("/register", studentController.getStudentRegisterPage);
     router.post("/register", studentController.checkUserIsValid,studentController.insertUser,
     studentController.getUserId,studentController.checkRegistration,studentController.insertRegistration,
-    studentController.getRegistrationId,studentController.redirectToSendEmoji);
+    studentController.getRegistrationId,emojiController.getSendEmojiPage);
     //if students lose the class link
     router.get("/getClassLink", studentController.getClassLinkPage);
     router.post("/getClassLink", studentController.listClassLinks);
