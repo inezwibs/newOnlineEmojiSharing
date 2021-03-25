@@ -35,6 +35,7 @@ async function getStudentRegisterPage (req, res, next) {
   res.render("register", {
     title: "Form Validation",
     classID: req.query.classID,
+    classLinkID: req.query.classLinkID
   });
   req.session.errors = null;
 }
@@ -101,22 +102,10 @@ async function getUserId(req, res, next) {
 
 async function checkRegistration(req, res, next) {
   let query =
-    " SELECT * FROM emojidatabase.registrations where classes_id = " +
+    " SELECT * FROM emojidatabase.registrations where id = " +
     req.class_id +
     " and users_id = " +
     req.user_id;
-  // await db.execute(query, (err, res) => {
-  //     console.log(query);
-  //     if (err) throw err;
-  //     let duplicateregistration;
-  //     if(res.length > 0){
-  //       duplicateregistration = 1;
-  //     }else{
-  //       duplicateregistration = 0;
-  //     }
-  //     req.duplicateregistration = duplicateregistration;
-  //     next();
-  // });
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
@@ -141,19 +130,7 @@ async function insertRegistration(req, res, next) {
       " ," +
       req.user_id +
       " , 0 )";
-    // await db.execute(query, (err, res) => {
-    //     console.log(query);
-    //     if (err) throw err;
-    //     let duplicateregistration;
-    //     if(res.length > 0){
-    //       duplicateregistration = 1;
-    //     }else{
-    //       duplicateregistration = 0;
-    //     }
-    //     req.duplicateregistration = duplicateregistration;
-    //     next();
-    // });
-    try {
+     try {
       const [res, err] = await db.execute(query);
       // console.log(query);
       let duplicateregistration;
@@ -169,27 +146,6 @@ async function insertRegistration(req, res, next) {
     }
   } else {
     next();
-  }
-}
-async function getRegistrationId(req, res, next) {
-  let query =
-    " SELECT * FROM emojidatabase.registrations where classes_id = " +
-    req.class_id +
-    " and users_id = " +
-    req.user_id;
-  // await db.execute(query, (err, res) => {
-  //     console.log(query);
-  //     if (err) throw err;
-  //     req.reg_id = res[0].id;
-  //     next();
-  // });
-  try {
-    const [res, err] = await db.execute(query);
-    // console.log(query);
-    req.reg_id = res[0].id;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
   }
 }
 
@@ -234,7 +190,7 @@ async function getRegistrationId(req, res, next) {
         " SELECT * FROM emojidatabase.registrations where classes_id = " +
         req.body.classID +
         " and users_id = " +
-        req.user.id;
+        req.user_id;
     // await db.execute(query, (err, res) => {
     //     console.log(query);
     //     if (err) throw err;
@@ -256,7 +212,8 @@ async function redirectToSendEmoji(req, res, next) {
         return res.redirect(url.format({
           pathname: "/sendEmoji",
           query: {
-            reg_id: req.reg_id,
+            classLinkID: req.body.classLinkID,
+            classID: req.body.classID
           },
         })
         );

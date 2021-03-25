@@ -4,8 +4,8 @@ const {url} = require("url");
 
 let instructorObj ={};
 let instructorClassesObj={};
-let path = 'http://emotionthermometer.online:4000/EmojiSharing?classID=';
-let localPath = 'http://localhost:4000/EmojiSharing?classID=';
+let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkID=';
+let localPath = 'http://localhost:4000/EmojiSharing?classLinkID=';
 
 
 async function getInstructorPage (req,res,user) {

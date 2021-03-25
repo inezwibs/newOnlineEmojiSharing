@@ -50,7 +50,9 @@ let initWebRoutes = (app) => {
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage )
     router.post("/sendEmoji" ,emojiController.getStudentClassId,
-        emojiController.getClassStartTime, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,)
+        emojiController.getClassStartTime, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
+        emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
+        emojiController.getSendEmojiPage)
 
     return app.use("/", router);
 };

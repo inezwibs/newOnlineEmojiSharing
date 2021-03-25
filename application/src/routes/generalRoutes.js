@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const {getRegIdFromQuery} = require("../controllers/emojiController");
 
 router.get("/EmojiSharing",(req, res) => {
-    // console.log("the class id is: "+req.query.classID);
-    const passClassID = req.query.classID;
+    const numArr = getIdFromQuery(req.url)
         res.render("home", {
-            classID: passClassID
+            classLinkID: numArr[0],
+            classID: numArr[1]
         });
 
 
@@ -15,9 +16,13 @@ router.get("/fail",(req, res) => {
 
         res.render("errorPage", {
         });
-
-
 });
+
+function getIdFromQuery(query){
+    const re = /\d+/g;
+    let results = query.match(re);
+    return results
+}
 
 // //instructor login page
 // router.get('/', (req,res)=>{
