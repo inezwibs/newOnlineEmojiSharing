@@ -28,11 +28,19 @@ async function getStudentClassId(req, res, next) {
 }
 
 async function getSendEmojiPage(req,res,next) {
-    let idFromUrl = getClassIdFromUrl(req.headers.referer);
-    console.log("***inside sendemoji", idFromUrl);
+
+    let idFromUrl;
     let userId;
     let userQuery;
     let rowsObj;
+
+    if (req.query){
+        let ids= getIdsFromUrl(req.query.regId);
+        idFromUrl = ids[0];
+        userId = ids[1];
+    }
+    console.log("***inside sendemoji", idFromUrl);
+
     if (req.user) {
         // let userQuery = "SELECT * FROM emojidatabase.users where '" + req.user + "'";
         userId = req.user;
@@ -285,6 +293,13 @@ function getRegIdFromQuery(query) {
 function getClassIdFromUrl(urlPath) {
     const re = /\d+/g;
     return urlPath.match(re)[1];
+}
+
+
+function getIdsFromUrl(urlPath) {
+    const re = /\d+/g;
+    let found =  urlPath.match(re);
+    return found;
 }
 
 
