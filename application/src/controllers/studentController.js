@@ -4,7 +4,9 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 let path = 'http://emotionthermometer.online:4000/EmojiSharing?classID=';
 let localPath = 'http://localhost:4000/EmojiSharing?classID=';
-
+const emojiController = require("../controllers/emojiController");
+let classIdValue;
+let classLinkIdValue;
 
 
 async function getClassLinkPage (req, res, next) {
@@ -32,10 +34,12 @@ async function listClassLinks (req,res,user) {
 
 async function getStudentRegisterPage (req, res, next) {
   // console.log("raya_query: " + req.query.classID);
+   classLinkIdValue = req.query.classLinkID && req.query.classLinkID.length < 5 ? req.query.classLinkID: emojiController.getIdsFromUrl(req.url)[0];
+   classIdValue = req.query.classID ? req.query.classID : emojiController.getIdsFromUrl(req.url)[1]
   res.render("register", {
     title: "Form Validation",
-    classID: req.query.classID,
-    classLinkID: req.query.classLinkID
+    classID: classIdValue,
+    classLinkID: classLinkIdValue
   });
   req.session.errors = null;
 }
@@ -75,7 +79,7 @@ async function checkUserIsValid(req, res, next) {
     }
     req.userIsValid = userIsValid;
     req.errorMsg = errorMsg;
-    req.class_id = req.body.classID;
+    req.class_id = classIdValue;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -188,7 +192,7 @@ async function insertUser(req, res, next) {
 async function getRegistrationId(req, res, next) {
     let query =
         " SELECT * FROM emojidatabase.registrations where classes_id = " +
-        req.body.classID +
+        req.class_id +
         " and users_id = " +
         req.user_id;
     // await db.execute(query, (err, res) => {
@@ -201,8 +205,8 @@ async function getRegistrationId(req, res, next) {
         const [res, err] = await db.execute(query);
         // console.log(query);
         req.reg_id = res[0].id;
-        req.classLinkID = req.body.classLinkID;
-        req.classID = req.body.classID;
+        req.classLinkID = classLinkIdValue;
+        req.classID = classIdValue;
         console.log('Reg Id',req.reg_id)
         next();
     } catch (e) {

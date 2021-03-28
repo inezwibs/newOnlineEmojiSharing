@@ -54,7 +54,7 @@
   class="center" />
 
 <div style="display: flex">
-  <form method="GET" action="/register" class="form-group">
+  <form method="GET" action="/register?classLinkID=<%=classID%>?classID=<%=classLinkID%>" class="form-group">
     <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
     <input type="hidden" name="classID" value="<%=classID%>" />
     <input type="submit" name="submit" class="button_register" value="Register" />

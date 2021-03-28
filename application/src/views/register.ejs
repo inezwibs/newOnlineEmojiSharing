@@ -34,7 +34,7 @@
           <form
             id="login-form"
             class="form"
-            action="/register"
+            action="/register?classLinkID=<%=classLinkID%>?classID=<%=classID%>"
             method="post"
             onsubmit="return checkForm(this);"
           >
@@ -96,6 +96,8 @@
               />
             </div>
             <div class="form-group">
+              <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
+              <input type="hidden" name="classID" value="<%=classID%>" />
               <input
                 type="submit"
                 name="submit"

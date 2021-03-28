@@ -18,7 +18,11 @@ async function getStudentClassId(req, res, next) {
     try {
         const [rows, fields] = await db.execute(query);
         // console.log(query);
-        req.user = req.userId;
+        let ids;
+        if (!req.userId && req.query.regId){
+            ids = getIdsFromUrl(req.query.regId);
+        }
+        req.user = req.userId ? req.userId : ids[1];
         req.class_id = rows[0].classes_id;
         // console.log('Reg Id',req.reg_id)
         next();
@@ -33,9 +37,13 @@ async function getSendEmojiPage(req,res,next) {
     let userId;
     let userQuery;
     let rowsObj;
+    let classId;
 
-    if (req.query){
-        let ids= getIdsFromUrl(req.query.regId);
+    if (req.classLinkID && req.user_id){
+        idFromUrl = req.classLinkID;
+        userId = req.user_id;
+    }else if (req.url){
+        let ids= getIdsFromUrl(req.url);
         idFromUrl = ids[0];
         userId = ids[1];
     }
@@ -75,7 +83,7 @@ async function getSendEmojiPage(req,res,next) {
         res.render("emojiSharing", {
                 classLinkID: localRegId,
                 regId : localRegId,
-                classID: rowsObj.id,//id shows undefined?
+                classID: rowsObj.id ? rowsObj.id : classId,//id shows undefined?
                 userId: userId,
                 userObj: rowsObj
             }
@@ -109,10 +117,11 @@ async function insertEmojiRecord(req, res, next) {
     var splitedInsertedEmojiTime = tmp.split(":");
     var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
     // console.log("insertedEmojiMinutes***: "+insertedEmojiMinutes);
-    req.minute = insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
+    req.minute = insertedEmojiMinutes - req.classStartMinutes;
+    // req.minute = insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
     // console.log("minute***: "+req.minute);
 
-
+    let cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
     let query =
         " INSERT INTO emojidatabase.posted_emojis (isAnonymous, date_time, emojis_id, registration_id, class_id, text, minute) VALUES ( " +
         isAnonymous +
@@ -125,7 +134,7 @@ async function insertEmojiRecord(req, res, next) {
         " ," +
         req.class_id +
         " , '" +
-        req.body.fname +
+        cleanText +
         "', " +
         req.minute +
         ")";
@@ -227,7 +236,7 @@ async function getContributedStudentsCount(req, res, next) {
         const [res, err] = await db.execute(query);
         let contributedStudentsCount = res[0].count;
         req.studentNotContributed =
-            req.classRegisteredStudentsCount - contributedStudentsCount - 1;
+            req.classRegisteredStudentsCount - contributedStudentsCount - 1;// -1 removing instructor who is also registered
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -313,6 +322,7 @@ module.exports = {
     getClassRegisteredStudentsCount: getClassRegisteredStudentsCount,
     getContributedStudentsCount: getContributedStudentsCount,
     insertRecordPerMinute: insertRecordPerMinute,
-    getRegIdFromQuery:getRegIdFromQuery
+    getRegIdFromQuery:getRegIdFromQuery,
+    getIdsFromUrl:getIdsFromUrl
 }
 
