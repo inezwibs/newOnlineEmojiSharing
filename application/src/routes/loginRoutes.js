@@ -1,7 +1,4 @@
-/*
-Author: Raya Farshad
-Description: API for user registration, Login, Logout and authentication.
-*/
+
 
 const express = require("express");
 const router = express.Router();

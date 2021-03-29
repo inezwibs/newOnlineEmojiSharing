@@ -1,10 +1,10 @@
-
-const express = require("express");
-const router = express.Router();
-const db = require("../configs/database.js");
-const url = require("url");
-const bcrypt = require("bcryptjs");
-const saltRounds = 10;
+//
+// const express = require("express");
+// const router = express.Router();
+// const db = require("../configs/database.js");
+// const url = require("url");
+// const bcrypt = require("bcryptjs");
+// const saltRounds = 10;
 
 // async function insertInstructure(req, res, next) {
 //   const hash = bcrypt.hashSync(req.body.password, saltRounds);

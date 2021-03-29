@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
 var passport = require("passport");
@@ -7,6 +6,7 @@ var expressValidator = require("express-validator");
 const initWebRoutes = require( "./src/routes/web");
 const connectFlash = require( "connect-flash");
 const bodyParser = require("body-parser");
+const configViewEngine = require("./src/configs/viewEngine");
 
 
 const PORT = 4000;
@@ -31,15 +31,8 @@ const app = express();
 const morgan = require("morgan");
 app.use(morgan("tiny"));
 
-// sets view engine for ejs
-app.set('views', path.join(__dirname, './src/views'));
-app.set('view engine', 'ejs');
-const publicDirectory = path.join(__dirname, './public');
-app.use(express.static(publicDirectory));
-
 // allows to parse body in http post requests
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static("./public"));
 app.use(expressValidator());
 app.use(bodyParser.json());
 
@@ -56,6 +49,9 @@ app.use(
     })
   );
 
+//Config view engine
+configViewEngine(app);
+
 //Enable flash message
 app.use(connectFlash());
 
@@ -64,9 +60,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const generalRoutes = require("./src/routes/generalRoutes");
-const historyRouter = require("./src/routes/historyRoutes");
+// const historyRouter = require("./src/controllers/historyController");
 app.use("/", generalRoutes);
-app.use("/", historyRouter);
+// app.use("/", historyRouter);
 
 //Init all web routes
 initWebRoutes(app);

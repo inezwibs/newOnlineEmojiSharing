@@ -121,8 +121,8 @@ async function insertEmojiRecord(req, res, next) {
     var splitedInsertedEmojiTime = tmp.split(":");
     var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
     // console.log("insertedEmojiMinutes***: "+insertedEmojiMinutes);
-    req.minute = insertedEmojiMinutes - req.classStartMinutes;
-    // req.minute = insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
+    // req.minute = insertedEmojiMinutes - req.classStartMinutes;
+    req.minute = insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
     // console.log("minute***: "+req.minute);
 
     let cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');

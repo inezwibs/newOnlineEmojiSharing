@@ -2,6 +2,7 @@ const express = require('express');
 const instructorController = require("../controllers/instructorController");
 const studentController = require("../controllers/studentController");
 const emojiController = require("../controllers/emojiController");
+const historyController = require("../controllers/historyController");
 const passport = require('passport');
 const initPassportLocal = require( "../controllers/passportController");
 
@@ -9,7 +10,6 @@ const initPassportLocal = require( "../controllers/passportController");
 initPassportLocal();
 
 let router = express.Router();
-
 
 let initWebRoutes = (app) => {
     router.get('/instructor', instructorController.getInstructorPage);
@@ -53,6 +53,13 @@ let initWebRoutes = (app) => {
         emojiController.getClassStartTime, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
         emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
         emojiController.getSendEmojiPage)
+    //history routes
+    router.get("/history",historyController.checkIfUserIsInstructor, historyController.getClassID, historyController.getEmojiRecordsPerMinute, historyController.getText,
+        historyController.getUserVisibility,historyController.getHistoryPage)
+    router.post("/history", historyController.checkIfUserIsInstructor, historyController.getClassID, historyController.getEmojiRecordsPerMinute, historyController.getText,
+        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage)
+    router.post("/logout", instructorController.postLogOut);
+    router.get("/logout", instructorController.postLogOut);
 
     return app.use("/", router);
 };

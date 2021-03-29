@@ -290,6 +290,12 @@ async function generateLink(req, res, next) {
         console.log("Catch an error: ", e);
     }
 }
+async function postLogOut (req, res) {
+    req.session.destroy(function(err) {
+        return res.redirect("/instructorLogin");
+    });
+}
+
 
 
 module.exports = {
@@ -303,7 +309,8 @@ module.exports = {
     getInstructorLoginPage:getInstructorLoginPage,
     getInstructorRegisterPage: getInstructorRegisterPage,
     checkedInstructor: checkedInstructor,
-    checkLoggedIn: checkLoggedIn
+    checkLoggedIn: checkLoggedIn,
+    postLogOut:postLogOut
 };
 
 

@@ -1,10 +1,8 @@
-const express = require("express");
-const router = express.Router();
 const db = require("../configs/database.js");
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
-    " SELECT * FROM emojidatabase.registrations where id = " + req.query.reg_id;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.regId;
 
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
@@ -24,7 +22,7 @@ async function checkIfUserIsInstructor(req, res, next) {
 
 async function getClassID(req, res, next) {
   let query =
-    " SELECT * FROM emojidatabase.registrations where id = " + req.query.reg_id;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.regId;
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
   //     req.class_id = res[0].classes_id;
@@ -128,51 +126,74 @@ async function getUserVisibility(req, res, next) {
   }
 }
 
-router.get(
-  "/history",
-  checkIfUserIsInstructor,
-  getClassID,
-  getEmojiRecordsPerMinute,
-  getText,
-  getUserVisibility,
-  (req, res) => {
-    let tmp = false;
-    if (req.isInstructor === 1) {
-      tmp = true;
-    }
-    res.render("history", {
-      isInstructor: tmp,
-      records: req.records,
-      userInfo: req.userInfo,
-      history_chart_access: req.history_chart_access,
-      history_text_access: req.history_text_access,
-    });
+async function getHistoryPage(req,res) {
+  let tmp = false;
+  if (req.isInstructor === 1) {
+    tmp = true;
   }
-);
+  res.render("history", {
+    isInstructor: tmp,
+    records: req.records,
+    userInfo: req.userInfo,
+    history_chart_access: req.history_chart_access,
+    history_text_access: req.history_text_access,
+  });
+}
+//
+// router.get(
+//   "/history",
+//   checkIfUserIsInstructor,
+//   getClassID,
+//   getEmojiRecordsPerMinute,
+//   getText,
+//   getUserVisibility,
+//   (req, res) => {
+//     let tmp = false;
+//     if (req.isInstructor === 1) {
+//       tmp = true;
+//     }
+//     res.render("history", {
+//       isInstructor: tmp,
+//       records: req.records,
+//       userInfo: req.userInfo,
+//       history_chart_access: req.history_chart_access,
+//       history_text_access: req.history_text_access,
+//     });
+//   }
+// );
+//
+// router.post(
+//   "/history",
+//   checkIfUserIsInstructor,
+//   getClassID,
+//   getEmojiRecordsPerMinute,
+//   getText,
+//   getUserVisibility,
+//   updateUserVisibility,
+//   (req, res) => {
+//     // console.log("req.body.history_chart_access: "+req.body.history_chart_access);
+//     let tmp = false;
+//     if (req.isInstructor === 1) {
+//       tmp = true;
+//     }
+//
+//     res.render("history", {
+//       isInstructor: tmp,
+//       records: req.records,
+//       userInfo: req.userInfo,
+//       history_chart_access: req.history_chart_access,
+//       history_text_access: req.history_text_access,
+//     });
+//   }
+// );
 
-router.post(
-  "/history",
-  checkIfUserIsInstructor,
-  getClassID,
-  getEmojiRecordsPerMinute,
-  getText,
-  getUserVisibility,
-  updateUserVisibility,
-  (req, res) => {
-    // console.log("req.body.history_chart_access: "+req.body.history_chart_access);
-    let tmp = false;
-    if (req.isInstructor === 1) {
-      tmp = true;
-    }
 
-    res.render("history", {
-      isInstructor: tmp,
-      records: req.records,
-      userInfo: req.userInfo,
-      history_chart_access: req.history_chart_access,
-      history_text_access: req.history_text_access,
-    });
-  }
-);
-
-module.exports = router;
+module.exports = {
+  checkIfUserIsInstructor:checkIfUserIsInstructor,
+  getClassID:getClassID,
+  getEmojiRecordsPerMinute:getEmojiRecordsPerMinute,
+  getText:getText,
+  getUserVisibility:getUserVisibility,
+  updateUserVisibility:updateUserVisibility,
+  getHistoryPage:getHistoryPage
+}

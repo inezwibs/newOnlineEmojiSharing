@@ -9,20 +9,16 @@ body {
     margin-right: auto;
 }
  table{
-     /*width:100%;*/
     width:fit-content !important;
     font-size:20px !important;
  }
 td.first {
-    /*width:auto;*/
     width: auto;
 }
 input.hello[type="text"] {
     width: 80px;
-    /*display: inline ;*/
     font-size:30px ;
     border: none ;
-    /*width: fit-content;*/
 
 }
 .anonymous-label{
@@ -114,7 +110,6 @@ input.hello[type="text"] {
     display: inline-block;
     width: 60px;
     height: 34px;
-    /*left: 380px;*/
 }
 
 .switchLabel{
@@ -123,7 +118,6 @@ input.hello[type="text"] {
     vertical-align: center;
     padding-left: 15px;
     font-size: 20px;
-    /*left: 450;*/
 
 }
 
@@ -178,4 +172,8 @@ input:checked+.slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+/*instructor account ejs*/
+.class-list{
+    list-style-type: none;
 }

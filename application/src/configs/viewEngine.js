@@ -1,11 +1,14 @@
-import express from "express";
+const express = require("express");
+const path = require('path');
+
 /**
  * Config view engine for app
  */
 let configViewEngine = (app)=> {
-    app.use(express.static("./src/public"));
-    app.set("view engine", "ejs");
-    app.set("views","./src/views");
+    app.set('views', path.join(__dirname, '../views'));
+    app.set('view engine', 'ejs');
+    const publicDirectory = path.join(__dirname, '../../public');
+    app.use(express.static(publicDirectory));
 };
 
 module.exports = configViewEngine;
