@@ -44,8 +44,10 @@ async function getSendEmojiPage(req,res,next) {
         userId = req.user_id;
     }else if (req.url){
         let ids= getIdsFromUrl(req.url);
-        idFromUrl = ids[0];
-        userId = ids[1];
+        if (ids && ids.length === 2){
+            idFromUrl = ids[0];
+            userId = ids[1];
+        }
     }
     console.log("***inside sendemoji", idFromUrl);
 
@@ -55,7 +57,7 @@ async function getSendEmojiPage(req,res,next) {
     }else if(req.user_id){
         userId = req.user_id;
     }
-    userQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, c.id " +
+    userQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, r.classes_id " +
         "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
         "WHERE u.id = r.users_id " +
         "AND c.id = r.classes_id " +
@@ -78,12 +80,14 @@ async function getSendEmojiPage(req,res,next) {
         } else if (req.query.regId) { // 195?userId=358
             localRegId = getRegIdFromQuery(req.query.regId);
             // localRegId = req.user; // req.user is incorrect
+        }else if (rowsObj.id){
+            localRegId = rowsObj.id;
         }
         // req.classId = rows[0].incorrectd
         res.render("emojiSharing", {
                 classLinkID: localRegId,
                 regId : localRegId,
-                classID: rowsObj.id ? rowsObj.id : classId,//id shows undefined?
+                classID: rowsObj.classes_id ? rowsObj.classes_id : classId,//id shows undefined?
                 userId: userId,
                 userObj: rowsObj
             }

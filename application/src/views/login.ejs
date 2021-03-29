@@ -8,7 +8,7 @@
         <div id="login-row" class="row justify-content-center align-items-center">
             <div id="login-column" class="col-md-6">
                 <div id="login-box" class="col-md-12">
-                    <form id="login-form" class="form" action="/login" method="POST">
+                    <form id="login-form" class="form" action="/login?classLinkID=<%=classLinkID%>?classID=<%=classID%>" method="POST">
                         <h3 class="text-center text-info">Login</h3>
                         <div class="form-group">
                             <label for="email" class="text-info">Email:</label><br>
@@ -25,6 +25,8 @@
                         <br>
 
                         <div class="form-group">
+                            <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
+                            <input type="hidden" name="classID" value="<%=classID%>" />
                             <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
                         </div>
 

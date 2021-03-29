@@ -158,6 +158,7 @@ async function getStudentLoginPage(req,res) {
     return res.render("login", {
     title: "Login",
     classID: req.query.classID,
+    classLinkID: req.query.classLinkID,
     isLoggedIn: req.isAuthenticated(),
   });
 }
