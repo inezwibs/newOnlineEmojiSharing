@@ -278,11 +278,12 @@ async function generateLink(req, res, next) {
         let numClasses = rows.length;
         let classesArray = rows;
         //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classID=
-        let newClassIdLink = 'http://emotionthermometer.online/EmojiSharing/?classLinkID=' + rows[numClasses-1].id;
-        // let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing/?classLinkID=" + rows[numClasses-1].id;
+        let newClassIdLink = 'http://emotionthermometer.online/EmojiSharing?classLinkID=' + rows[numClasses-1].id;
+        // let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing?classLinkID=" + rows[numClasses-1].id;
 
         res.render("generateLink", {
             newClassLink: newClassIdLink,
+            newClassId: rows[numClasses-1].classes_id,
             classArr: classesArray,
             path:path
         });
