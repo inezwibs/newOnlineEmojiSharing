@@ -11,10 +11,10 @@ const saltRounds = 10;
 
 // Gets student registration page
 router.get("/register", function (req, res, next) {
-  // console.log("raya_query: " + req.query.classID);
+  // console.log("raya_query: " + req.query.classId);
   res.render("register", {
     title: "Form Validation",
-    classID: req.query.classID,
+    classId: req.query.classId,
   });
   req.session.errors = null;
 });
@@ -24,7 +24,7 @@ router.get("/register", function (req, res, next) {
 async function insertToRegistration(req, res, next) {
   let query =
     " INSERT INTO emojidatabase.registrations (classes_id, users_id) VALUES ( " +
-    req.body.classID +
+    req.body.classId +
     ", " +
     req.userID +
     " )";
@@ -62,7 +62,7 @@ async function getUserID(req, res, next) {
 }
 //check user is user is valid, no email like that is exists-> userValid = true/false
 //if userValid == false -> pass error message to req.errorMessage
-//if userValid ==true -> (add user to users table) (get the user number) (get classID) (add to registration)
+//if userValid ==true -> (add user to users table) (get the user number) (get classId) (add to registration)
 // Verifies that new user has filled in the signup form correctly and creates user
 async function checkUserIsValid(req, res, next) {
   let query =
@@ -82,7 +82,7 @@ async function checkUserIsValid(req, res, next) {
   //     }
   //     req.userIsValid = userIsValid;
   //     req.errorMsg = errorMsg;
-  //     req.class_id = req.body.classID;
+  //     req.class_id = req.body.classId;
   //     next();
   // });
   try {
@@ -99,7 +99,7 @@ async function checkUserIsValid(req, res, next) {
     }
     req.userIsValid = userIsValid;
     req.errorMsg = errorMsg;
-    req.class_id = req.body.classID;
+    req.class_id = req.body.classId;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -286,7 +286,7 @@ router.get("/login", function (req, res) {
   res.render("login", {
     error_msg: "",
     title: "Login",
-    classID: req.query.classID,
+    classId: req.query.classId,
     isLoggedIn: req.isAuthenticated(),
   });
 });
@@ -303,7 +303,7 @@ router.get("/login", function (req, res) {
 async function getRegistrationID_login(req, res, next) {
   let query =
     " SELECT * FROM emojidatabase.registrations where classes_id = " +
-    req.body.classID +
+    req.body.classId +
     " and users_id = " +
     req.user.id;
   // await db.execute(query, (err, res) => {
@@ -332,7 +332,7 @@ router.post(
   getRegistrationID_login,
   function (req, res) {
     // console.log("req.user.id: "+req.user.id);
-    // console.log("req.query.classID: "+req.body.classID);
+    // console.log("req.query.classId: "+req.body.classId);
 
     res.redirect(
       url.format({

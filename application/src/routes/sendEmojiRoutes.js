@@ -257,7 +257,7 @@
 //     // console.log("text: "+req.body.fname);
 //     // console.log("optradio: "+req.body.optradio);
 //     // console.log("userID: "+req.user.id);
-//     // console.log("classID: "+req.class_id);
+//     // console.log("classId: "+req.class_id);
 //   }
 // );
 //

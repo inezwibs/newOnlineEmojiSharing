@@ -71,7 +71,7 @@ async function getClassID(req, res, next) {
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
-    req.classID = res[0].id;
+    req.classId = res[0].id;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -82,7 +82,7 @@ async function getClassID(req, res, next) {
 async function insertToRegistration(req, res, next) {
   let query =
     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-    req.classID +
+    req.classId +
     " ," +
     req.instructorID +
     " , 1 )";
@@ -90,7 +90,7 @@ async function insertToRegistration(req, res, next) {
   try {
     await db.execute(query);
     // console.log(query);
-    // req.classID = res[0].id;
+    // req.classId = res[0].id;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -109,7 +109,7 @@ router.post(
       url.format({
         pathname: "/generateLink",
         query: {
-          classID: req.classID,
+          classId: req.classId,
         },
       })
     );

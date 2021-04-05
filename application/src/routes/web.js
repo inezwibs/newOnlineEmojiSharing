@@ -34,23 +34,28 @@ let initWebRoutes = (app) => {
     //student get routes they can't go directly, must get class link
     router.get("/login", studentController.getStudentLoginPage);
     router.post("/login", passport.authenticate("local", {
-        successRedirect: "/sendEmoji",
         failureRedirect: "/fail",
         failureFlash: true,
-        successFlash: true
-    }))
+        successFlash: true,
+        successRedirect: "/sendEmoji"}), (req, res) => {
+        if (req.user) {
+            res.redirect('/sendEmoji');
+        }
+    });
     //student get routes, they can't go directly, must get class link
     router.get("/register", studentController.getStudentRegisterPage);
     router.post("/register", studentController.checkUserIsValid,studentController.insertUser,
     studentController.getUserId,studentController.checkRegistration,studentController.insertRegistration,
     studentController.getRegistrationId,emojiController.getSendEmojiPage);
+    router.post("/logout", emojiController.studentLogOut);
+    router.get("/logout", emojiController.studentLogOut);
     //if students lose the class link
     router.get("/getClassLink", studentController.getClassLinkPage);
     router.post("/getClassLink", studentController.listClassLinks);
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage )
-    router.post("/sendEmoji" ,emojiController.getStudentClassId,
-        emojiController.getClassStartTime, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
+    router.post("/sendEmoji" ,emojiController.getStudentClassId,  emojiController.getClassStartTime,
+        emojiController.invalidEmojiPostBranch,emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
         emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
         emojiController.getSendEmojiPage)
     //history routes
@@ -58,8 +63,8 @@ let initWebRoutes = (app) => {
         historyController.getUserVisibility,historyController.getHistoryPage)
     router.post("/history", historyController.checkIfUserIsInstructor, historyController.getClassID, historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage)
-    router.post("/logout", instructorController.postLogOut);
-    router.get("/logout", instructorController.postLogOut);
+    router.post("/instructorLogout", instructorController.postLogOut);
+    router.get("/instructorLogout", instructorController.postLogOut);
 
     return app.use("/", router);
 };

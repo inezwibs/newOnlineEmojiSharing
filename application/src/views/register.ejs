@@ -34,7 +34,7 @@
           <form
             id="login-form"
             class="form"
-            action="/register?classLinkID=<%=classLinkID%>?classID=<%=classID%>"
+            action="/register?classLinkId=<%=classLinkId%>?classId=<%=classId%>"
             method="post"
             onsubmit="return checkForm(this);"
           >
@@ -50,15 +50,15 @@
               />
               <input
               type="hidden"
-              name="classLinkID"
-              id="classLinkID"
-              value="<%=classLinkID%>"
+              name="classLinkId"
+              id="classLinkId"
+              value="<%=classLinkId%>"
             />
               <input
                       type="hidden"
-                      name="classID"
-                      id="classID"
-                      value="<%=classID%>"
+                      name="classId"
+                      id="classId"
+                      value="<%=classId%>"
               />
             </div>
             <div class="form-group">
@@ -96,8 +96,8 @@
               />
             </div>
             <div class="form-group">
-              <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
-              <input type="hidden" name="classID" value="<%=classID%>" />
+              <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+              <input type="hidden" name="classId" value="<%=classId%>" />
               <input
                 type="submit"
                 name="submit"
@@ -106,7 +106,7 @@
               />
             </div>
             <div id="login-link" class="text-right">
-                <a href="/login?classLinkID=<%= classLinkID%>?classID=<%=classID%>" class="text-info">Login</a>
+                <a href="/login?classLinkId=<%= classLinkId%>?classId=<%=classId%>" class="text-info">Login</a>
             </div>
           </form>
         </div>

@@ -2,7 +2,7 @@ const db = require("../configs/database.js");
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
-    " SELECT * FROM emojidatabase.registrations where id = " + req.query.regId;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.classLinkId;
 
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
@@ -14,6 +14,7 @@ async function checkIfUserIsInstructor(req, res, next) {
     const [res, err] = await db.execute(query);
     // console.log(query);
     req.isInstructor = res[0].isInstructor;
+    req.class_id = res[0].classes_id
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -22,7 +23,7 @@ async function checkIfUserIsInstructor(req, res, next) {
 
 async function getClassID(req, res, next) {
   let query =
-    " SELECT * FROM emojidatabase.registrations where id = " + req.query.regId;
+    " SELECT * FROM emojidatabase.registrations where id = " + req.query.classLinkId;
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
   //     req.class_id = res[0].classes_id;
@@ -72,7 +73,7 @@ async function getText(req, res, next) {
     req.class_id;
 
   try {
-    const [res, err] = await db.execute(query);
+    const [rows, fields] = await db.execute(query);
     // console.log(query);
     req.userInfo = res;
     next();

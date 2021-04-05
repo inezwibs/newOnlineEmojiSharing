@@ -4,8 +4,8 @@ const {url} = require("url");
 
 let instructorObj ={};
 let instructorClassesObj={};
-let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkID=';
-let localPath = 'http://localhost:4000/EmojiSharing?classLinkID=';
+let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
+let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 
 
 async function getInstructorPage (req,res,user) {
@@ -50,20 +50,11 @@ async function checkLoggedIn (req, res, next) {
         try{
             const[rows,fields] = await db.execute(query);
             //check students who are not in registration because they didn't have class link
-            if (rows === undefined || rows.length ===0){
-                return res.redirect('/getClassLink');// students can input instructor name and class date time
+            if (rows === undefined || rows.length ===0 || (rows && rows[0].isInstructor === 0)){
+                return res.render('classLinkPage');// students can input instructor name and class date time
             }else if (rows && rows[0].isInstructor === 1){
                 //for instructor
                 next();
-            }else if (rows && rows[0].isInstructor === 0){
-                //look up class id for this student
-                return res.redirect(url.format({
-                        pathname: "/sendEmoji",
-                        query: {
-                            reg_id: rows[0].id,
-                        },
-                    })
-                );
             }
         }catch (e) {
 
@@ -123,6 +114,18 @@ async function checkedInstructor(req, res, next) {
     return res.redirect('/instructor');
 }
 
+/*
+get class tues thur 15:00 16:00
+convert tues and thur to numeric value
+current = new Date()
+if current.getDay() - class day1  or class day2 == 0
+then
+get start time, convert to minutes , calculate minutes of class time
+currentTimeInMinutes = current.getHours() * 60 + current.getMinutes()
+if currentTimeInMinutes is between startTimeInMinutes and endTimeInMinutes
+
+ */
+
 //create classes
 async function insertClasses(req, res, next) {
     let isClassUniqueQuery = " SELECT * FROM emojidatabase.classes where class_name = '"+req.body.className+ "'" +
@@ -178,7 +181,7 @@ async function getClassID(req, res, next) {
     try {
         const [res, err] = await db.execute(query);
         // console.log(query);
-        req.classID = res[0].id;
+        req.classId = res[0].id;
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -244,14 +247,14 @@ async function insertToRegistration(req, res, next) {
         userId = instructorObj.id;
     }
     let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE classes_id='"+
-        req.classID + "' AND users_id = '" + userId + "'" ;
+        req.classId + "' AND users_id = '" + userId + "'" ;
     let query;
     try{
         const [rows, fields] = await db.execute(checkExistingInstructor);
         if (rows === undefined || rows.length === 0){
             query =
                 " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-                req.classID +
+                req.classId +
                 " ," +
                 userId +
                 " , 1 )";
@@ -277,9 +280,9 @@ async function generateLink(req, res, next) {
         const [rows, fields] = await db.execute(query);
         let numClasses = rows.length;
         let classesArray = rows;
-        //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classID=
-        let newClassIdLink = 'http://emotionthermometer.online/EmojiSharing?classLinkID=' + rows[numClasses-1].id;
-        // let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing?classLinkID=" + rows[numClasses-1].id;
+        //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classId=
+        let newClassIdLink = 'http://emotionthermometer.online/EmojiSharing?classLinkId=' + rows[numClasses-1].id;
+        // let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing?classLinkId=" + rows[numClasses-1].id;
 
         res.render("generateLink", {
             newClassLink: newClassIdLink,

@@ -2,8 +2,8 @@ const db = require("../configs/database.js");
 const {url} = require("url");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
-let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkID=';
-let localPath = 'http://localhost:4000/EmojiSharing?classLinkID=';
+let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
+let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 const emojiController = require("../controllers/emojiController");
 let classIdValue;
 let classLinkIdValue;
@@ -14,32 +14,39 @@ async function getClassLinkPage (req, res, next) {
 }
 
 async function listClassLinks (req,res,user) {
-    // let classIdQuery = " SELECT classes_id FROM emojidatabase.registrations where id = '"+ req.body.classId + "'" ;
-    // let classObj;
-    // try{
-    //     const [rows, err ] = await db.execute(classIdQuery);
-    //     if (rows === undefined || rows.length ===0) {
-    //         throw ErrorEvent("ER_KEY_NOT_FOUND")
-    //     }else{
-    //         classObj = rows[0];
-    //     }
-    // }catch(e){
-    //     console.log('error' , e)
-    // }
-    return res.render("generateLink.ejs" ,{
-        classId : req.body.classId,
-        path : localPath
+    // let classIdQuery = " SELECT * FROM emojidatabase.registrations where id = '"+ req.body.classId + "'" ;
+    let classIdQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, r.classes_id " +
+        "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+        "WHERE u.id = r.users_id " +
+        "AND c.id = r.classes_id " +
+        "AND r.id = '" + req.body.classLinkId + "'";
+
+    let classObj;
+    try{
+        const [rows, err ] = await db.execute(classIdQuery);
+        if (rows === undefined || rows.length ===0) {
+            console.log("Classes not found")
+        }else{
+            classObj = rows;
+        }
+    }catch(e){
+        console.log('error' , e)
+    }
+    return res.render("classLinkPage.ejs" ,{
+        classLinkId : req.body.classLinkId,
+        classObj: classObj,
+        path : path
     });
 };
 
 async function getStudentRegisterPage (req, res, next) {
-  // console.log("raya_query: " + req.query.classID);
-   classLinkIdValue = req.query.classLinkID && req.query.classLinkID.length < 5 ? req.query.classLinkID: emojiController.getIdsFromUrl(req.url)[0];
-   classIdValue = req.query.classID ? req.query.classID : emojiController.getIdsFromUrl(req.url)[1]
+  // console.log("raya_query: " + req.query.classId);
+   classLinkIdValue = req.query.classLinkId && req.query.classLinkId.length < 5 ? req.query.classLinkId: emojiController.getIdsFromUrl(req.url)[0];
+   classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
   res.render("register", {
     title: "Form Validation",
-    classID: classIdValue,
-    classLinkID: classLinkIdValue
+    classId: classIdValue,
+    classLinkId: classLinkIdValue
   });
   req.session.errors = null;
 }
@@ -47,24 +54,7 @@ async function getStudentRegisterPage (req, res, next) {
 async function checkUserIsValid(req, res, next) {
   let query =
     " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
-  // await db.execute(query, (err, res) => {
-  //     console.log(query);
-  //     if (err) throw err;
-  //     let userIsValid;
-  //     let errorMsg;
-  //     if(res.length > 0){
-  //       console.log("res.length > 0");
-  //       userIsValid = 0;
-  //       errorMsg = 'the user exists';
-  //     }else{
-  //       console.log("res.length == 0");
-  //       userIsValid = 1;
-  //     }
-  //     req.userIsValid = userIsValid;
-  //     req.errorMsg = errorMsg;
-  //     req.class_id = req.body.classID;
-  //     next();
-  // });
+
   try {
     const [res, err] = await db.execute(query);
     let userIsValid;
@@ -157,8 +147,8 @@ async function getStudentLoginPage(req,res) {
 
     return res.render("login", {
     title: "Login",
-    classID: req.query.classID,
-    classLinkID: req.query.classLinkID,
+    classId: req.query.classId,
+    classLinkId: req.query.classLinkId,
     isLoggedIn: req.isAuthenticated(),
   });
 }
@@ -206,8 +196,8 @@ async function getRegistrationId(req, res, next) {
         const [res, err] = await db.execute(query);
         // console.log(query);
         req.reg_id = res[0].id;
-        req.classLinkID = classLinkIdValue;
-        req.classID = classIdValue;
+        req.classLinkId = classLinkIdValue;
+        req.classId = classIdValue;
         console.log('Reg Id',req.reg_id)
         next();
     } catch (e) {

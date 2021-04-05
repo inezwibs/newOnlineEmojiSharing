@@ -5,8 +5,8 @@ const {getRegIdFromQuery} = require("../controllers/emojiController");
 router.get("/EmojiSharing",(req, res) => {
     const numArr = getIdFromQuery(req.url)
         res.render("home", {
-            classLinkID: numArr[0],
-            classID: numArr[1]
+            classLinkId: numArr[0],
+            classId: numArr[1]
         });
 
 

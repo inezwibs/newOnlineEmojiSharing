@@ -17,11 +17,11 @@
 <body>
 
     <div>
-    <form action="/history?regId=<%=regId%>" method="post">
+    <form action="/history?classLinkId=<%=classLinkId%>" method="post">
         <input type="submit" value="History" />
     </form>
     <h2 class="text-center text-info">Emoji Sharing!</h2>
-    <form class="form-group" action="/sendEmoji?regId=<%=regId%>?userId=<%=userId%>" method="post">
+    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?userId=<%=userId%>" method="post">
          <div class="anonymous-label mx-auto d-flex">
              <label class="switch">
                  <input type="checkbox" name="isAnonymous">
@@ -36,8 +36,8 @@
 
 
                 <tbody>
-                    <input type="hidden" id='regID'  name="regId" value = "<%=regId%>">
-                    <input type="hidden" id='userObj'  name="userObj" value = "<%=userObj%>">
+<!--                    <input type="hidden" id='classLinkId'  name="classLinkId" value = "">-->
+<!--                    <input type="hidden" id='userObj'  name="userObj" value = "">-->
 
 
                     <tr>
@@ -113,11 +113,15 @@
 
         <div>
             <form method="GET" action="/sendEmoji" class="form-group">
-                <input type="hidden" name="classLinkID" value="<%=classLinkID%>" />
-                <input type="hidden" name="classID" value="<%=classID%>" />
+                <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+                <input type="hidden" name="classId" value="<%=classId%>" />
                 <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
                 <input type="submit" name="submit" class="button_next" value="Submit">
             </form>
+        </div>
+
+        <div>
+            <div>To logout click here<a href="/logout">Logout.</a></div>
         </div>
     </form>
 </div>

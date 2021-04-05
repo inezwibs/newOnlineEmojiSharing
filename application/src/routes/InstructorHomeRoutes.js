@@ -91,7 +91,7 @@
 //   try {
 //     const [res, err] = await db.execute(query);
 //     // console.log(query);
-//     req.classID = res[0].id;
+//     req.classId = res[0].id;
 //     next();
 //   } catch (e) {
 //     console.log("Catch an error: ", e);
@@ -106,7 +106,7 @@
 // async function insertToRegistration(req, res, next) {
 //   let query =
 //     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-//     req.classID +
+//     req.classId +
 //     " ," +
 //     req.instructorID +
 //     " , 1 )";
@@ -114,7 +114,7 @@
 //   try {
 //     await db.execute(query);
 //     // console.log(query);
-//     // req.classID = res[0].id;
+//     // req.classId = res[0].id;
 //     next();
 //   } catch (e) {
 //     console.log("Catch an error: ", e);

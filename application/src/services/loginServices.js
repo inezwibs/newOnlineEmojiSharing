@@ -4,19 +4,23 @@ const bcrypt = require ("bcryptjs");
 let handleLogin = async (email, password) => {
     //check email is exist or not
     let user = await findUserByEmail(email);
+    let loginResult;
     if (user) {
         //compare password
-        await bcrypt.compare(password, user.password).then((isMatch) => {
+        await bcrypt.compare(password, user[0].password).then((isMatch) => {
             if (isMatch) {
-                resolve(true);
+                console.log("Login successful");
+                loginResult =  user;
             } else {
-                reject(`The password that you've entered is incorrect`);
+                console.log("The password that you've entered is incorrect");
+                loginResult =  undefined;
             }
         });
     } else {
-        reject(`This user email "${email}" doesn't exist`);
+        console.log(`This user email "${email}" doesn't exist`);
+        loginResult =  undefined;
     }
-
+    return loginResult;
 };
 
 let findUserByEmail = async (email, pass) => {
@@ -27,10 +31,11 @@ let findUserByEmail = async (email, pass) => {
         const [rows, fields] = await db.execute(queryString);
 
         console.log(rows);
+
         if (!email || !rows || rows.length === 0) {
             return false
         } else {
-            return rows[0];
+            return rows;
         }
     } catch (err) {
         console.log("Catch an error: ", err);

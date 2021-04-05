@@ -36,7 +36,7 @@
   <div>
     <ul>
       <% for (var i = 0; i < classes.length ; i++){ %>
-        <li class="class-list"><a target="_blank" href=<%= path+classes[i].id%>?classID=<%= classes[i].classes_id%>>Go to Emoji Sharing app for
+        <li class="class-list"><a target="_blank" href=<%= path+classes[i].id%>?classId=<%= classes[i].classes_id%>>Go to Emoji Sharing app for
               class link id: <%= classes[i].id %>, class id: <%=classes[i].classes_id%> <%=classNames[i][0].class_name%> on <%=classNames[i][0].datetime%> </a>
         </li>
       <% }%>
@@ -153,7 +153,7 @@
         <div>To login with a different account, you can <a href="/instructorLogin">Log in.</a></div>
         <div>To login with a new account, you can <a href="/instructorRegister">Register.</a></div>
 
-        <div>To login with a new account, you can <a href="/logout">Logout.</a></div>
+        <div>To login with a new account, you can <a href="/instructorLogout">Logout.</a></div>
 
       </form>
     </div>
