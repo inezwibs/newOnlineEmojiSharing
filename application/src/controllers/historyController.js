@@ -1,4 +1,5 @@
 const db = require("../configs/database.js");
+const { ms, s, m, h, d } = require('time-convert')
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
@@ -14,7 +15,8 @@ async function checkIfUserIsInstructor(req, res, next) {
     const [res, err] = await db.execute(query);
     // console.log(query);
     req.isInstructor = res[0].isInstructor;
-    req.class_id = res[0].classes_id
+    req.class_id = res[0].classes_id;
+    req.classLinkId = res[0].id;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -54,15 +56,37 @@ async function getEmojiRecordsPerMinute(req, res, next) {
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
-    req.records = res;
+
+    req.records = convertTime(res);
+    // req.records = res; // where we get the records
+
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
   }
 }
-//get class id
-//getEmojiRecordsPerMinute and send that to front
-//from there loop over the length
+function convertTime (emojiRecordsArray) {
+
+  emojiRecordsArray.forEach( emojiRecord => {
+        let convertedMinutes = convertMinHourHelper(emojiRecord.min)
+        emojiRecord.date_time = convertedMinutes;
+      });
+  return emojiRecordsArray;
+}
+
+function convertMinHourHelper(unformattedMinutes) {
+  let decimalResult = parseFloat(unformattedMinutes/60); // divide to get hours
+  let hours = Math.floor(decimalResult);
+  let remainder = parseFloat(decimalResult - hours);
+  let minute = parseInt(remainder  * 60);
+  if (minute < 10){
+    minute = "0" + minute;
+  }
+  if (hours < 10){
+    hours = "0" + hours;
+  }
+  return `${hours}:${minute}`;
+}
 
 async function getText(req, res, next) {
   let query =
@@ -109,13 +133,6 @@ async function updateUserVisibility(req, res, next) {
 async function getUserVisibility(req, res, next) {
   let query = " select * from emojidatabase.classes where id =" + req.class_id;
 
-  // await db.execute(query, (err, classInfo) => {
-  //     // console.log(query);
-  //     if (err) throw err;
-  //     req.history_chart_access = classInfo[0].history_chart_access;
-  //     req.history_text_access = classInfo[0].history_text_access;
-  //     next();
-  // });
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
@@ -138,6 +155,7 @@ async function getHistoryPage(req,res) {
     userInfo: req.userInfo,
     history_chart_access: req.history_chart_access,
     history_text_access: req.history_text_access,
+    classLinkId: req.classLinkId
   });
 }
 //

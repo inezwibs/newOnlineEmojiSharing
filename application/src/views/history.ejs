@@ -40,35 +40,35 @@
 
             var dps6 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
 
             var dps5 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
             var dps4 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
             var dps3 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
             var dps2 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
             var dps1 = [];
             "<% for(var i=0; i < records.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].min%>" });
+            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].date_time%>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
                 {
                     colorSet: "myShades",
                     title: {
-                        text: "Emoji'es count per minute"
+                        text: "Emojis count per minute"
                     },
                     data: [
                         {
@@ -115,8 +115,8 @@
     <script>
         function update_chart_visibility(chk_bx) {
             const params = new URLSearchParams(document.location.search);
-            const reg_id = params.get("reg_id");
-            const myurl = "/history/?reg_id=" + reg_id;
+            const classLinkId = params.get("classLinkId");
+            const myurl = "/history?classLinkId=" + classLinkId;
             var isChecked = 0;
             if (chk_bx.checked) {
                 isChecked = 1;
@@ -142,8 +142,8 @@
 
         function update_text_visibility(chk_bx) {
             const params = new URLSearchParams(document.location.search);
-            const reg_id = params.get("reg_id");
-            const myurl = "/history/?reg_id=" + reg_id;
+            const classLinkId = params.get("classLinkId");
+            const myurl = "/history?classLinkId=" + classLinkId;
             var isChecked = 0;
             if (chk_bx.checked) {
                 isChecked = 1;

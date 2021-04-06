@@ -53,15 +53,15 @@ let initWebRoutes = (app) => {
     router.get("/getClassLink", studentController.getClassLinkPage);
     router.post("/getClassLink", studentController.listClassLinks);
     //emoji routes
-    router.get("/sendEmoji",  emojiController.getSendEmojiPage )
+    router.get("/sendEmoji",  emojiController.getSendEmojiPage );
     router.post("/sendEmoji" ,emojiController.getStudentClassId,  emojiController.getClassStartTime,
         emojiController.invalidEmojiPostBranch,emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
         emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
         emojiController.getSendEmojiPage)
     //history routes
-    router.get("/history",historyController.checkIfUserIsInstructor, historyController.getClassID, historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.get("/history",historyController.checkIfUserIsInstructor, historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage)
-    router.post("/history", historyController.checkIfUserIsInstructor, historyController.getClassID, historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.post("/history", historyController.checkIfUserIsInstructor,  historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage)
     router.post("/instructorLogout", instructorController.postLogOut);
     router.get("/instructorLogout", instructorController.postLogOut);

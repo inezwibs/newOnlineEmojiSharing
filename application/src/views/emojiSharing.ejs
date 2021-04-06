@@ -21,7 +21,7 @@
         <input type="submit" value="History" />
     </form>
     <h2 class="text-center text-info">Emoji Sharing!</h2>
-    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?userId=<%=userId%>" method="post">
+    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
          <div class="anonymous-label mx-auto d-flex">
              <label class="switch">
                  <input type="checkbox" name="isAnonymous">
@@ -37,7 +37,7 @@
 
                 <tbody>
 <!--                    <input type="hidden" id='classLinkId'  name="classLinkId" value = "">-->
-<!--                    <input type="hidden" id='userObj'  name="userObj" value = "">-->
+                    <input type="hidden" id='userId'  name="userId" value = "<%= userId %>">
 
 
                     <tr>

@@ -4,35 +4,33 @@ const {url} = require("url");
 
 
 async function getStudentClassId(req, res, next) {
-    let query =
-        " SELECT * FROM emojidatabase.registrations where id = '" + req.body.regId +"'";
-        // req.body.classId +
-        // " and users_id = " +
-        // req.user.id ;
-    // await db.execute(query, (err, res) => {
-    //     console.log(query);
-    //     if (err) throw err;
-    //     req.reg_id = res[0].id;
-    //     next();
-    // });
+
     try {
-        const [rows, fields] = await db.execute(query);
         // console.log(query);
         let ids;
-        if (!req.userId && req.query.regId){
-            ids = getIdsFromUrl(req.query.regId);
-            req.user = ids[1];
-            req.class_id = ids[0];
-        } else if (req.userId){
-            req.user = req.userId
-        } else if (req.user){
+        if (req.body){
             req.class_id = req.body.classId;
-        } else if (rows.length !== 0 ){
-            req.user = rows[0].users_id;
-            req.class_id = rows[0].classes_id;
+            req.classLinkId = req.body.classLinkId;
+        } else if ( req.query.classLinkId){
+            ids = getIdsFromUrl(req.query.regId);
+            req.class_id = ids[1];
+            req.classLinkId = ids[0];
+        } else if (req.originalUrl){
+            ids = getIdsFromUrl(req.query.regId);
+            req.class_id = ids[1];
+            req.classLinkId = ids[0];
+        } else if (req.url){
+            ids = getIdsFromUrl(req.query.regId);
+            req.class_id = ids[1];
+            req.classLinkId = ids[0];
         }
+        let query =
+            " SELECT * FROM emojidatabase.registrations where id = '" + req.classLinkId +"'";
+
+        const [rows, fields] = await db.execute(query);
 
         // console.log('Reg Id',req.reg_id)
+        req.user = rows[0].users_id;
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -46,47 +44,36 @@ async function getSendEmojiPage(req,res,next) {
     let classLinkId;
     let rowsObj;
     let classId;
+    let ids;
     const re = /\d+/g;
 
-    if (req.classLinkId && req.user_id){
-        classLinkId = req.classLinkId;
-        userId = req.user_id;
-    } else if (req.classLinkId && req.user){
-        classLinkId = req.classLinkId;
-        userId = req.user;
-    } else if (req.url && (req.url).match(re)){
-        let ids= getIdsFromUrl(req.url);
-        if (ids && ids.length === 2){
-            classLinkId = ids[0];
-            userId = ids[1];
-        }
-    } else if (req.query.regId && (req.query.regId).match(re)){
-        let ids= getIdsFromUrl(req.query.regId);
-        if (ids && ids.length === 2){
-            classLinkId = ids[0];
-            userId = ids[1];
-        }
-    } else if (!classLinkId && !userId && req.user){
-        let tempQuery = "Select * from emojidatabase.registrations where users_id = '" + req.user + "'";
-        try {
-            [rows, fields] = await db.execute (tempQuery)
-
-            if (rows === 0 || rows.length === 0) {
-                console.log("User does not exist. Please register.")
-            } else {
-                req.reg = rows;
-                classLinkId = rows[0].id;
-                userId = req.user;
+    if (!req.classLinkId || !req.user_id || !req.user){
+        if (req.url && (req.url).match(re)){
+            ids= getIdsFromUrl(req.url);
+            if (ids && ids.length === 2){
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
             }
+        } else if (req.query.regId && (req.query.regId).match(re)){
+            ids= getIdsFromUrl(req.query.regId);
+            if (ids && ids.length === 2){
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
+            }
+        } else if (req.headers.referer && (req.headers.referer).match(re).length > 2){
+                ids= getIdsFromUrl(req.headers.referer);
+                req.classLinkId = ids[1];
+                req.classId = ids[2];
 
-        } catch (e) {
-            console.log(e);
+        } else if (req.body.classLinkId && req.body.userId && req.body.classId) {
+            req.classLinkId = req.body.classLinkId;
+            req.user = req.body.userId;
+            req.classId = req.body.classId;
         }
-
     }
 
     try {
-        rowsObj = await getEmojiClassData (userId, classLinkId )
+        rowsObj = await getEmojiClassData (req.user, req.classLinkId  )
 
         if (rowsObj === 0 || rowsObj.length === 0) {
             console.log("User does not exist. Please register.")
@@ -98,11 +85,12 @@ async function getSendEmojiPage(req,res,next) {
         console.log(e);
     }
 
+
     res.render("emojiSharing", {
-            classLinkId: classLinkId,
-            regId : classLinkId,
-            classId: rowsObj.classes_id ? rowsObj.classes_id : classId,//id shows undefined?
-            userId: userId,
+            classLinkId: req.classLinkId,
+            regId : req.classLinkId,
+            classId: rowsObj.classes_id ? rowsObj.classes_id : req.classId ,//id shows undefined?
+            userId: req.user_id ?  req.user : '',
             userObj: rowsObj
         }
     )
@@ -330,7 +318,7 @@ async function getContributedStudentsCount(req, res, next) {
         const [rows, fields] = await db.execute(query);
         let contributedStudentsCount = rows[0].count;
         req.studentNotContributed =
-            req.classRegisteredStudentsCount - contributedStudentsCount;// -1 removing instructor who is also registered
+            req.classRegisteredStudentsCount - contributedStudentsCount;
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -338,6 +326,9 @@ async function getContributedStudentsCount(req, res, next) {
 }
 
 async function insertRecordPerMinute(req, res, next) {
+    let gmtIndex = Date().search('GMT')
+    let insertDateTimeValue = Date().substring(0,gmtIndex-1);// -1 to remove the space before GMT
+
     if (req.recordExists === true) {
 
         let query =
@@ -350,7 +341,10 @@ async function insertRecordPerMinute(req, res, next) {
             " where min = " +
             req.insertedMinutes +
             " and classes_id = " +
-            req.class_id;
+            req.class_id +
+            " and date_time = '" +
+            insertDateTimeValue +
+            "') "
 
         try {
             await db.execute(query);
@@ -361,16 +355,19 @@ async function insertRecordPerMinute(req, res, next) {
         }
     } else {
         //insert record
+
         let query =
             " INSERT INTO emojidatabase.emojiRecordsPerMinute (min, count_emoji" +
             req.emojis_id +
-            ", count_notParticipated, classes_id) VALUES ( " +
+            ", count_notParticipated, classes_id, date_time) VALUES ( " +
             req.insertedMinutes +
             ", 1 , " +
             req.studentNotContributed +
             ", " +
             req.class_id +
-            ") ";
+            ", '" +
+            insertDateTimeValue +
+            "') ";
 
         try {
             await db.execute(query);
