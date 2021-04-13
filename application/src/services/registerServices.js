@@ -57,6 +57,28 @@ let checkExistEmail = async (email) => {
 };
 
 
+let updateUserPassword = async (newPassword, id) => {
+    const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
+
+    let query = " UPDATE emojidatabase.users SET password ='" + hashedNewPassword + "' " +
+        "where id = '" + id + "'";
+    try {
+        const [rows,fields] = await db.execute(query);
+
+        console.log(rows);
+        if (rows.affectedRows > 0){
+            return true;
+        }else{
+            return false;
+        }
+    } catch (err) {
+        console.log("Catch an error: ", err);
+    }
+
+};
+
+
 module.exports = {
-    createNewInstructor: createNewInstructor
+    createNewInstructor: createNewInstructor,
+    updateUserPassword:updateUserPassword
 };

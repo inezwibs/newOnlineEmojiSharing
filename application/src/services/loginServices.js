@@ -58,11 +58,13 @@ let findUserById = async (id) => {
 
 let comparePassword = (password, userObject) => {
         try {
-             bcrypt.compareSync(password, userObject.password);
-                    return true
+             return !!bcrypt.compareSync(password, userObject.password);
+
         } catch (e) {
             console.log(`The password that you've entered is incorrect`);
             console.log(e);
+            return false;
+
         }
 
 };

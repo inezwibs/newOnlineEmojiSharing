@@ -3,6 +3,7 @@ const instructorController = require("../controllers/instructorController");
 const studentController = require("../controllers/studentController");
 const emojiController = require("../controllers/emojiController");
 const historyController = require("../controllers/historyController");
+const passwordController = require("../controllers/passwordController")
 const passport = require('passport');
 const initPassportLocal = require( "../controllers/passportController");
 
@@ -58,6 +59,12 @@ let initWebRoutes = (app) => {
         emojiController.invalidEmojiPostBranch,emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
         emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
         emojiController.getSendEmojiPage)
+    //forget password
+    router.get("/forget-password", passwordController.getForgotPasswordPage);
+    router.post("/forget-password",passwordController.handlePostForgotPasswordPage);
+    router.get("/reset-password/:id/:token",passwordController.getResetPasswordPage);
+    router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
+
     //history routes
     router.get("/history",historyController.checkIfUserIsInstructor, historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage)

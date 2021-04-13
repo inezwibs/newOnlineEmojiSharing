@@ -2,6 +2,7 @@ const express = require('express');
 var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
 var passport = require("passport");
+var jwt = require('jsonwebtoken');
 var expressValidator = require("express-validator");
 const initWebRoutes = require( "./src/routes/web");
 const connectFlash = require( "connect-flash");
