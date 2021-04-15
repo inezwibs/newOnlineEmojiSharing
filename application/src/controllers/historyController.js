@@ -1,5 +1,5 @@
 const db = require("../configs/database.js");
-const { ms, s, m, h, d } = require('time-convert')
+const emojiController = require("../controllers/emojiController.js");
 
 async function checkIfUserIsInstructor(req, res, next) {
   let query =
@@ -41,18 +41,29 @@ async function getClassID(req, res, next) {
   }
 }
 
+async function getPostedEmojiRecords(req, res, next) {
+  let query =
+      " SELECT * FROM emojidatabase.posted_emojis where class_id = " +
+      req.class_id;
+
+  try {
+    const [res, err] = await db.execute(query);
+    // console.log(query);
+
+    temp = processEmojiRecordsPerDay(res, req);
+    req.emojiRecordsPerDay = temp; // where we get the records
+    next();
+  } catch (e) {
+    console.log("Catch an error: ", e);
+  }
+}
+
 async function getEmojiRecordsPerMinute(req, res, next) {
   let query =
     " SELECT * FROM emojidatabase.emojiRecordsPerMinute where classes_id = " +
     req.class_id;
 
-  // await db.execute(query, (err, records) => {
-  //     // console.log(query);
-  //     if (err) throw err;
-  //     req.records = records;
-  //     // console.log("records[0].min: "+records[0].min);
-  //     next();
-  // });
+
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
@@ -65,6 +76,81 @@ async function getEmojiRecordsPerMinute(req, res, next) {
     console.log("Catch an error: ", e);
   }
 }
+
+function getEmptyRecords(){
+  let records = {
+    count_emoji1: 0,
+    count_emoji2: 0,
+    count_emoji3: 0,
+    count_emoji4: 0,
+    count_emoji5: 0,
+    count_notParticipated:0
+  }
+  return records;
+}
+
+function processEmojiRecordsPerDay (emojiRecordsPerDay, req) {
+  var newEmojiRecordsPerDay = {};
+  var studentRegistered = req.classRegisteredStudentsCount;
+  for (let i =0 ; i < emojiRecordsPerDay.length ; i++ ) {
+
+    let emojiRecord = emojiRecordsPerDay[i];
+    let dateTimeMilliseconds = Date.parse(emojiRecord.date_time);
+    let dateTime = new Date(dateTimeMilliseconds);
+    let keyLocaleDateString = dateTime.toLocaleDateString();
+    let dateInt = dateTime.getDate();
+    let monthInt = dateTime.getMonth();
+    let hoursInt = dateTime.getHours();
+    let minuteInt = dateTime.getMinutes();
+    let emojiSuffix = emojiRecord.emojis_id;
+    let currentRegId = emojiRecord.registration_id;
+
+    if (!newEmojiRecordsPerDay.hasOwnProperty(keyLocaleDateString)) {
+      //key does not exist
+      //init first key value array
+      newEmojiRecordsPerDay[keyLocaleDateString] = [];
+      let records = getEmptyRecords();
+      regIdArr = [];
+      records[`count_emoji${emojiSuffix}`] = 1;
+      records[`count_notParticipated`] = studentRegistered - 1;
+      emojiRecord.records = records;
+      newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
+      regIdArr.push(emojiRecord.registration_id);
+
+    } else { //object has key , add values into array
+      let subArrLength = newEmojiRecordsPerDay[keyLocaleDateString].length;
+      let prevDateTimeMilliseconds = Date.parse(newEmojiRecordsPerDay[keyLocaleDateString][subArrLength - 1].date_time);
+      let prevDateTime = new Date(prevDateTimeMilliseconds);
+      //while date and month is the same
+      if (prevDateTime.getDate() === dateInt && prevDateTime.getMonth() === monthInt) {
+          if (prevDateTime.getHours() === hoursInt && prevDateTime.getMinutes() === minuteInt){
+            //records
+            newEmojiRecordsPerDay[keyLocaleDateString][subArrLength - 1].records[`count_emoji${emojiSuffix}`] += 1;
+            if (!regIdArr.includes(currentRegId)){
+              regIdArr.push(currentRegId)
+            }
+            newEmojiRecordsPerDay[keyLocaleDateString][subArrLength - 1].records[`count_notParticipated`] =
+                req.classRegisteredStudentsCount - regIdArr.length;
+          }else {// if the minute is different , but in the same day
+            let records = getEmptyRecords();
+            regIdArr = [];
+            records[`count_emoji${emojiSuffix}`] = 1;
+            records[`count_notParticipated`] = studentRegistered - 1;
+            emojiRecord.records = records;
+            newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
+            regIdArr.push(emojiRecord.registration_id)
+
+          }
+      } else {
+        //while date and month is not the same create new array with the record
+        newEmojiRecordsPerDay[keyLocaleDateString].push([emojiRecord]);
+      }
+    }
+  }
+  return newEmojiRecordsPerDay;
+}
+
+
 function convertTime (emojiRecordsArray) {
 
   emojiRecordsArray.forEach( emojiRecord => {
@@ -87,6 +173,8 @@ function convertMinHourHelper(unformattedMinutes) {
   }
   return `${hours}:${minute}`;
 }
+
+
 
 async function getText(req, res, next) {
   let query =
@@ -149,9 +237,42 @@ async function getHistoryPage(req,res) {
   if (req.isInstructor === 1) {
     tmp = true;
   }
+  let currentObj = new Date();
+  let currentMs = currentObj.getTime();
+  //NEED TO CREATE LINK WITH CLASSLINKID AND DATE
+  //get the time right now
+  //find out the times in the postedRecordsPerDay
+  //sort the history links closest, then after wards
+  let dateStringKeys = Object.keys(req.emojiRecordsPerDay);
+  let dateParsedMillisecondsFirst, dateParsedMillisecondsLast;
+  let tempDiffFirst, tempDiffLast;
+  //compare first
+  dateParsedMillisecondsFirst = Date.parse(dateStringKeys[0]);
+  tempDiffFirst = Math.abs(currentMs-dateParsedMillisecondsFirst)
+  //compare last
+  dateParsedMillisecondsLast = Date.parse(dateStringKeys[dateStringKeys.length-1]);
+  tempDiffLast = Math.abs(currentMs-dateParsedMillisecondsLast)
+  let isReverseOrder;
+  let topChart;
+  let objectCount = Object.keys(req.emojiRecordsPerDay).length;
+  if (tempDiffFirst <= tempDiffLast){
+    //show first at the top, no need to resort the list
+    isReverseOrder = false;
+     //returns 'first'
+    topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[0]];
+  }else{
+    //last is at the top , and display in reverse order
+    isReverseOrder = true;
+    topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[objectCount-1]];
+  }
+
   res.render("history", {
+    topChart: topChart,
+    isReverseOrder: isReverseOrder,
+    currentMillisecond: currentMs,
     isInstructor: tmp,
     records: req.records,
+    postedRecordsPerDay: req.emojiRecordsPerDay,
     userInfo: req.userInfo,
     history_chart_access: req.history_chart_access,
     history_text_access: req.history_text_access,
@@ -214,5 +335,6 @@ module.exports = {
   getText:getText,
   getUserVisibility:getUserVisibility,
   updateUserVisibility:updateUserVisibility,
-  getHistoryPage:getHistoryPage
+  getHistoryPage:getHistoryPage,
+  getPostedEmojiRecords:getPostedEmojiRecords
 }

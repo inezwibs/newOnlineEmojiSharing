@@ -66,9 +66,9 @@ let initWebRoutes = (app) => {
     router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
 
     //history routes
-    router.get("/history",historyController.checkIfUserIsInstructor, historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.get("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords, historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage)
-    router.post("/history", historyController.checkIfUserIsInstructor,  historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.get("/history", historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords,historyController.getEmojiRecordsPerMinute, historyController.getText,
         historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage)
     router.post("/instructorLogout", instructorController.postLogOut);
     router.get("/instructorLogout", instructorController.postLogOut);

@@ -13,17 +13,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<script src="/js/my.js"></script>
+<!--<script src="/js/my.js"></script>-->
 
 <title>Play</title>
-
 
 <meta http-equiv="Refresh" content="60">
 
 <head>
     <script type="text/javascript">
-
- 
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
                 [//colorSet Array   
@@ -33,42 +30,39 @@
                     "#ffff00",//yellow
                     '#17cbe3',//blue
                     "#3CB371",//green
-
-
                 ]);
 
-
             var dps6 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps6.push({ y: parseInt("<%= records[parseInt(i)].count_emoji1 %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps6.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji1 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
 
             var dps5 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps5.push({ y: parseInt("<%= records[parseInt(i)].count_emoji2 %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps5.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji2 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
             var dps4 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps4.push({ y: parseInt("<%= records[parseInt(i)].count_emoji3 %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps4.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji3 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
             var dps3 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps3.push({ y: parseInt("<%= records[parseInt(i)].count_emoji4 %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps3.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji4 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
             var dps2 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps2.push({ y: parseInt("<%= records[parseInt(i)].count_emoji5 %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps2.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji5 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
             var dps1 = [];
-            "<% for(var i=0; i < records.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= records[parseInt(i)].count_notParticipated %>"), label: "<%=records[parseInt(i)].date_time%>" });
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps1.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_notParticipated %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
                 {
                     colorSet: "myShades",
                     title: {
-                        text: "Emojis count per minute"
+                        text: "Emojis count per minute for <%=topChart[Object.keys(topChart)[0]]%>"
                     },
                     data: [
                         {
@@ -110,8 +104,6 @@
 
     </script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
-
     <script>
         function update_chart_visibility(chk_bx) {
             const params = new URLSearchParams(document.location.search);
@@ -137,9 +129,7 @@
             });
         }
     </script>
-
     <script>
-
         function update_text_visibility(chk_bx) {
             const params = new URLSearchParams(document.location.search);
             const classLinkId = params.get("classLinkId");
@@ -165,8 +155,8 @@
         }
 
     </script>
-
 </head>
+
 <style>
     .table-center {
         display: table;
@@ -284,12 +274,6 @@
         background: red;
     }
 </style>
-
-
-</div>
-
-
-
 
 <div class="container">
     <div class="row table-center">
