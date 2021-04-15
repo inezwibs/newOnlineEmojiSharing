@@ -3,9 +3,9 @@ const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   database: "emojidatabase",
   user: "publicadmin",
-  port:"3307",
+  port:"3306",
   password: "1600holloway",
-  host: "127.0.0.1",
+  host: "54.215.121.49",
 
   
   waitForConnections: true,
