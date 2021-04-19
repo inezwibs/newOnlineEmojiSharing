@@ -15,9 +15,9 @@ const PORT = 4000;
 var options = {
     database: "emojidatabase",
     user: "publicadmin",
-    port:"3306",
+    port:"3307",
     password: "1600holloway",
-    host: "54.215.121.49",
+    host: "127.0.0.1",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

@@ -1,25 +1,28 @@
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <!--<script src="/js/my.js"></script>-->
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
-<!--<script src="/js/my.js"></script>-->
+    <title>Emoji History</title>
 
-<title>Play</title>
+    <meta http-equiv="Refresh" content="60">
 
-<meta http-equiv="Refresh" content="60">
 
-<head>
     <script type="text/javascript">
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
@@ -34,35 +37,35 @@
 
             var dps6 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps6.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji1 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps6.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji1 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
 
             var dps5 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps5.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji2 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps5.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji2 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
             var dps4 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps4.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji3 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps4.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji3 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
             var dps3 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps3.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji4 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps3.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji4 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
             var dps2 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps2.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji5 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps2.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_emoji5 %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
             var dps1 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_notParticipated %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleDateString()%>" });
+            dps1.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_notParticipated %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
                 {
                     colorSet: "myShades",
                     title: {
-                        text: "Emojis count per minute for <%=topChart[Object.keys(topChart)[0]]%>"
+                        text: "Emojis count per minute for <%=topDate%>"
                     },
                     data: [
                         {
@@ -157,216 +160,126 @@
     </script>
 </head>
 
-<style>
-    .table-center {
-        display: table;
-        width: 120%;
-        height: 190%;
-        min-height: 190%;
-    }
+    <body>
 
-    .middle {
-        display: table-cell;
-        vertical-align: middle;
-        float: left;
-    }
+    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="GET">
+        <input type="submit" value="Back to emoji page" />
+        <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+        <input type="hidden" name="classId" value="<%=classId%>" />
+    </form>
 
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-        left: 0;
-    }
+        <div class="container">
+            <div class="row table-center">
+                <br><br><br><br>
+                <p id="EmojiHistory"></p>
 
-    .switchLabel {
-        position: absolute;
-        left: 80;
-
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
-
-    input:checked+.slider {
-        background-color: #2196F3;
-    }
-
-    input:focus+.slider {
-        box-shadow: 0 0 1px #2196F3;
-    }
-
-    input:checked+.slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
-    }
-
-    /* Rounded sliders */
-    .slider.round {
-        border-radius: 34px;
-    }
-
-    .slider.round:before {
-        border-radius: 50%;
-    }
-
-    div.ex1 {
-        background-color: rgb(235, 235, 235);
-        height: 400px;
-        width: 100%;
-        overflow-y: scroll;
-        overflow-x: scroll;
-    }
+                <div class="col-md-10 col-sm-10 middle">
 
 
 
-    .messages {
-        width: 300px;
-        height: 300px;
-        box-sizing: border-box;
-        border: 2px solid #ccc;
-        position: relative;
-        overflow: hidden;
-        padding-bottom: 50px;
-    }
+                </div>
 
-    .message {
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-    }
+                <div class="col-md-10 col-sm-10 middle">
 
-    .textarea {
-        width: 100%;
-        height: 50px;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        resize: none;
-        background: red;
-    }
-</style>
+                    <%if (isInstructor === true && history_chart_access === 0) { %>
 
-<div class="container">
-    <div class="row table-center">
-        <br><br><br><br>
-        <p id="Geeks"></p>
-        <div class="col-md-10 col-sm-10 middle">
-
-            <%if (isInstructor === true && history_chart_access === 0) { %>
-
-            <div>
-                <label class="switch">
-
-                    <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" unchecked>
-                    <span class="slider round"></span>
-                </label>
-                <label class="switchLabel">
-                    visible
-                </label>
-            </div>
-
-
-
-            <% } else if (isInstructor === true && history_chart_access === 1) { %>
-
-            <div>
-                <label class="switch">
-
-                    <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" checked>
-                    <span class="slider round"></span>
-                </label>
-                <label class="switchLabel">
-                    visible
-                </label>
-            </div>
-            <% } %>
-            <%if (isInstructor === true || (isInstructor === false && history_chart_access === 1)) { %>
-            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-            <% } %>
-        </div>
-
-        <div class="col-md-10 col-sm-10 middle">
-            <br><br>
-            <%if (isInstructor === true && history_text_access === 0) { %>
-
-            <div>
-                <label class="switch">
-
-                    <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" unchecked>
-                    <span class="slider round"></span>
-                </label>
-                <label class="switchLabel">
-                    visible
-                </label>
-            </div>
-
-
-
-            <% } else if (isInstructor === true && history_text_access === 1) { %>
-
-            <div>
-                <label class="switch">
-
-                    <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" checked>
-                    <span class="slider round"></span>
-                </label>
-                <label class="switchLabel">
-                    visible
-                </label>
-            </div>
-            <% } %>
-            <span id="result"></span>
-            <%if ((isInstructor === true || (isInstructor === false && history_text_access === 1))) { %>
-            <div>
-                <div class="row">
-                    <div class="ex1">
-                        <% for(var i=0; i < userInfo.length; i++) { %>
                         <div>
-                            <div>
-                                
-                                <%if (userInfo[i].isAnonymous === 0) { %>
-                                <h5 ><%= userInfo[i].full_name %></h5> 
-                                <% }else{ %>  
-                                    
-                                    <h5 >Anonymous user</h5> 
-                                <% } %>                            
-                                <small class="col-lg-10"><%= userInfo[i].text %></small>
+                            <label class="switch">
+
+                                <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" unchecked>
+                                <span class="slider round"></span>
+                            </label>
+                            <label class="switchLabel">
+                                visible
+                            </label>
+                        </div>
+
+
+
+                    <% } else if (isInstructor === true && history_chart_access === 1) { %>
+
+                        <div>
+                            <label class="switch">
+
+                                <input type="checkbox" name="chart_isVisible" onchange="update_chart_visibility(this);" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <label class="switchLabel">
+                                visible
+                            </label>
+                        </div>
+                    <% } %>
+                    <%if (isInstructor === true || (isInstructor === false && history_chart_access === 1)) { %>
+                        <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+                    <% } %>
+        <!--link to other charts -->
+                        <div >
+                            <ul class="chart-history">
+                                <% for (var i = emojiDatesArray.length-1 ; i > -1 ; i--){ %>
+                                    <li><a href=<%= path %>/<%=classLinkId%>/<%= (emojiDatesArray[i].split('/')).join('-') %>>View history for <%= emojiDatesArray[i] %> </a>
+                                    </li>
+                                <% }%>
+                            </ul>
+                        </div>
+
+                </div>
+
+                <div class="col-md-10 col-sm-10 middle">
+                    <br><br>
+                    <%if (isInstructor === true && history_text_access === 0) { %>
+
+                        <div>
+                            <label class="switch">
+
+                                <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" unchecked>
+                                <span class="slider round"></span>
+                            </label>
+                            <label class="switchLabel">
+                                visible
+                            </label>
+                        </div>
+
+
+
+                    <% } else if (isInstructor === true && history_text_access === 1) { %>
+
+                        <div>
+                            <label class="switch">
+
+                                <input type="checkbox" name="text_isVisible" onchange="update_text_visibility(this);" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <label class="switchLabel">
+                                visible
+                            </label>
+                        </div>
+                    <% } %>
+                    <span id="result"></span>
+                    <%if ((isInstructor === true || (isInstructor === false && history_text_access === 1))) { %>
+                        <div>
+                            <div class="row">
+                                <div class="ex1">
+                                    <% for(var i=0; i < userInfo.length; i++) { %>
+                                    <div>
+                                        <div>
+
+                                            <%if (userInfo[i].isAnonymous === 0) { %>
+                                                <h5 ><%= userInfo[i].full_name %></h5>
+                                            <% }else{ %>
+
+                                                <h5 >Anonymous user</h5>
+                                            <% } %>
+                                            <small class="col-lg-10"><%= userInfo[i].text %></small>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
-                        <% } %>
-                    </div>
+                    <% } %>
                 </div>
             </div>
-            <% } %>
         </div>
-    </div>
-</div>
+
+    </body>
+</html>

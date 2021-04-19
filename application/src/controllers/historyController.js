@@ -1,9 +1,20 @@
 const db = require("../configs/database.js");
-const emojiController = require("../controllers/emojiController.js");
+const localPath = 'http://localhost:4000/history';
+const path = 'http://emotionthermometer.online/history';
+const emojiController = require("../controllers/emojiController");
 
 async function checkIfUserIsInstructor(req, res, next) {
+  let tempRegId;
+  if (req.params.classLinkId){
+    tempRegId = req.params.classLinkId;
+  }else if (req.query.classLinkId) {
+    tempRegId = req.query.classLinkId;
+  }else if (req.headers.referer){
+    let numbersInUrl = emojiController.getIdsFromUrl(req.headers.referer);
+    tempRegId = numbersInUrl[1];
+  }
   let query =
-    " SELECT * FROM emojidatabase.registrations where id = " + req.query.classLinkId;
+    " SELECT * FROM emojidatabase.registrations where id = " + tempRegId;
 
   // await db.execute(query, (err, res) => {
   //     // console.log(query);
@@ -187,7 +198,7 @@ async function getText(req, res, next) {
   try {
     const [rows, fields] = await db.execute(query);
     // console.log(query);
-    req.userInfo = res;
+    req.userInfo = rows;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -234,51 +245,113 @@ async function getUserVisibility(req, res, next) {
 
 async function getHistoryPage(req,res) {
   let tmp = false;
+  let currentMs, currentObj;
+  let emojiDatesArray = Object.keys(req.emojiRecordsPerDay);
+
   if (req.isInstructor === 1) {
     tmp = true;
   }
-  let currentObj = new Date();
-  let currentMs = currentObj.getTime();
-  //NEED TO CREATE LINK WITH CLASSLINKID AND DATE
-  //get the time right now
-  //find out the times in the postedRecordsPerDay
-  //sort the history links closest, then after wards
-  let dateStringKeys = Object.keys(req.emojiRecordsPerDay);
-  let dateParsedMillisecondsFirst, dateParsedMillisecondsLast;
-  let tempDiffFirst, tempDiffLast;
-  //compare first
-  dateParsedMillisecondsFirst = Date.parse(dateStringKeys[0]);
-  tempDiffFirst = Math.abs(currentMs-dateParsedMillisecondsFirst)
-  //compare last
-  dateParsedMillisecondsLast = Date.parse(dateStringKeys[dateStringKeys.length-1]);
-  tempDiffLast = Math.abs(currentMs-dateParsedMillisecondsLast)
-  let isReverseOrder;
-  let topChart;
-  let objectCount = Object.keys(req.emojiRecordsPerDay).length;
-  if (tempDiffFirst <= tempDiffLast){
-    //show first at the top, no need to resort the list
-    isReverseOrder = false;
-     //returns 'first'
-    topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[0]];
-  }else{
-    //last is at the top , and display in reverse order
-    isReverseOrder = true;
-    topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[objectCount-1]];
+  if (req.params.date){
+    let paramsDate = req.params.date;
+    let paramsDateArr = paramsDate.split('-');
+    //new Date(year, month, day) , year is actual year, month is 0-11, day is actual day, hours defaul to 0, minutes default to 0
+    // let currentDate = new Date(Date());
+    // currentObj = new Date(paramsDateArr[paramsDateArr.length-1],paramsDateArr[0]-1,paramsDateArr[1],currentDate.getHours(), currentDate.getMinutes());
+    // currentMs = currentObj.getTime();
+    topChartKey = paramsDateArr.join('/');
+  }else {
+    // currentObj = new Date(Date());
+    // currentMs = currentObj.getTime();
+    //
+    topChartKey = emojiDatesArray[emojiDatesArray.length-1];
   }
 
-  res.render("history", {
+  // let dateStringKeys = Object.keys(req.emojiRecordsPerDay);
+  // let dateParsedMillisecondsFirst, dateParsedMillisecondsLast,dateParsedMilliseconds;
+  // let tempDiffFirst, tempDiffLast, tempDiff;
+  //parse each of the keys and find the closest/smallest difference
+  // let keyOrder = new Map();
+  // let minValue = Math.abs(currentMs-Date.parse(dateStringKeys[0]));
+  // let topChartKey;
+  /*
+   {
+    a : [b,c,e],
+    c : [d]
+  }
+  minValue = 0;
+   */
+
+  // dateStringKeys.forEach( key => {
+  //   dateParsedMilliseconds = Date.parse(key);
+  //   tempDiff = Math.abs(currentMs-dateParsedMilliseconds);
+  //   if (tempDiff <= minValue) {
+  //     minValue = tempDiff;
+  //     topChartKey = key;
+  //   }
+    // if (keyOrder.has(tempDiff)){
+    //   keyOrder.get(tempDiff).push(key);
+    // }else {
+    //   keyOrder.set(tempDiff, [key]);
+    // }
+  // })
+  //reorder closest, then the rest reverse order 4/4, 4/5, 4/18, should be 4/5, then 4/18, 4/4
+
+  //compare first
+  // dateParsedMillisecondsFirst = Date.parse(dateStringKeys[0]);
+  // tempDiffFirst = Math.abs(currentMs-dateParsedMillisecondsFirst)
+  // //compare last
+  // dateParsedMillisecondsLast = Date.parse(dateStringKeys[dateStringKeys.length-1]);
+  // tempDiffLast = Math.abs(currentMs-dateParsedMillisecondsLast)
+
+  // let isReverseOrder = true;
+  // let topChart;
+  // let emojiDatesArray = Object.keys(req.emojiRecordsPerDay);
+  // let objectCount = emojiDatesArray.length;
+
+  topChart = req.emojiRecordsPerDay[topChartKey];
+  // if (tempDiffFirst <= tempDiffLast){
+  //   //show first at the top, no need to resort the list
+  //   isReverseOrder = false;
+  //    //returns 'first'
+  //   topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[0]];
+  // }else{
+  //   //last is at the top , and display in reverse order
+  //   isReverseOrder = true;
+  //   topChart = req.emojiRecordsPerDay[Object.keys(req.emojiRecordsPerDay)[objectCount-1]];
+  // }
+
+  const topDate = (new Date(Date.parse(topChart[parseInt(0)].date_time))).toLocaleDateString('en-US',{ timeZone: 'America/Los_Angeles'});
+  // const queryDate = (topDate.split('/').join('-'));
+  res.render(`history`, {
+    path:path,
+    emojiDatesArray: emojiDatesArray,
+    topDate: topDate,
     topChart: topChart,
-    isReverseOrder: isReverseOrder,
-    currentMillisecond: currentMs,
+    // isReverseOrder: isReverseOrder,
+    // currentMillisecond: currentMs,
     isInstructor: tmp,
     records: req.records,
     postedRecordsPerDay: req.emojiRecordsPerDay,
     userInfo: req.userInfo,
     history_chart_access: req.history_chart_access,
     history_text_access: req.history_text_access,
-    classLinkId: req.classLinkId
+    classLinkId: req.classLinkId,
+    classId: req.class_id
   });
 }
+
+
+module.exports = {
+  checkIfUserIsInstructor:checkIfUserIsInstructor,
+  getClassID:getClassID,
+  getEmojiRecordsPerMinute:getEmojiRecordsPerMinute,
+  getText:getText,
+  getUserVisibility:getUserVisibility,
+  updateUserVisibility:updateUserVisibility,
+  getHistoryPage:getHistoryPage,
+  getPostedEmojiRecords:getPostedEmojiRecords
+}
+
 //
 // router.get(
 //   "/history",
@@ -326,15 +399,3 @@ async function getHistoryPage(req,res) {
 //     });
 //   }
 // );
-
-
-module.exports = {
-  checkIfUserIsInstructor:checkIfUserIsInstructor,
-  getClassID:getClassID,
-  getEmojiRecordsPerMinute:getEmojiRecordsPerMinute,
-  getText:getText,
-  getUserVisibility:getUserVisibility,
-  updateUserVisibility:updateUserVisibility,
-  getHistoryPage:getHistoryPage,
-  getPostedEmojiRecords:getPostedEmojiRecords
-}

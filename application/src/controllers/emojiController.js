@@ -8,19 +8,19 @@ async function getStudentClassId(req, res, next) {
     try {
         // console.log(query);
         let ids;
-        if (req.body){
+        if (req.body && Object.keys(req.body).length !== 0){
             req.class_id = req.body.classId;
             req.classLinkId = req.body.classLinkId;
         } else if ( req.query.classLinkId){
-            ids = getIdsFromUrl(req.query.regId);
+            ids = getIdsFromUrl(req.query.classLinkId);
             req.class_id = ids[1];
             req.classLinkId = ids[0];
         } else if (req.originalUrl){
-            ids = getIdsFromUrl(req.query.regId);
+            ids = getIdsFromUrl(req.originalUrl);
             req.class_id = ids[1];
             req.classLinkId = ids[0];
         } else if (req.url){
-            ids = getIdsFromUrl(req.query.regId);
+            ids = getIdsFromUrl(req.url);
             req.class_id = ids[1];
             req.classLinkId = ids[0];
         }
@@ -77,14 +77,10 @@ async function getSendEmojiPage(req,res,next) {
 
         if (rowsObj === 0 || rowsObj.length === 0) {
             console.log("User does not exist. Please register.")
-        } else {
-            next();
         }
-
     } catch (e) {
         console.log(e);
     }
-
 
     res.render("emojiSharing", {
             classLinkId: req.classLinkId,
@@ -92,9 +88,7 @@ async function getSendEmojiPage(req,res,next) {
             classId: rowsObj.classes_id ? rowsObj.classes_id : req.classId ,//id shows undefined?
             userId: req.user_id ?  req.user : '',
             userObj: rowsObj
-        }
-    )
-
+    });
 }
 function getIntegerDatetime(daysArray){
     let temp = [];
@@ -344,7 +338,7 @@ async function insertRecordPerMinute(req, res, next) {
             req.class_id +
             " and date_time = '" +
             insertDateTimeValue +
-            "') "
+            "' "
 
         try {
             await db.execute(query);

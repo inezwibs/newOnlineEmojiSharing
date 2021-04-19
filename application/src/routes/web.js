@@ -65,11 +65,16 @@ let initWebRoutes = (app) => {
     router.get("/reset-password/:id/:token",passwordController.getResetPasswordPage);
     router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
 
-    //history routes
+    //accessing using history routes
     router.get("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords, historyController.getEmojiRecordsPerMinute, historyController.getText,
-        historyController.getUserVisibility,historyController.getHistoryPage)
+        historyController.getUserVisibility,historyController.getHistoryPage);
+    router.post("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords, historyController.getEmojiRecordsPerMinute, historyController.getText,
+        historyController.getUserVisibility,historyController.getHistoryPage);
+    //accessing from other pages
     router.get("/history", historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords,historyController.getEmojiRecordsPerMinute, historyController.getText,
-        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage)
+        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
+    router.post("/history", historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords,historyController.getEmojiRecordsPerMinute, historyController.getText,
+        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
     router.post("/instructorLogout", instructorController.postLogOut);
     router.get("/instructorLogout", instructorController.postLogOut);
 

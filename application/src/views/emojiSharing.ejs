@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" href="/styles.css">
@@ -17,28 +18,36 @@
 <body>
 
     <div>
-    <form action="/history?classLinkId=<%=classLinkId%>" method="post">
-        <input type="submit" value="History" />
-    </form>
+        <% if ( typeof dateStringParams === 'undefined') {%>
+        <form action="/history?classLinkId=<%=classLinkId%>" method="POST">
+            <input type="submit" value="History" />
+        </form>
+        <%}else if (typeof dateStringParams !== 'undefined') {%>
+        <form action="/history/<%=classLinkId%>/<%=dateStringParams%>" method="POST">
+            <input type="submit" value="History" />
+        </form>
+        <%}%>
     <h2 class="text-center text-info">Emoji Sharing!</h2>
     <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
-         <div class="anonymous-label mx-auto d-flex">
-             <label class="switch">
-                 <input type="checkbox" name="isAnonymous">
-                 <span class="slider round"></span>
-             </label>
-             <label class="switchLabel">
-                 Anonymous user
-             </label>
-         </div>
+        <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+        <input type="hidden" name="classId" value="<%=classId%>" />
+
+        <div class="anonymous-label mx-auto d-flex ">
+            <label   class="switch">
+                <input type="checkbox" name="isAnonymous">
+                <span class="slider round"></span>
+            </label>
+            <label class="switchLabel ">
+                Anonymous user
+            </label>
+        </div>
+
         <div class="table table-responsive ">
             <table class="table-container table-bordered ">
-
 
                 <tbody>
 <!--                    <input type="hidden" id='classLinkId'  name="classLinkId" value = "">-->
                     <input type="hidden" id='userId'  name="userId" value = "<%= userId %>">
-
 
                     <tr>
                         <td class="first">
@@ -112,9 +121,9 @@
         </div>
 
         <div>
-            <form method="GET" action="/sendEmoji" class="form-group">
-                <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
-                <input type="hidden" name="classId" value="<%=classId%>" />
+            <form method="POST" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" class="form-group">
+<!--                <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />-->
+<!--                <input type="hidden" name="classId" value="<%=classId%>" />-->
                 <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
                 <input type="submit" name="submit" class="button_next" value="Submit">
             </form>
