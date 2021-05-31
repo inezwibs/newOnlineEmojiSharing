@@ -288,7 +288,8 @@ async function generateLink(req, res, next) {
             newClassLink: newClassIdLink,
             newClassId: rows[numClasses-1].classes_id,
             classArr: classesArray,
-            path:path
+            path:path,
+            newClass: req.body
         });
     } catch (e) {
         console.log("Catch an error: ", e);

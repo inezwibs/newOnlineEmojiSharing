@@ -1,6 +1,7 @@
 const db = require("../configs/database.js");
 const express = require("express");
 const {url} = require("url");
+let currentEmoji;
 
 
 async function getStudentClassId(req, res, next) {
@@ -24,14 +25,22 @@ async function getStudentClassId(req, res, next) {
             req.class_id = ids[1];
             req.classLinkId = ids[0];
         }
-        let query =
-            " SELECT * FROM emojidatabase.registrations where id = '" + req.classLinkId +"'";
 
-        const [rows, fields] = await db.execute(query);
+        if (req.user){
+            req.user = req.user;
+            next();
+        }else{
+            //most likely won't need this as the body will have user id
+            let query =
+                " SELECT * FROM emojidatabase.registrations where classes_id = '" + req.class_id +"'";
 
-        // console.log('Reg Id',req.reg_id)
-        req.user = rows[0].users_id;
-        next();
+            const [rows, fields] = await db.execute(query);
+
+            // console.log('Reg Id',req.reg_id)
+            req.user = rows[0].users_id;
+            next();
+        }
+
     } catch (e) {
         console.log("Catch an error: ", e);
     }
@@ -47,7 +56,7 @@ async function getSendEmojiPage(req,res,next) {
     let ids;
     const re = /\d+/g;
 
-    if (!req.classLinkId || !req.user_id || !req.user){
+    if (!req.classLinkId || !req.user_id || !req.userEmail){
         if (req.url && (req.url).match(re)){
             ids= getIdsFromUrl(req.url);
             if (ids && ids.length === 2){
@@ -67,27 +76,32 @@ async function getSendEmojiPage(req,res,next) {
 
         } else if (req.body.classLinkId && req.body.userId && req.body.classId) {
             req.classLinkId = req.body.classLinkId;
-            req.user = req.body.userId;
             req.classId = req.body.classId;
         }
     }
 
     try {
-        rowsObj = await getEmojiClassData (req.user, req.classLinkId  )
-
+        req.userInfo = req.body.email ? req.body.email : req.user;
+        rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
+        //TODO: check when rowObj is undefined
         if (rowsObj === 0 || rowsObj.length === 0) {
             console.log("User does not exist. Please register.")
+            throw new Error("Error: User does not exist. Please register.");
         }
     } catch (e) {
         console.log(e);
     }
-
+    //TODO rowsObj showing undefined for new registrants
+    let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
+    let userIdValue = rowsObj.id;
+    let emojiValue = req.body.optradio ? req.body.optradio  : '3';
     res.render("emojiSharing", {
             classLinkId: req.classLinkId,
             regId : req.classLinkId,
-            classId: rowsObj.classes_id ? rowsObj.classes_id : req.classId ,//id shows undefined?
-            userId: req.user_id ?  req.user : '',
-            userObj: rowsObj
+            classId: classIdValue,//id shows undefined?
+            userId: userIdValue,
+            userObj: rowsObj,
+            emojiSelected: emojiValue
     });
 }
 function getIntegerDatetime(daysArray){
@@ -115,10 +129,12 @@ function getIntegerDatetime(daysArray){
 // monday 1, tues 2 , wed 3, thur 4 , fri 5, sat 6, sun 7
 }
 function checkValidDate(daysInIntegerArray, classStartEndTimes) {
-    var splitedClassStartTime = classStartEndTimes[0].split(":");
-    var classStartMinutes = parseFloat(splitedClassStartTime[0] * 60) + parseFloat(splitedClassStartTime[1]);
-    var splitedClassEndTime = classStartEndTimes[1].split(":");
-    var classEndMinutes = parseFloat(splitedClassEndTime[0] * 60) + parseFloat(splitedClassEndTime[1]);
+    var splitClassStartTime = classStartEndTimes[0].split(":");
+    var classStartMinutes = parseFloat(parseInt(splitClassStartTime[0]) * 60) + parseFloat(splitClassStartTime[1]);
+    var splitClassEndTime = classStartEndTimes[1].split(":");
+    let minuteEndTime;
+    splitClassEndTime[0] === "00" ? minuteEndTime = "24" : minuteEndTime = splitClassEndTime[0]
+    var classEndMinutes = parseFloat(parseInt(minuteEndTime) * 60) + parseFloat(splitClassEndTime[1]);
 
     var currentDate = new Date();
     /*current minutes calculation*/
@@ -149,6 +165,7 @@ async function getClassStartTime(req, res, next) {
         var resultArr = res[0].datetime.split(/[,-]/);
         var lengthArr = resultArr.length;
         var classDaysInInteger = getIntegerDatetime(resultArr.slice(0,lengthArr-2)) // -2 because we're getting all the days not the time
+        //check if the time mojis are posted are in the time range of the class
         var resultDateArr = checkValidDate(classDaysInInteger,resultArr.slice(lengthArr-2));
         if (resultDateArr.length > 0 ){
             req.currentMinutes = resultDateArr[0]; // we send even if it is 0
@@ -164,26 +181,36 @@ async function getClassStartTime(req, res, next) {
     }
 }
 
-async function getEmojiClassData (userId, regId ) {
-    let userQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, r.classes_id " +
-        "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
-        "WHERE u.id = r.users_id " +
-        "AND c.id = r.classes_id " +
-        "AND r.users_id = '" + userId + "'";
+async function getEmojiClassData(userInfo, classLinkId, classId) {
+    let userQuery;
+    // let userInfoType = userInfo.indexOf('@');
+    if (userInfo.length > 4) {
+        userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+            "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+            "WHERE u.id = r.users_id " +
+            "AND c.id = r.classes_id " +
+            "AND u.email = '" + userInfo + "'";
+    }else {
+        userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+            "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+            "WHERE u.id = r.users_id " +
+            "AND c.id = r.classes_id " +
+            "AND u.id = '" + userInfo + "'";
+    }
     let result;
     try {
         const [rows, fields] =  await db.execute(userQuery);
         if (rows === undefined || rows.length === 0) {
             console.log("User does not exist. Please register.")
             result = 0;
-        } else if (regId !== 0 ){
+        } else if (classId !== 0 ){
             rows.forEach( row => {
-                var temp = parseInt(regId);
-                if (row.id === temp){
+                var temp = parseInt(classId);
+                if (row.classes_id === temp){
                     result = row;
                 }
             });
-        } else if (regId === 0 ){
+        } else if (classId === 0 ){
             //meaning no regId was provided then we pick first one
             result = rows[0];
         }
@@ -192,23 +219,23 @@ async function getEmojiClassData (userId, regId ) {
     }
     return result;
 }
+
 async function invalidEmojiPostBranch(req,res,next) {
     if (req.currentMinutes===0){
-        if (req.query.regId) {
+        if (req.query.regId || req.url) {
             let ids = getIdsFromUrl(req.url);
-            let rowsObj = await getEmojiClassData(ids[1],ids[0])
+            let rowsObj = await getEmojiClassData(req.user,ids[0],ids[1])
             if (ids && ids.length === 2 && rowsObj) {
                    res.render("emojiSharing", {
                        classLinkId: ids[0],
                        regId : ids[0],
                         userId : ids[1],
                        classId: rowsObj.classes_id ? rowsObj.classes_id : classId,//id shows undefined?
-                       userObj: rowsObj
-
+                       userObj: rowsObj,
+                       emojiSelected: req.body ? req.body.optradio : '3'
                    });
             }
         }
-
     } else {
         next();
     }
@@ -260,6 +287,7 @@ async function getInsertedEmojiTime(req, res, next) {
     try {
         const [res, err] = await db.execute(query);
         req.emojis_id = res[0].emojis_id;
+        currentEmoji = req.emojis_id;
         req.insertedMinutes = res[0].minute;
         next();
     } catch (e) {

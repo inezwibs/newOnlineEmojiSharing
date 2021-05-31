@@ -5,135 +5,168 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Play</title>
-    <meta http-equiv="Refresh" content="300">
-
+<!--refresh content every 5 minutes content in seconds    -->
+<!--    <meta http-equiv="Refresh" content="<%=5%>">-->
+<!--reset at 5 minutes -->
     <script type="text/javascript">
         setTimeout(function(){
-            $("#topScroll").fadeOut();
-        }, 4000)
-        </script>
+          $("#topScroll").fadeOut();
+            }, 5000);
+    </script>
+
+
+    <script type="text/javascript">
+        // setInterval(function() {
+        //     //select the 2nd form which is emoji submit
+        //     $("#emoji3").checked(true);
+        // }, 5000);//every 5 minute value reset 5 * 60 * 60 * 1000 = 18000000
+        // setInterval(function() {
+        //     //select the 2nd form which is emoji submit
+        //
+        //     //select the 2nd form which is emoji submit
+        //     document.forms[1].submit();
+        // }, 4000);//every 1 minute value = 1 * 60 * 60 * 1000 = 3600000
+    </script>
+
 
 </head>
 <body>
 
-    <div>
+    <div class="mt-1 ml-1">
         <% if ( typeof dateStringParams === 'undefined') {%>
-        <form action="/history?classLinkId=<%=classLinkId%>" method="POST">
-            <input type="submit" value="History" />
+        <form id="historySubmit" action="/history?classLinkId=<%=classLinkId%>" method="POST">
+            <input  type="submit" value="History" />
+            <input type="hidden" name="classId" value="<%=classId%>" />
+            <input type="hidden" name="userid" value="<%=userId%>" />
+
         </form>
         <%}else if (typeof dateStringParams !== 'undefined') {%>
-        <form action="/history/<%=classLinkId%>/<%=dateStringParams%>" method="POST">
+        <form id="historySubmit" action="/history/<%=classLinkId%>/<%=dateStringParams%>" method="POST">
             <input type="submit" value="History" />
+            <input type="hidden" name="classId" value="<%=classId%>" />
+            <input type="hidden" name="userid" value="<%=userId%>" />
         </form>
         <%}%>
-    <h2 class="text-center text-info">Emoji Sharing!</h2>
-    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
-        <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
-        <input type="hidden" name="classId" value="<%=classId%>" />
+    </div>
+    <div>
+        <h2 class="text-center text-info mt-4">Welcome to Emoji Sharing <%= userObj.full_name%> for <%= userObj.class_name%></h2>
+        <p class="text-center mb-1 text-info">Class times <%=userObj.datetime%>.</p>
+        <p class="text-center text-info">Class id number is <%= userObj.classes_id%>.</p>
+    </div>
+    <div>
 
-        <div class="anonymous-label mx-auto d-flex ">
-            <label   class="switch">
-                <input type="checkbox" name="isAnonymous">
-                <span class="slider round"></span>
-            </label>
-            <label class="switchLabel ">
-                Anonymous user
-            </label>
-        </div>
+        <form class="form-group" id="emojiSubmit" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
+            <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+            <input type="hidden" name="classId" value="<%=classId%>" />
 
-        <div class="table table-responsive ">
-            <table class="table-container table-bordered ">
+            <div class="anonymous-label mx-auto d-flex ">
+                <label   class="switch">
+                    <input type="checkbox" name="isAnonymous">
+                    <span class="slider round"></span>
+                </label>
+                <label class="switchLabel ">
+                    Anonymous user
+                </label>
+            </div>
 
-                <tbody>
-<!--                    <input type="hidden" id='classLinkId'  name="classLinkId" value = "">-->
-                    <input type="hidden" id='userId'  name="userId" value = "<%= userId %>">
+            <div class="table table-responsive ">
+                <table class="table-container table-bordered ">
 
-                    <tr>
-                        <td class="first">
-                            <input class="hello"  type="text" name="image" value="&#x1f601;" readonly />
+                    <tbody>
+                        <input type="hidden" id='userId'  name="userId" value = "<%= userId %>">
+
+                        <tr>
+                            <td class="first">
+                                <input class="hello"  type="text" name="image" value="&#x1f601;" readonly />
+                            </td>
+                            <td >
+                                <div class="radio">
+                                    <input type="radio" id='emoji1'  name="optradio" value = "1"
+                                            <%= emojiSelected === 1 ? 'checked' : '' %>
+                                    >
+                                </div>
+                            </td >
+                            <td >
+                                <input style="border: 0" type="text" size="35" name="caption" value="I completely understand!" readonly /> </td>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="first">
+                                <input class="hello"   type="text" name="image" value="&#128578;" readonly />
+                            </td>
+                            <td >
+                                <div class="radio">
+                                    <input type="radio" id='emoji2'  name="optradio" value = "2"
+                                            <%= emojiSelected === 2 ? 'checked' : '' %>
+                                    >
+                                </div>
+                            </td >
+                            <td >
+                                <input style="border: 0" type="text" size="35" name="caption" value="I think I’m getting it" readonly /> </td>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="first">
+                                <input class="hello"  type="text" name="image" value="&#128528;" readonly />
+                            </td>
+                            <td >
+                                <input type="radio" id='emoji3'  name="optradio" value = "3"
+                                        <%= emojiSelected === 3  ? 'checked' : '' %>
+                                >
+                            </td >
+                            <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly />
+                                <div id="topScroll" style="color:chocolate; font-weight: bold;">
+                                    <a>Selected Emoji set to Neutral every 5 minutes!</a>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="first">
+                                <input class="hello"  type="text" name="image" value="&#129300;"  readonly />
+                            </td>
+                            <td >
+                                <input type="radio" id='emoji4'  name="optradio" value = "4"
+                                        <%= emojiSelected === 4 ? 'checked' : '' %>
+                                >
+                            </td >
+                            <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
                         </td>
-                        <td >
-                            <div class="radio">
-                                <input type="radio" id='regular'  name="optradio" value = "1">
-                            </div>
-                        </td > 
-                        <td >
-                            <input style="border: 0" type="text" size="35" name="caption" value="I completely understand!" readonly /> </td>
-                        </td>
+                        </tr>
 
-                    </tr>
+                        <tr>
+                            <td  >
+                                <input class="hello"  type="text" name="image" value="&#128534;" readonly />
+                            </td>
+                            <td >
+                                <input type="radio" id='emoji5'  name="optradio" value = "5"
+                                        <%= emojiSelected === 5 ? 'checked' : '' %>
+                                >
+                            </td  >
+                            <td ><input style="border: 0" size="45" type="text" name="caption" value="I completely don’t understand what’s going on!" readonly /> </td>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="first">
-                            <input class="hello"   type="text" name="image" value="&#128578;" readonly />
-                        </td>
-                        <td >
-                            <div class="radio">
-                                <input type="radio" id='regular'  name="optradio" value = "2"> 
-                            </div>
-                        </td >
-                        <td >
-                            <input style="border: 0" type="text" size="35" name="caption" value="I think I’m getting it" readonly /> </td>
-                        </td>
+                    </tbody>
+                </table>
+            </div>
 
-                    </tr>
 
-                    <tr>
-                        <td class="first">
-                            <input class="hello"  type="text" name="image" value="&#128528;" readonly />
-                        </td>
-                        <td >
-                            <input type="radio" id='regular'  name="optradio" value = "3" checked="checked">
-                        </td >
-                        <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly />
-                            <div id="topScroll" style="color:chocolate; font-weight: bold;">
-                                <a>Selected Emoji set to Neutral every 5 minutes!</a>
-                            </div> 
-                        </td>
-    
-                    </tr>
+            <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
+            <input type="submit" name="emojiSubmit" class="button_next" value="Submit">
 
-                    <tr>
-                        <td class="first">
-                            <input class="hello"  type="text" name="image" value="&#129300;"  readonly />
-                        </td>
-                        <td >
-                            <input type="radio" id='regular'  name="optradio" value = "4">
-                        </td >
-                        <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
-                    </td>
-                    </tr>
+            <div class="ml-1">
+                <div>To logout: <a href="/logout">Logout.</a></div>
+            </div>
+        </form>
 
-                    <tr>
-                        <td  >
-                            <input class="hello"  type="text" name="image" value="&#128534;" readonly />
-                        </td>
-                        <td >
-                            <input type="radio" id='regular'  name="optradio" value = "5">
-                        </td  >
-                        <td ><input style="border: 0" size="45" type="text" name="caption" value="I completely don’t understand what’s going on!" readonly /> </td>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
-
-        <div>
-            <form method="POST" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" class="form-group">
-<!--                <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />-->
-<!--                <input type="hidden" name="classId" value="<%=classId%>" />-->
-                <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
-                <input type="submit" name="submit" class="button_next" value="Submit">
-            </form>
-        </div>
-
-        <div>
-            <div>To logout click here<a href="/logout">Logout.</a></div>
-        </div>
-    </form>
-</div>
-
+    </div>
 </body>
 </html>

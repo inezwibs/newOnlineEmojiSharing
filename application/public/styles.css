@@ -1,3 +1,5 @@
+
+
 body {
     background-color: white;
 }
@@ -31,7 +33,14 @@ input.hello[type="text"] {
     margin-left: auto;
     margin-right: auto;
 }
-
+.center-buttons {
+    display: block;
+    width: 300px;
+    margin: auto;
+}
+.inner-button{
+    display: inline
+}
 
 .button_next {
     background-color: rgb(224, 138, 80);
@@ -277,3 +286,47 @@ div.ex1 {
 .chart-history{
     padding-top:10px;
 }
+
+/*Homepage*/
+
+ .center {
+     display: block;
+     margin-left: auto;
+     margin-right: auto;
+ }
+
+.button_login {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 40px 2px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-inline-start: 25px;
+    /* margin-left: 250px;
+  margin-right: 250px; */
+}
+
+.button_register {
+    background-color: rgb(35, 90, 134);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 40px 2px;
+    border-radius: 8px;
+    cursor: pointer;
+    /*margin-inline-start: 500px;*/
+    /* margin-left: 250px;
+  margin-right: 250px; */
+}
+
+

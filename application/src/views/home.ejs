@@ -1,67 +1,36 @@
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html>
+  <head>
 
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-<style>
-  .center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
 
-  .button_login {
-    background-color: #4caf50;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 40px 2px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-inline-start: 25px;
-    /* margin-left: 250px;
-  margin-right: 250px; */
-  }
+  </head>
+  <body>
 
-  .button_register {
-    background-color: rgb(35, 90, 134);
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 40px 2px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-inline-start: 500px;
-    /* margin-left: 250px;
-  margin-right: 250px; */
-  }
-</style>
+    <div>
+      <h2 class="text-center text-info mt-2">Welcome to Emotion Thermometer app!</h2>
+    </div>
 
+    <div>
+      <img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
+           class="center" />
+    </div>
 
-<br />
-<h2 class="text-center text-info">Welcome to Emotion Thermometer app!</h2>
-<br />
-
-<img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
-  class="center" />
-
-<div style="display: flex">
-  <form method="GET" action="/register?classLinkId=<%=classLinkId%>?classId=<%=classId%>" class="form-group">
-    <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
-    <input type="hidden" name="classId" value="<%=classId%>" />
-    <input type="submit" name="submit" class="button_register" value="Register" />
-  </form>
-  <form method="GET" action="/login" class="form-group">
-    <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
-    <input type="hidden" name="classId" value="<%=classId%>" />
-    <input type="submit" name="submit" class="button_login" value="Login" />
-  </form>
-</div>
+    <div  class="center-buttons">
+      <form method="GET" action="/register?classLinkId=<%=classLinkId%>?classId=<%=classId%>" class="inner-button">
+        <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+        <input type="hidden" name="classId" value="<%=classId%>" />
+        <input type="submit" name="submit" class="button_register" value="Register" />
+      </form>
+      <form method="GET" action="/login" class="inner-button">
+        <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+        <input type="hidden" name="classId" value="<%=classId%>" />
+        <input type="submit" name="submit" class="button_login" value="Login" />
+      </form>
+    </div>
+  </body>
+</html>

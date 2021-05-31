@@ -15,12 +15,10 @@ async function getClassLinkPage (req, res, next) {
 
 async function listClassLinks (req,res,user) {
     // let classIdQuery = " SELECT * FROM emojidatabase.registrations where id = '"+ req.body.classId + "'" ;
-    let classIdQuery = "SELECT u.full_name, c.class_name, c.datetime, r.id, r.classes_id " +
+    let classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
         "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
         "WHERE u.id = r.users_id " +
-        "AND c.id = r.classes_id " +
-        "AND r.id = '" + req.body.classLinkId + "'";
-
+        "AND c.id = r.classes_id AND r.classes_id = " + req.body.classId + " AND r.isInstructor = \'1\' ";
     let classObj;
     try{
         const [rows, err ] = await db.execute(classIdQuery);

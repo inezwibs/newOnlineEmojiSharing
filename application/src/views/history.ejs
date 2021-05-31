@@ -22,7 +22,6 @@
 
     <meta http-equiv="Refresh" content="60">
 
-
     <script type="text/javascript">
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
@@ -32,7 +31,7 @@
                     "#FFA500",//orange
                     "#ffff00",//yellow
                     '#17cbe3',//blue
-                    "#3CB371",//green
+                    "#3CB371",//greenco
                 ]);
 
             var dps6 = [];
@@ -65,38 +64,51 @@
                 {
                     colorSet: "myShades",
                     title: {
-                        text: "Emojis count per minute for <%=topDate%>"
+                        text: "Emojis count per minute for <%=topDate%>, class <%=classInfo.class_name%>, on <%=classInfo.datetime%>"
                     },
                     data: [
                         {
                             //gray
                             type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "Did not participate",
                             dataPoints: dps1
                         },
                         {
                             //red
                             type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "Don't understand",
                             dataPoints: dps2
                         },
                         {
                             //orange
                             type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "I think I'm lost",
                             dataPoints: dps3
                         },
                         {
                             //yellow
                             type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "Neutral",
                             dataPoints: dps4
                         },
                         {
                             //blue
                             type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "I'm getting it",
                             dataPoints: dps5
                         },
                         {
                             //green
                             type: "stackedColumn",
-                            dataPoints: dps6
+                            showInLegend: true,
+                            legendText: "I understand",
+                            dataPoints: dps6,
+
                         }
                     ]
 
@@ -162,7 +174,7 @@
 
     <body>
 
-    <form class="form-group" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="GET">
+    <form class="form-group mt-1 ml-1" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="GET">
         <input type="submit" value="Back to emoji page" />
         <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
         <input type="hidden" name="classId" value="<%=classId%>" />
@@ -172,12 +184,6 @@
             <div class="row table-center">
                 <br><br><br><br>
                 <p id="EmojiHistory"></p>
-
-                <div class="col-md-10 col-sm-10 middle">
-
-
-
-                </div>
 
                 <div class="col-md-10 col-sm-10 middle">
 
