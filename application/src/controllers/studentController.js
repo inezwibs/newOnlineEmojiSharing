@@ -144,10 +144,10 @@ async function insertRegistration(req, res, next) {
 async function getStudentLoginPage(req,res) {
 
     return res.render("login", {
-    title: "Login",
-    classId: req.query.classId,
-    classLinkId: req.query.classLinkId,
-    isLoggedIn: req.isAuthenticated(),
+        title: "Login",
+        classId: req.query.classId,
+        classLinkId: req.query.classLinkId,
+        isLoggedIn: req.isAuthenticated(),
   });
 }
 

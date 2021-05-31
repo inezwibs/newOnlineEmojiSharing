@@ -101,7 +101,8 @@ async function getSendEmojiPage(req,res,next) {
             classId: classIdValue,//id shows undefined?
             userId: userIdValue,
             userObj: rowsObj,
-            emojiSelected: emojiValue
+            emojiSelected: emojiValue,
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
     });
 }
 function getIntegerDatetime(daysArray){
@@ -232,7 +233,8 @@ async function invalidEmojiPostBranch(req,res,next) {
                         userId : ids[1],
                        classId: rowsObj.classes_id ? rowsObj.classes_id : classId,//id shows undefined?
                        userObj: rowsObj,
-                       emojiSelected: req.body ? req.body.optradio : '3'
+                       emojiSelected: req.body ? req.body.optradio : '3',
+                       isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
                    });
             }
         }
@@ -243,7 +245,7 @@ async function invalidEmojiPostBranch(req,res,next) {
 
 async function insertEmojiRecord(req, res, next) {
     let isAnonymous = 0;
-    if (req.body.isAnonymouse !== undefined) {
+    if (req.body.isAnonymous !== undefined) {
         isAnonymous = 1;
     }
     //cleaning text of any symbols

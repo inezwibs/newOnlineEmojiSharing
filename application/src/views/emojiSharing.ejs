@@ -20,7 +20,7 @@
     <script type="text/javascript">
         // setInterval(function() {
         //     //select the 2nd form which is emoji submit
-        //     $("#emoji3").checked(true);
+        //     $("#emoji3").'checked'(true);
         // }, 5000);//every 5 minute value reset 5 * 60 * 60 * 1000 = 18000000
         // setInterval(function() {
         //     //select the 2nd form which is emoji submit
@@ -62,8 +62,10 @@
             <input type="hidden" name="classId" value="<%=classId%>" />
 
             <div class="anonymous-label mx-auto d-flex ">
-                <label   class="switch">
-                    <input type="checkbox" name="isAnonymous">
+                <label class="switch">
+                    <input type="checkbox" name="isAnonymous"
+                            <%= isAnonymousStatus ? 'checked' : '' %>
+                    >
                     <span class="slider round"></span>
                 </label>
                 <label class="switchLabel ">
@@ -84,7 +86,7 @@
                             <td >
                                 <div class="radio">
                                     <input type="radio" id='emoji1'  name="optradio" value = "1"
-                                            <%= emojiSelected === 1 ? 'checked' : '' %>
+                                            <%= emojiSelected === '1' ? 'checked' : '' %>
                                     >
                                 </div>
                             </td >
@@ -101,7 +103,7 @@
                             <td >
                                 <div class="radio">
                                     <input type="radio" id='emoji2'  name="optradio" value = "2"
-                                            <%= emojiSelected === 2 ? 'checked' : '' %>
+                                            <%= emojiSelected === '2' ? 'checked' : '' %>
                                     >
                                 </div>
                             </td >
@@ -117,7 +119,7 @@
                             </td>
                             <td >
                                 <input type="radio" id='emoji3'  name="optradio" value = "3"
-                                        <%= emojiSelected === 3  ? 'checked' : '' %>
+                                        <%= emojiSelected === '3'  ? 'checked' : '' %>
                                 >
                             </td >
                             <td ><input style="border: 0" size="35" type="text" name="caption" value="Neutral" readonly />
@@ -134,7 +136,7 @@
                             </td>
                             <td >
                                 <input type="radio" id='emoji4'  name="optradio" value = "4"
-                                        <%= emojiSelected === 4 ? 'checked' : '' %>
+                                        <%= emojiSelected === '4' ? 'checked' : '' %>
                                 >
                             </td >
                             <td ><input style="border: 0" size="35" type="text" name="caption" value="I think I'm lost!" readonly /> </td>
@@ -147,7 +149,7 @@
                             </td>
                             <td >
                                 <input type="radio" id='emoji5'  name="optradio" value = "5"
-                                        <%= emojiSelected === 5 ? 'checked' : '' %>
+                                        <%= emojiSelected === '5' ? 'checked' : '' %>
                                 >
                             </td  >
                             <td ><input style="border: 0" size="45" type="text" name="caption" value="I completely don’t understand what’s going on!" readonly /> </td>
