@@ -18,7 +18,6 @@ let initPassportLocal = () => {
                     }
                     else{
                         req.user = isValidUser
-                        // let match = await loginServices.comparePassword(password, isValidUser);
                             return done(null, isValidUser[0], isValidUser)
                     }
             } catch (err) {
@@ -35,12 +34,6 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
     done(null, id);
-
-    // loginServices.findUserById(id).then((user) => {
-    //     return done(null, user);
-    // }).catch(error => {
-    //     return done(error, null)
-    // });
 });
 
 module.exports = initPassportLocal;

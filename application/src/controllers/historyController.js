@@ -32,7 +32,7 @@ async function checkIfUserIsInstructor(req, res, next) {
     // console.log(query);
     req.isInstructor = res[0].isInstructor;
     req.class_id = res[0].classes_id;
-    req.classLinkId = res[0].id;
+    req.classLinkId = classLinkId;
     next();
   } catch (e) {
     console.log("Catch an error: ", e);
@@ -42,11 +42,7 @@ async function checkIfUserIsInstructor(req, res, next) {
 async function getClassID(req, res, next) {
   let query =
     " SELECT * FROM emojidatabase.registrations where id = " + req.query.classLinkId;
-  // await db.execute(query, (err, res) => {
-  //     // console.log(query);
-  //     req.class_id = res[0].classes_id;
-  //     next();
-  // });
+
   try {
     const [res, err] = await db.execute(query);
     // console.log(query);
@@ -64,7 +60,6 @@ async function getPostedEmojiRecords(req, res, next) {
 
   try {
     const [res, err] = await db.execute(query);
-    // console.log(query);
 
     temp = processEmojiRecordsPerDay(res, req);
     req.emojiRecordsPerDay = temp; // where we get the records
@@ -82,11 +77,7 @@ async function getEmojiRecordsPerMinute(req, res, next) {
 
   try {
     const [res, err] = await db.execute(query);
-    // console.log(query);
-
     req.records = convertTime(res);
-    // req.records = res; // where we get the records
-
     next();
   } catch (e) {
     console.log("Catch an error: ", e);

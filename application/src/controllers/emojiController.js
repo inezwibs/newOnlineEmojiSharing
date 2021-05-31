@@ -420,8 +420,12 @@ function getIdsFromUrl(urlPath) {
     return found;
 }
 async function studentLogOut (req, res) {
+    let classId = req.body.classId;
+    let classLinkId = req.body.classLinkId;
+
     req.session.destroy(function(err) {
-        return res.redirect("/login");
+        let paramString = classLinkId + '&classId=' + classId;
+        return res.redirect('/login?classLinkId=' + paramString);
     });
 }
 
@@ -441,14 +445,3 @@ module.exports = {
     studentLogOut: studentLogOut,
     invalidEmojiPostBranch:invalidEmojiPostBranch
 }
-
-//calculate the minute of inserted record using req.classStartMinutes
-// var tmp = Date().split(" ")[4];
-// var dateArr = Date().split(" ").slice(0, 5);
-// var date = dateObj.split(" ");
-// var splitedInsertedEmojiTime = tmp.split(":");
-// var insertedEmojiMinutes = parseFloat(splitedInsertedEmojiTime[0] * 60) + parseFloat(splitedInsertedEmojiTime[1]);
-// console.log("insertedEmojiMinutes***: "+insertedEmojiMinutes);
-// req.minute = insertedEmojiMinutes - req.classStartMinutes;
-// req.minute = insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
-// console.log("minute***: "+req.minute);

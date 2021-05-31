@@ -18,7 +18,6 @@ let initWebRoutes = (app) => {
         instructorController.insertToRegistration, instructorController.generateLink);
 
     router.get("/", instructorController.checkLoggedIn, instructorController.getInstructorPage);
-    //post / not decided yet
     router.post("/",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);
 
@@ -32,6 +31,7 @@ let initWebRoutes = (app) => {
     router.get("/instructorRegister", instructorController.getInstructorRegisterPage);
     router.post("/instructorRegister",instructorController.insertInstructure,
         instructorController.getInstructorID,instructorController.checkedInstructor);
+
     //student get routes they can't go directly, must get class link
     router.get("/login", studentController.getStudentLoginPage);
     router.post("/login", passport.authenticate("local", {
@@ -46,9 +46,11 @@ let initWebRoutes = (app) => {
     studentController.getRegistrationId,emojiController.getSendEmojiPage);
     router.post("/logout", emojiController.studentLogOut);
     router.get("/logout", emojiController.studentLogOut);
+
     //if students lose the class link
     router.get("/getClassLink", studentController.getClassLinkPage);
     router.post("/getClassLink", studentController.listClassLinks);
+
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
     router.post("/sendEmoji" ,emojiController.getStudentClassId,  emojiController.getClassStartTime,

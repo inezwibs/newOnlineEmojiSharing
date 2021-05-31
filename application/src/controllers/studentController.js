@@ -14,7 +14,6 @@ async function getClassLinkPage (req, res, next) {
 }
 
 async function listClassLinks (req,res,user) {
-    // let classIdQuery = " SELECT * FROM emojidatabase.registrations where id = '"+ req.body.classId + "'" ;
     let classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
         "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
         "WHERE u.id = r.users_id " +
@@ -38,7 +37,6 @@ async function listClassLinks (req,res,user) {
 };
 
 async function getStudentRegisterPage (req, res, next) {
-  // console.log("raya_query: " + req.query.classId);
    classLinkIdValue = req.query.classLinkId && req.query.classLinkId.length < 5 ? req.query.classLinkId: emojiController.getIdsFromUrl(req.url)[0];
    classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
   res.render("register", {
@@ -58,11 +56,9 @@ async function checkUserIsValid(req, res, next) {
     let userIsValid;
     let errorMsg;
     if (res.length > 0) {
-      // console.log("res.length > 0");
       userIsValid = 0;
       errorMsg = "the user exists";
     } else {
-      // console.log("res.length == 0");
       userIsValid = 1;
     }
     req.userIsValid = userIsValid;
@@ -77,12 +73,7 @@ async function checkUserIsValid(req, res, next) {
 async function getUserId(req, res, next) {
   let query =
     " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
-  // await db.execute(query, (err, res) => {
-  //     console.log(query);
-  //     if (err) throw err;
-  //     req.user_id = res[0].id;
-  //     next();
-  // });
+
   try {
     const [res, err] = await db.execute(query);
     req.user_id = res[0].id;
@@ -162,11 +153,7 @@ async function insertUser(req, res, next) {
       "' , '" +
       hash +
       "', 0)";
-    // await db.execute(query, (err, res) => {
-    //     console.log(query);
-    //     if (err) throw err;
-    //     next();
-    // });
+
     try {
       await db.execute(query);
       next();
@@ -184,12 +171,7 @@ async function getRegistrationId(req, res, next) {
         req.class_id +
         " and users_id = " +
         req.user_id;
-    // await db.execute(query, (err, res) => {
-    //     console.log(query);
-    //     if (err) throw err;
-    //     req.reg_id = res[0].id;
-    //     next();
-    // });
+
     try {
         const [res, err] = await db.execute(query);
         // console.log(query);
@@ -216,29 +198,3 @@ module.exports = {
     listClassLinks:listClassLinks
 }
 
-// router.post(
-//   "/register",
-//   checkUserIsValid,
-//   insertUser,
-//   getUserID,
-//   checkregistration,
-//   insertregistration,
-//   getregistrationID,
-//   function (req, res, next) {
-//     // console.log("req.userIsValid: "+req.userIsValid);
-//     // console.log("req.errorMsg: "+req.errorMsg);
-//     // console.log("req.class_id: "+req.class_id);
-//     // console.log("req.user_id: "+req.user_id);
-//     req.login({ id: req.user_id }, () =>
-//       res.redirect(
-//         url.format({
-//           pathname: "/sendEmoji",
-//           query: {
-//             reg_id: req.reg_id,
-//           },
-//         })
-//       )
-//     );
-//   }
-// );
-//

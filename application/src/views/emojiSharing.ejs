@@ -7,30 +7,19 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Play</title>
-<!--refresh content every 5 minutes content in seconds    -->
-<!--    <meta http-equiv="Refresh" content="<%=5%>">-->
-<!--reset at 5 minutes -->
-    <script type="text/javascript">
-        setTimeout(function(){
-          $("#topScroll").fadeOut();
-            }, 5000);
-    </script>
-
 
     <script type="text/javascript">
-        // setInterval(function() {
-        //     //select the 2nd form which is emoji submit
-        //     $("#emoji3").'checked'(true);
-        // }, 5000);//every 5 minute value reset 5 * 60 * 60 * 1000 = 18000000
-        // setInterval(function() {
-        //     //select the 2nd form which is emoji submit
-        //
-        //     //select the 2nd form which is emoji submit
-        //     document.forms[1].submit();
-        // }, 4000);//every 1 minute value = 1 * 60 * 60 * 1000 = 3600000
+        setInterval(function() {
+            $("#emoji3").attr('checked','checked');
+            $("#topScroll").fadeOut();
+        }, 18000000);//every 5 minute value reset 5 * 60 * 60 * 1000 = 18000000
     </script>
-
-
+    <script type="text/javascript">
+        setInterval(function() {
+            //select the 2nd form which is emoji submit
+            document.forms[1].submit();
+        }, 3600000);//every 1 minute value = 1 * 60 * 60 * 1000 = 3600000
+    </script>
 </head>
 <body>
 
@@ -163,12 +152,13 @@
 
             <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
             <input type="submit" name="emojiSubmit" class="button_next" value="Submit">
-
-            <div class="ml-1">
-                <div>To logout: <a href="/logout">Logout.</a></div>
-            </div>
         </form>
+        <form class="ml-1" id="logout" action="/logout?classLinkId=<%=classLinkId%>&classId=<%=classId%>" method="POST">
+            <input  type="submit" name="logout" value="Logout" />
+                            <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+                            <input type="hidden" name="classId" value="<%=classId%>" />
 
+        </form>
     </div>
 </body>
 </html>
