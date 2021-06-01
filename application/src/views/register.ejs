@@ -105,6 +105,16 @@
                 value="Submit"
               />
             </div>
+            <div>
+              <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                <ul class="alert alert-primary" role="alert">
+                  <% for (var i = 0 ; i < errors.length ; i++){ %>
+                    <li> <%= errors[i].msg %>
+                    </li>
+                  <% }%>
+                </ul>
+              <% } %>
+            </div>
             <div id="login-link" class="text-right">
                 <a href="/login?classLinkId=<%= classLinkId%>?classId=<%=classId%>" class="text-info">Login</a>
             </div>

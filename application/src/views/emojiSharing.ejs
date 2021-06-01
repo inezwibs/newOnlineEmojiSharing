@@ -149,7 +149,18 @@
                 </table>
             </div>
 
-
+            <div>
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <ul class="alert alert-primary" role="alert">
+                        <% for (var i = 0 ; i < errors.length ; i++){ %>
+                            <li> <%= errors[i].msg %>
+                            </li>
+                        <% }%>
+                    </ul>
+                <% } else { %>
+                    <p></p>
+                <% }  %>
+            </div>
             <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
             <input type="submit" name="emojiSubmit" class="button_next" value="Submit">
         </form>

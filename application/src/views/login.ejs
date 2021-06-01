@@ -1,5 +1,4 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 
 <div id="login">
@@ -29,7 +28,16 @@
                             <input type="hidden" name="classId" value="<%=classId%>" />
                             <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
                         </div>
-
+                        <div>
+                            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                                <ul class="alert alert-primary" role="alert">
+                                    <% for (var i = 0 ; i < errors.length ; i++){ %>
+                                        <li> <%= errors[i].msg %>
+                                        </li>
+                                    <% }%>
+                                </ul>
+                            <% } %>
+                        </div>
                         <div id="register-link" class="text-right">
                             <a href="/register?classLinkId=<%=classLinkId%>?classId=<%=classId%>" class="text-info">Register here</a>
                         </div>

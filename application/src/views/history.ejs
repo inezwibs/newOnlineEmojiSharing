@@ -187,7 +187,7 @@
 
                 <div class="col-md-10 col-sm-10 middle">
 
-                    <%if (isInstructor === true && history_chart_access === 0) { %>
+                    <% if (isInstructor === true && history_chart_access === 0) { %>
 
                         <div>
                             <label class="switch">
@@ -215,7 +215,7 @@
                             </label>
                         </div>
                     <% } %>
-                    <%if (isInstructor === true || (isInstructor === false && history_chart_access === 1)) { %>
+                    <% if (isInstructor === true || (isInstructor === false && history_chart_access === 1)) { %>
                         <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                     <% } %>
         <!--link to other charts -->
@@ -232,7 +232,7 @@
 
                 <div class="col-md-10 col-sm-10 middle">
                     <br><br>
-                    <%if (isInstructor === true && history_text_access === 0) { %>
+                    <% if (isInstructor === true && history_text_access === 0) { %>
 
                         <div>
                             <label class="switch">

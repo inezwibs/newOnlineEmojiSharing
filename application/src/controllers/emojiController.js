@@ -5,7 +5,7 @@ let currentEmoji;
 
 
 async function getStudentClassId(req, res, next) {
-
+    let errors = [];
     try {
         // console.log(query);
         let ids;
@@ -29,32 +29,41 @@ async function getStudentClassId(req, res, next) {
         if (req.user){
             req.user = req.user;
             next();
-        }else{
+        }else if (req.body){
+            req.user = req.body.userId;
             //most likely won't need this as the body will have user id
-            let query =
-                " SELECT * FROM emojidatabase.registrations where classes_id = '" + req.class_id +"'";
-
-            const [rows, fields] = await db.execute(query);
-
-            // console.log('Reg Id',req.reg_id)
-            req.user = rows[0].users_id;
+            // let query =
+            //     " SELECT * FROM emojidatabase.registrations where classes_id = '" + req.class_id +"'";
+            //
+            // const [rows, fields] = await db.execute(query);
+            //
+            // // console.log('Reg Id',req.reg_id)
+            // req.user = rows[0].users_id;
             next();
         }
 
     } catch (e) {
         console.log("Catch an error: ", e);
+        errors.push( {msg: e})
+        res.render("emojiSharing", {
+            errors: errors,
+            classLinkId: req.classLinkId,
+            regId : req.classLinkId,
+            classId: req.class_id,//id shows undefined?
+            userId: '',
+            userObj: '',
+            emojiSelected: '',
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+        });
     }
 }
 
 async function getSendEmojiPage(req,res,next) {
 
-    let regId;
-    let userId;
-    let classLinkId;
     let rowsObj;
-    let classId;
     let ids;
     const re = /\d+/g;
+    let errors = [];
 
     if (!req.classLinkId || !req.user_id || !req.userEmail){
         if (req.url && (req.url).match(re)){
@@ -84,12 +93,22 @@ async function getSendEmojiPage(req,res,next) {
         req.userInfo = req.body.email ? req.body.email : req.user;
         rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
         //TODO: check when rowObj is undefined
-        if (rowsObj === 0 || rowsObj.length === 0) {
-            console.log("User does not exist. Please register.")
-            throw new Error("Error: User does not exist. Please register.");
+        if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
+            errorMsg = "This user is not registered to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
+            errors.push({msg: errorMsg});
         }
     } catch (e) {
         console.log(e);
+        errors.push({msg: e})
+    }
+    if (errors.length > 0){
+        res.render('login', {
+            errors: errors,
+            title: "Login",
+            classId: req.classId,
+            classLinkId: req.classLinkId,
+            isLoggedIn: req.isAuthenticated(),
+        })
     }
     //TODO rowsObj showing undefined for new registrants
     let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
@@ -204,14 +223,14 @@ async function getEmojiClassData(userInfo, classLinkId, classId) {
         if (rows === undefined || rows.length === 0) {
             console.log("User does not exist. Please register.")
             result = 0;
-        } else if (classId !== 0 ){
+        } else if (classId !== 0 || classId !== undefined ){
             rows.forEach( row => {
                 var temp = parseInt(classId);
                 if (row.classes_id === temp){
                     result = row;
                 }
             });
-        } else if (classId === 0 ){
+        } else if (classId === 0 || classId === undefined && rows){
             //meaning no regId was provided then we pick first one
             result = rows[0];
         }

@@ -14,10 +14,20 @@ async function getClassLinkPage (req, res, next) {
 }
 
 async function listClassLinks (req,res,user) {
-    let classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
-        "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
-        "WHERE u.id = r.users_id " +
-        "AND c.id = r.classes_id AND r.classes_id = " + req.body.classId + " AND r.isInstructor = \'1\' ";
+    let classIdQuery;
+    if (req.body.classId){
+        classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
+            "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+            "WHERE u.id = r.users_id " +
+            "AND c.id = r.classes_id AND r.classes_id = " + req.body.classId + " AND r.isInstructor = \'1\' ";
+    }
+    // else if (req.body.email){
+    //     classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
+    //         "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+    //         "WHERE u.id = r.users_id " +
+    //         "AND c.id = r.classes_id AND u.email = " + req.body.email + " AND r.isInstructor = \'1\' ";
+    // }
+
     let classObj;
     try{
         const [rows, err ] = await db.execute(classIdQuery);
@@ -48,26 +58,62 @@ async function getStudentRegisterPage (req, res, next) {
 }
 
 async function checkUserIsValid(req, res, next) {
-  let query =
-    " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
+    let errors = [];
+    let query =
+        " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
 
-  try {
-    const [res, err] = await db.execute(query);
-    let userIsValid;
-    let errorMsg;
-    if (res.length > 0) {
-      userIsValid = 0;
-      errorMsg = "the user exists";
-    } else {
-      userIsValid = 1;
+    try {
+        const [rows, err] = await db.execute(query);
+        let userIsValid;
+        let errorMsg;
+        if (rows.length > 0) {
+            userIsValid = 0;
+            errorMsg = "This user with this email exists already. Reset password?"; //which means it is duplicate reg;
+            errors.push({msg: errorMsg})
+        } else {
+            userIsValid = 1;
+        }
+        if (errors.length > 0){
+            res.render('register', {
+                errors: errors,
+                title: "Form Validation",
+                classId: classIdValue,
+                classLinkId: classLinkIdValue
+            })
+        }else{
+            req.userIsValid = userIsValid;
+            req.errorMsg = errorMsg;
+            req.class_id = classIdValue;
+            next();
+        }
+    } catch (e) {
+        console.log("Catch an error: ", e);
+        errors.push({msg: e})
     }
-    req.userIsValid = userIsValid;
-    req.errorMsg = errorMsg;
-    req.class_id = classIdValue;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
-  }
+
+
+}
+async function insertUser(req, res, next) {
+    if (req.userIsValid === 1) {
+        const hash = bcrypt.hashSync(req.body.password, saltRounds);
+        let query =
+            " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
+            req.body.username +
+            "' , '" +
+            req.body.email +
+            "' , '" +
+            hash +
+            "', 0)";
+
+        try {
+            await db.execute(query);
+            next();
+        } catch (e) {
+            console.log("Catch an error: ", e);
+        }
+    } else {
+        next();
+    }
 }
 
 async function getUserId(req, res, next) {
@@ -142,28 +188,6 @@ async function getStudentLoginPage(req,res) {
   });
 }
 
-async function insertUser(req, res, next) {
-  if (req.userIsValid === 1) {
-    const hash = bcrypt.hashSync(req.body.password, saltRounds);
-    let query =
-      " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
-      req.body.username +
-      "' , '" +
-      req.body.email +
-      "' , '" +
-      hash +
-      "', 0)";
-
-    try {
-      await db.execute(query);
-      next();
-    } catch (e) {
-      console.log("Catch an error: ", e);
-    }
-  } else {
-    next();
-  }
-}
 
 async function getRegistrationId(req, res, next) {
     let query =

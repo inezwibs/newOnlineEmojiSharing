@@ -3,6 +3,7 @@ const bcrypt = require ("bcryptjs");
 
 let handleLogin = async (email, password) => {
     //check email is exist or not
+    email = email.replace(/\s/gm, "");
     let user = await findUserByEmail(email);
     let loginResult;
     if (user) {
