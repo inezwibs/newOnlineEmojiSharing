@@ -119,6 +119,7 @@ function processEmojiRecordsPerDay (emojiRecordsPerDay, req) {
       let records = getEmptyRecords();
       regIdArr = [];
       records[`count_emoji${emojiSuffix}`] = 1;
+      //TODO find better way to display count for not participate , if we have multiple people participating
       records[`count_notParticipated`] = studentRegistered - 1;
       emojiRecord.records = records;
       newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
@@ -185,10 +186,10 @@ function convertMinHourHelper(unformattedMinutes) {
 
 async function getText(req, res, next) {
   let query =
-    ` SELECT P.date_time, P.emojis_id, P.text, U.full_name, P.isAnonymous, SUBSTRING(date_time, 16,6) as record_time
+    `  SELECT P.date_time, P.emojis_id, P.text, U.id, U.full_name, P.isAnonymous, 
+ SUBSTRING(date_time, 16,6) as record_time
     FROM emojidatabase.posted_emojis P
-     join emojidatabase.registrations R on P.registration_id = R.id
-     join emojidatabase.users U on U.id = R.users_id where length(text)>0 and class_id = ` +
+    join emojidatabase.users U on U.id = P.users_id where length(text)>0 and class_id =` +
     req.class_id;
 
   try {
@@ -269,8 +270,8 @@ async function getHistoryPage(req,res) {
   let query = "SELECT * from emojidatabase.classes where id = " + req.class_id;
   let classInfo;
   try{
-    const [res,err] = await db.execute(query);
-    req.classInfo = res[0];
+    const [rows,err] = await db.execute(query);
+    req.classInfo = rows[0];
   }catch (e) {
     console.log(e)
   }

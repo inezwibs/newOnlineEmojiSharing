@@ -54,7 +54,7 @@ let initWebRoutes = (app) => {
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
     router.post("/sendEmoji" ,emojiController.getStudentClassId,  emojiController.getClassStartTime,
-        emojiController.invalidEmojiPostBranch,emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
+        emojiController.invalidEmojiPostBranch,emojiController.checkRecordExistsInPostedEmojis, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
         emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
         emojiController.getSendEmojiPage)
     //forget password
