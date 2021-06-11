@@ -53,10 +53,8 @@ let initWebRoutes = (app) => {
 
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
-    router.post("/sendEmoji" ,emojiController.getStudentClassId,  emojiController.getClassStartTime,
-        emojiController.invalidEmojiPostBranch,emojiController.checkRecordExistsInPostedEmojis, emojiController.insertEmojiRecord, emojiController.getInsertedEmojiTime,emojiController.checkRecordExists,
-        emojiController.getClassRegisteredStudentsCount, emojiController.getContributedStudentsCount,emojiController.insertRecordPerMinute,
-        emojiController.getSendEmojiPage)
+    router.post("/sendEmoji" ,emojiController.getStudentClassId, emojiController.triageBasedOnTime,
+        emojiController.insertRecords);
     //forget password
     router.get("/forget-password", passwordController.getForgotPasswordPage);
     router.post("/forget-password",passwordController.handlePostForgotPasswordPage);
@@ -64,14 +62,14 @@ let initWebRoutes = (app) => {
     router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
 
     //accessing using history routes
-    router.get("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords, historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.get("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage);
-    router.post("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords, historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.post("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage);
     //accessing from other pages
-    router.get("/history", historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords,historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.get("/history", historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords,historyController.getText,
         historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
-    router.post("/history", historyController.checkIfUserIsInstructor, emojiController.getClassRegisteredStudentsCount, historyController.getPostedEmojiRecords,historyController.getEmojiRecordsPerMinute, historyController.getText,
+    router.post("/history", historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
         historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
     router.post("/instructorLogout", instructorController.postLogOut);
     router.get("/instructorLogout", instructorController.postLogOut);

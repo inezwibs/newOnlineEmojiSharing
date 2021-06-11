@@ -10,16 +10,17 @@
 
     <script type="text/javascript">
         setInterval(function() {
-            $("#emoji3").attr('checked','checked');
-            $("#topScroll").fadeOut();
-        }, 18000000);//every 5 minute value reset 5 * 60 * 60 * 1000 = 18000000
+            //select the 2nd form which is emoji submit
+            document.forms[1].submit();
+        }, 60000);//every 1 minute value = 1 * 60 * 1000 = 60000
     </script>
     <script type="text/javascript">
         setInterval(function() {
-            //select the 2nd form which is emoji submit
-            document.forms[1].submit();
-        }, 3600000);//every 1 minute value = 1 * 60 * 60 * 1000 = 3600000
+            $("#emoji3").attr('checked','checked');
+            $("#topScroll").fadeOut();
+        }, 300000);//every 5 minute value reset 5 * 60 * 1000 = 300000
     </script>
+
 </head>
 <body>
 

@@ -58,7 +58,7 @@ async function getStudentClassId(req, res, next) {
     }
 }
 
-async function getSendEmojiPage(req,res,next) {
+async function getSendEmojiPage(req,res) {
 
     let rowsObj;
     let ids;
@@ -96,20 +96,22 @@ async function getSendEmojiPage(req,res,next) {
         if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
             errorMsg = "This user is not registered to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
             errors.push({msg: errorMsg});
+            throw new Error();
         }
     } catch (e) {
         console.log(e);
-        errors.push({msg: e})
+        errors.push({msg: e});
+        if (errors.length > 0){
+            res.render('login', {
+                errors: errors,
+                title: "Login",
+                classId: req.classId,
+                classLinkId: req.classLinkId,
+                isLoggedIn: req.isAuthenticated(),
+            })
+        }
     }
-    if (errors.length > 0){
-        res.render('login', {
-            errors: errors,
-            title: "Login",
-            classId: req.classId,
-            classLinkId: req.classLinkId,
-            isLoggedIn: req.isAuthenticated(),
-        })
-    }
+
     //TODO rowsObj showing undefined for new registrants
     let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
     let userIdValue = rowsObj.id;
@@ -121,7 +123,7 @@ async function getSendEmojiPage(req,res,next) {
             userId: userIdValue,
             userObj: rowsObj,
             emojiSelected: emojiValue,
-            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+            isAnonymousStatus: req.body.isAnonymous === "on"
     });
 }
 function getIntegerDatetime(daysArray){
@@ -191,10 +193,8 @@ async function getClassStartTime(req, res, next) {
             req.currentMinutes = resultDateArr[0]; // we send even if it is 0
             req.currentDate = resultDateArr[1];
             req.classStartMinutes = resultDateArr[2];
-            next();
         }else {
             req.currentMinutes = 0;
-            next();
         }
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -257,8 +257,6 @@ async function invalidEmojiPostBranch(req,res,next) {
                    });
             }
         }
-    } else {
-        next();
     }
 }
 async function checkRecordExistsInPostedEmojis(req, res, next) {
@@ -279,10 +277,30 @@ async function checkRecordExistsInPostedEmojis(req, res, next) {
             recordExistsInPostedEmojis  = true;
         }
         req.recordExistsInPostedEmojis = recordExistsInPostedEmojis;
-        next();
     } catch (e) {
         console.log("Catch an error: ", e);
     }
+}
+
+async function triageBasedOnTime(req,res,next){
+    await getClassStartTime(req,res,next);
+    if ( req.currentMinutes === 0 ){
+        await invalidEmojiPostBranch(req, res, next);
+    }else {
+        await checkRecordExistsInPostedEmojis(req,res,next);
+        await checkRecordExists(req,res,next);
+        // await getClassRegisteredStudentsCount(req,res,next);
+        // await getContributedStudentsCount(req,res,next);
+        next();
+    }
+
+}
+async function insertRecords(req,res,next){
+    await insertEmojiRecord(req,res,next);
+    await getClassRegisteredStudentsCount(req,res,next);
+    await getContributedStudentsCount(req,res,next);
+    await insertRecordPerMinute(req,res,next);
+    await getSendEmojiPage(req,res);
 }
 
 async function insertEmojiRecord(req, res, next) {
@@ -318,7 +336,7 @@ async function insertEmojiRecord(req, res, next) {
         try {
             const [rows, err] = await db.execute(query);
             req.posted_record_id = rows.insertId;
-            next();
+            // next();
         } catch (e) {
             console.log("Catch an error: ", e);
         }
@@ -330,155 +348,163 @@ async function insertEmojiRecord(req, res, next) {
         try {
             const [rows, err] = await db.execute(query);
             req.posted_record_id = rows.insertId;
-            next();
+            // next();
         } catch (e) {
             console.log("Catch an error: ", e);
         }
-        next();
-    }
-}
-
-async function getInsertedEmojiTime(req, res, next) {
-    //next call doesn't know req.insertminutes, need to call datetime calculate minutes
-    let query =
-        " SELECT  * FROM emojidatabase.posted_emojis where users_id = " +
-        req.user + " and class_id = " + req.class_id + " and " + " minute =" + req.insertMinutes
-    try {
-        const [rows, err] = await db.execute(query);
-        if (rows.length > 0) {
-            req.recordExistsInPostedEmojis = true;
-
-            req.emojis_id = rows[0].emojis_id;
-            currentEmoji = req.emojis_id;
-            req.insertedMinutes = rows[0].minute;
-            req.userIdPostedEmoji = rows[0].users_id;
-            next();
-        }else{
-            //when there is norecord inserted because invalid time
-            next()
-        }
-    } catch (e) {
-        console.log("Catch an error: ", e);
+        // next();
     }
 }
 
 async function checkRecordExists(req, res, next) {
     // var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
     let query;
-    let thisMinute = req.insertedMinutes ? req.insertedMinutes : req.currentMinutes;
-    if (thisMinute && req.body.userId && req.class_id){
+    req.thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes;
+    let recordExists = false;
+
+    if (req.thisMinute && req.body.userId && req.class_id){
          query =
             " SELECT * FROM emojidatabase.emojiRecordsPerMinute where min = " +
-            thisMinute +
-            " and users_id = " +
+             req.thisMinute +
+            " and users_id = '" +
             req.body.userId +
-            " and classes_id = " +
-            req.class_id;
+            "' and classes_id = '" +
+            req.class_id + "'";
 
         try {
             const [rows, err] = await db.execute(query);
-            var recordExists = false;
             //if record exists then assign to true
-            if (rows.length !== 0) {
+            if (rows != null && rows.length !== 0) {
+                req.existingRecord = rows[0]; // we use this to update/zero out the existing emoji
                 recordExists = true;
             }
             req.recordExists = recordExists;
-            next();
-        } catch (e) {
-            console.log("Catch an error: ", e);
+        } catch (err) {
+            req.recordExists = recordExists;
+            console.log("Catch an error: ", err);
         }
-    }else{
-        next();
     }
 }
 
-
-async function getClassRegisteredStudentsCount(req, res, next) {
+ async function getClassRegisteredStudentsCount(req, res, next) {
     let query =
         " SELECT count(*) as count FROM emojidatabase.registrations where classes_id = '" +
         req.class_id + "' AND isInstructor = \'0\' ";
 
     try {
-        const [rows, err] = await db.execute(query);
+        const [rows, err] =  await db.execute(query);
         req.classRegisteredStudentsCount = rows[0].count;
-        next();
     } catch (e) {
         console.log("Catch an error: ", e);
     }
 }
 
 async function getContributedStudentsCount(req, res, next) {
-    let thisMinute = req.insertedMinutes ? req.insertedMinutes : req.currentMinutes
+    let thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes
     let query =
-        " SELECT count(distinct registration_id) as count FROM emojidatabase.posted_emojis where class_id = " +
+        " SELECT count(distinct id) as count FROM emojidatabase.posted_emojis where class_id = " +
         req.class_id + " and minute = " + thisMinute;
     try {
         const [rows, fields] = await db.execute(query);
-        let contributedStudentsCount = rows[0].count;
+        req.contributedStudentsCount = rows[0].count;
         //TODO modify the way we do this
         req.studentNotContributed =
-            req.classRegisteredStudentsCount - contributedStudentsCount;
-        next();
+            req.classRegisteredStudentsCount - req.contributedStudentsCount;
     } catch (e) {
         console.log("Catch an error: ", e);
     }
 }
 
+async function resetEmojiRecordHelper(req,res){
+    let query;
+    /*
+        update yourTableName set yourColumnName =if(yourColumnName =yourOldValue,yourNewValue,yourColumnName);
+        if columnName matches count_emojithisEmoji set this.emoji
+        if columnName starts with count_emoji but not thisEmoji set to 0
+         */
+    /*
+    record exists in this minute,check the users_id
+    if the users id is the same and the min is the same then if it's not 0 -1
+    if ther users id is not the same and the min is the same then +1 that emoji count
+     */
+    try {
+        //loop through 1-5 skipping this emoji
+        if (req.existingRecord.users_id === req.user){
+            for (let i = 1; i <= 5; i++){
+                if (i === parseInt(req.thisEmoji)){
+                    continue;
+                }
+
+                query = `UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji${i} =IF(count_emoji${i} > 0,count_emoji${i}-1,count_emoji${i}) `+
+                    ` WHERE min = ${req.insertMinutes} AND classes_id = ${req.class_id} `+
+                    `AND date_time = '${req.currentDate}' AND users_id = ${req.body.userId}`
+                const [res, err] = await db.execute(query);
+            }
+        }else if (req.existingRecord.users_id !== req.user){
+            req.studentNotContributed = req.studentNotContributed - 1;
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
+
+}
 async function insertRecordPerMinute(req, res, next) {
     let gmtIndex = Date().search('GMT')
     let insertDateTimeValue = Date().substring(0,gmtIndex-1);// -1 to remove the space before GMT
     let query;
-    if (req.recordExists === true) {
 
+    req.thisEmoji = req.emojis_id ? req.emojis_id : req.body.optradio ;
+    if (req.recordExists === true) {
+        // this query if the req user of the existing record is the same
+        await resetEmojiRecordHelper(req,res);
         query =
-            " UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji" +
-            req.emojis_id +
+            " UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji" + req.thisEmoji +
             " = count_emoji" +
-            req.emojis_id +
+            req.thisEmoji  +
             "+1, count_notParticipated = " +
             req.studentNotContributed +
             " where min = " +
-            req.insertedMinutes +
+            req.insertMinutes +
             " and classes_id = " +
             req.class_id +
             " and date_time = '" +
-            insertDateTimeValue +
+            req.currentDate +
             "' " +
             " and users_id = " +
             req.body.userId
 
         try {
-            await db.execute(query);
+            const [res, err] = await db.execute(query);
             //   console.log("first: "+query);
-            next();
         } catch (e) {
             console.log("Catch an error: ", e);
         }
     } else {
-        //insert record
-
+        // req.contributedStudentsCount = req.contributedStudentsCount + 1;
+        // req.studentNotContributed = req.classRegisteredStudentsCount - req.contributedStudentsCount;
         query =
             " INSERT INTO emojidatabase.emojiRecordsPerMinute (min, count_emoji" +
-            req.emojis_id +
+            req.thisEmoji +
             ", count_notParticipated, classes_id, date_time, users_id) VALUES ( " +
-            req.insertedMinutes +
+            req.insertMinutes +
             ", 1 , " +
-            req.studentNotContributed +
+            req.studentNotContributed+
             ", " +
             req.class_id +
             ", '" +
-            insertDateTimeValue +
+            req.currentDate +
             "' ," +
             req.body.userId +
             ")";
 
         try {
-            await db.execute(query);
-            next();
+            const [res, err] = await db.execute(query);
         } catch (e) {
             console.log("Catch an error: ", e);
         }
     }
+
 }
 
 // function you can use:
@@ -512,9 +538,10 @@ async function studentLogOut (req, res) {
 module.exports = {
     getSendEmojiPage: getSendEmojiPage,
     getStudentClassId: getStudentClassId,
+    triageBasedOnTime: triageBasedOnTime,
     getClassStartTime: getClassStartTime,
     insertEmojiRecord: insertEmojiRecord,
-    getInsertedEmojiTime: getInsertedEmojiTime,
+    insertRecords:insertRecords,
     checkRecordExists: checkRecordExists,
     getClassRegisteredStudentsCount: getClassRegisteredStudentsCount,
     getContributedStudentsCount: getContributedStudentsCount,
