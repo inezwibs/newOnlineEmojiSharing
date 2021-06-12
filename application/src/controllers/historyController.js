@@ -104,8 +104,22 @@ async function getEmojiRecordsPerMinute(req, res, next) {
           //if object has the same min, add up the counts only
           if (existingValue.min === record.min){
             isMinFound = true;
-            for (let j = 1; j <= 5; j++){
-              newRecords[keyLocaleDateString][i][`count_emoji${j}`] += record[`count_emoji${j}`];
+            // if min is the same but the user is the same , use the record count to replace the existing one
+            if (newRecords[keyLocaleDateString][i]['users_id'] === record['users_id']) {
+              for (let j = 1; j <= 5; j++){
+                if (newRecords[keyLocaleDateString][i][`count_emoji${j}`] !== record[`count_emoji${j}`]){
+                  newRecords[keyLocaleDateString][i][`count_emoji${j}`] = record[`count_emoji${j}`];
+                }
+              }
+              // if min is the same but the user is not the same, then add it
+            }else {
+              let sumCountEmoji = 0 ;
+              for (let j = 1; j <= 5; j++){
+                newRecords[keyLocaleDateString][i][`count_emoji${j}`] += record[`count_emoji${j}`];
+                sumCountEmoji += newRecords[keyLocaleDateString][i][`count_emoji${j}`];
+              }
+              let sumCountNotParticipate = req.classRegisteredStudentsCount - sumCountEmoji;
+              newRecords[keyLocaleDateString][i]['count_notParticipated'] = sumCountNotParticipate;
             }
             //done adding to existing record, we don't add record to newRecords
             break;

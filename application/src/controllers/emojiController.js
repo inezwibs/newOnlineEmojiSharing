@@ -275,6 +275,7 @@ async function checkRecordExistsInPostedEmojis(req, res, next) {
         //if record exists then assign to true
         if (rows.length !== 0) {
             recordExistsInPostedEmojis  = true;
+            req.existingRecordInPostedEmojis = rows[0];
         }
         req.recordExistsInPostedEmojis = recordExistsInPostedEmojis;
     } catch (e) {
@@ -472,7 +473,8 @@ async function insertRecordPerMinute(req, res, next) {
             req.currentDate +
             "' " +
             " and users_id = " +
-            req.body.userId
+            req.body.userId + " and id = " +
+            req.existingRecord.id;
 
         try {
             const [res, err] = await db.execute(query);
@@ -533,7 +535,6 @@ async function studentLogOut (req, res) {
         return res.redirect('/login?classLinkId=' + paramString);
     });
 }
-
 
 module.exports = {
     getSendEmojiPage: getSendEmojiPage,
