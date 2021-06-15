@@ -19,6 +19,7 @@ async function checkIfUserIsInstructor(req, res, next) {
   }
 
   let query;
+  req.user = req.body.userid;
   if (req.user && req.body.classId){
     query =
         " SELECT * FROM emojidatabase.registrations where classes_id = " + req.body.classId + " and users_id = " + req.user;
@@ -80,7 +81,7 @@ async function getEmojiRecordsPerMinute(req, res, next) {
     // req.records = convertTime(res);
     req.records = res;
     /*
-    got through each day
+    go through each day
     grab the date and create a new dictionary
     key is the x/xx/xxxx and value is the record
     if there is more than 1 per minute, add up the the mojis
@@ -119,6 +120,8 @@ async function getEmojiRecordsPerMinute(req, res, next) {
                 sumCountEmoji += newRecords[keyLocaleDateString][i][`count_emoji${j}`];
               }
               let sumCountNotParticipate = req.classRegisteredStudentsCount - sumCountEmoji;
+              //non participant number should not be negative
+              sumCountNotParticipate = sumCountNotParticipate < 0 ? 0 : sumCountNotParticipate;
               newRecords[keyLocaleDateString][i]['count_notParticipated'] = sumCountNotParticipate;
             }
             //done adding to existing record, we don't add record to newRecords
@@ -172,16 +175,8 @@ function processEmojiRecordsPerDay (emojiRecordsPerDay, req) {
       //key does not exist
       //init first key value array
       newEmojiRecordsPerDay[keyLocaleDateString] = [];
-      // let records = getEmptyRecords();
       regIdArr = [];
-      // records[`count_emoji${emojiSuffix}`] = 1;
-      //TODO find better way to display count for not participate , if we have multiple people participating
-      /*
-      get count not participate
-       */
-      // records[`count_notParticipated`] = req.records ;
-      // emojiRecord.records = records;
-      newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
+            newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
       regIdArr.push(emojiRecord.registration_id);
 
     } else { //object has key , add values into array
@@ -192,18 +187,12 @@ function processEmojiRecordsPerDay (emojiRecordsPerDay, req) {
       if (prevDateTime.getDate() === dateInt && prevDateTime.getMonth() === monthInt) {
           if (prevDateTime.getHours() === hoursInt && prevDateTime.getMinutes() === minuteInt){
             //records
-            // newEmojiRecordsPerDay[keyLocaleDateString][subArrLength - 1].records[`count_emoji${emojiSuffix}`] += 1;
             if (!regIdArr.includes(currentRegId)){
               regIdArr.push(currentRegId)
             }
-            // newEmojiRecordsPerDay[keyLocaleDateString][subArrLength - 1].records[`count_notParticipated`] =
-            //     req.classRegisteredStudentsCount - regIdArr.length;
+
           }else {// if the minute is different , but in the same day
-            // let records = getEmptyRecords();
             regIdArr = [];
-            // records[`count_emoji${emojiSuffix}`] = 1;
-            // records[`count_notParticipated`] = studentRegistered - 1;
-            // emojiRecord.records = records;
             newEmojiRecordsPerDay[keyLocaleDateString].push(emojiRecord);
             regIdArr.push(emojiRecord.registration_id)
 
@@ -349,6 +338,9 @@ async function getHistoryPage(req,res) {
     isInstructor: tmp,
     postedRecordsPerDay: req.emojiRecordsPerDay,
     userInfo: req.userInfo,
+    userid: req.body.userid,
+    emojiSelected: req.body.emojiSelected,
+    isAnonymousStatus: req.body.isAnonymousStatus,
     history_chart_access: req.history_chart_access,
     history_text_access: req.history_text_access,
     classLinkId: req.classLinkId,

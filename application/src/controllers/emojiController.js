@@ -26,10 +26,7 @@ async function getStudentClassId(req, res, next) {
             req.classLinkId = ids[0];
         }
 
-        if (req.user){
-            req.user = req.user;
-            next();
-        }else if (req.body){
+        if (req.body){
             req.user = req.body.userId;
             //most likely won't need this as the body will have user id
             // let query =
@@ -68,29 +65,55 @@ async function getSendEmojiPage(req,res) {
     if (!req.classLinkId || !req.user_id || !req.userEmail){
         if (req.url && (req.url).match(re)){
             ids= getIdsFromUrl(req.url);
-            if (ids && ids.length === 2){
+            if (ids && ids.length === 4){
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
+                req.userInfo = ids[2];
+                req.emojiSelected = ids[3];
+            }else if (ids && ids.length === 2){
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
             }
-        } else if (req.query.regId && (req.query.regId).match(re)){
-            ids= getIdsFromUrl(req.query.regId);
-            if (ids && ids.length === 2){
+        } else if (req.query.classLinkId && (req.query.classLinkId).match(re)){
+            ids= getIdsFromUrl(req.query.classLinkId);
+            if (ids && ids.length === 4){
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
+                req.userInfo = ids[2];
+                req.emojiSelected = ids[3];
+            }else if (ids && ids.length === 2){
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
             }
         } else if (req.headers.referer && (req.headers.referer).match(re).length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
-                req.classLinkId = ids[1];
-                req.classId = ids[2];
+            if (ids && ids.length === 4) {
 
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
+                req.userInfo = ids[2];
+                req.emojiSelected = ids[3];
+            }  else if (ids && ids.length === 2){
+                req.classLinkId = ids[0];
+                req.classId = ids[1];
+            }
         } else if (req.body.classLinkId && req.body.userId && req.body.classId) {
             req.classLinkId = req.body.classLinkId;
             req.classId = req.body.classId;
         }
     }
-
+    req.isAnonymousStatus = req.query.isAnonymousStatus;
     try {
-        req.userInfo = req.body.email ? req.body.email : req.user;
+        if (req.userInfo === undefined){
+            req.userInfo = req.body.email ? req.body.email : req.query.userid;
+        }
+        if (req.userInfo === undefined){
+            req.userInfo = req.body.userinfo;
+        }
+        if (req.userInfo === undefined){
+            req.userInfo = req.body.userId ? req.body.userId : req.body.userInfo;
+        }
+
         rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
         //TODO: check when rowObj is undefined
         if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
@@ -112,18 +135,18 @@ async function getSendEmojiPage(req,res) {
         }
     }
 
-    //TODO rowsObj showing undefined for new registrants
+    //TODO classes_id showing undefined for new registrants
     let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
     let userIdValue = rowsObj.id;
-    let emojiValue = req.body.optradio ? req.body.optradio  : '3';
+    let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
     res.render("emojiSharing", {
             classLinkId: req.classLinkId,
             regId : req.classLinkId,
             classId: classIdValue,//id shows undefined?
             userId: userIdValue,
             userObj: rowsObj,
-            emojiSelected: emojiValue,
-            isAnonymousStatus: req.body.isAnonymous === "on"
+            emojiSelected: emojiValue ? emojiValue : "3",
+            isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus
     });
 }
 function getIntegerDatetime(daysArray){

@@ -30,6 +30,10 @@
             <input  type="submit" value="History" />
             <input type="hidden" name="classId" value="<%=classId%>" />
             <input type="hidden" name="userid" value="<%=userId%>" />
+            <input type="hidden" name="emojiSelected" value="<%=emojiSelected%>" />
+            <input type="hidden" name="userObj" value="<%=userObj%>" />
+            <input type="hidden" name="isAnonymousStatus" value="<%=isAnonymousStatus%>" />
+
 
         </form>
         <%}else if (typeof dateStringParams !== 'undefined') {%>
@@ -37,6 +41,9 @@
             <input type="submit" value="History" />
             <input type="hidden" name="classId" value="<%=classId%>" />
             <input type="hidden" name="userid" value="<%=userId%>" />
+            <input type="hidden" name="emojiSelected" value="<%=emojiSelected%>" />
+            <input type="hidden" name="userObj" value="<%=userObj%>" />
+            <input type="hidden" name="isAnonymousStatus" value="<%=isAnonymousStatus%>" />
         </form>
         <%}%>
     </div>

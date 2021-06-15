@@ -3,18 +3,19 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"/>
 <script>
   function checkForm(form) {
-    if (
-            form.password.value != "" &&
-            form.password.value == form.passwordMatch.value
-    ) {
-      //alert("Good Job");
-      return true;
-    } else {
-      alert(
-              "Error: Please check that you've entered and confirmed your password!"
-      );
-      form.password.focus();
-      return false;
+    var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (form.email.value.match(emailFormat)) {
+      if (form.password.value != "" && form.password.value == form.passwordMatch.value) {
+        return true;
+      }else {
+        alert("Error: Please check that you've entered and confirmed your passwords match!");
+        form.password.focus();
+        return false;
+      }
+    }else{
+        alert("Error: Please check that you've entered a valid email address!");
+        form.email.focus();
+        return false;
     }
   }
 </script>
@@ -26,67 +27,33 @@
 
         <div id="instructorForm-box" class="col-md-12">
 <!--         was /action home-->
-          <form id="instructorForm" class="form" action="/instructorRegister" method="POST"
-                onsubmit="return checkForm(this);"
-          >
+          <form id="instructorForm" name="instructorForm" class="form" action="/instructorRegister" method="POST"
+                onsubmit="return checkForm(this);">
             <h3 class="text-center text-info">Instructor Form</h3>
+
             <div class="form-group">
-              <label for="firstName" class="text-info"
-                >Instructor Full Name:</label
-              ><br />
-              <input
-                type="text"
-                name="name"
-                id="firstName"
-                class="form-control"
-                required>
+              <label for="firstName" class="text-info">Instructor Full Name:</label><br />
+              <input type="text" name="name" id="firstName" class="form-control" required>
             </div>
 
             <div class="form-group">
-              <label for="email" class="text-info"
-                >Instructor Email:</label
-              ><br />
-              <input
-                type="text"
-                name="email"
-                id="email"
-                class="form-control"
-                required>
+              <label for="email" class="text-info">Instructor Email:</label><br />
+              <input type="text" name="email" id="email" class="form-control" required>
             </div>
 
             <div class="form-group">
               <label for="password" class="text-info">Password:</label><br />
-              <input
-                      pattern=".{6,18}"
-                      title="Should be between 6 and 18 characters!"
-                      type="password"
-                      name="password"
-                      id="password"
-                      class="form-control"
-                      required
-              />
+              <input pattern=".{6,18}" title="Should be between 6 and 18 characters!" type="password"
+                      name="password" id="password" class="form-control" required />
             </div>
 
             <div class="form-group">
-              <label for="passwordMatch" class="text-info"
-              >Confirm Password:</label
-              ><br />
-              <input
-                      type="password"
-                      name="passwordMatch"
-                      id="passwordMatch"
-                      class="form-control"
-                      required
-              />
+              <label for="passwordMatch" class="text-info">Confirm Password:</label><br />
+              <input type="password" name="passwordMatch" id="passwordMatch" class="form-control" required />
             </div>
 
             <div class="form-group">
-              <input
-                      type="submit"
-                      name="submit"
-                      class="btn btn-info btn-md"
-                      value="Create Instructor Account"
-              />
+              <input type="submit" name="submit" class="btn btn-info btn-md" value="Create Instructor Account" />
             </div>
 
             <div>

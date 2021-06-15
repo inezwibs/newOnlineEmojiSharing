@@ -11,11 +11,10 @@
       form.password.value != "" &&
       form.password.value == form.passwordMatch.value
     ) {
-      //alert("Good Job");
       return true;
     } else {
       alert(
-        "Error: Please check that you've entered and confirmed your password!"
+        "Error: Please check that you've entered and confirmed your passwords match!"
       );
       form.password.focus();
       return false;
