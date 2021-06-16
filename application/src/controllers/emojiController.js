@@ -73,6 +73,9 @@ async function getSendEmojiPage(req,res) {
             }else if (ids && ids.length === 2){
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
+            }else if (ids && ids.length === 3){
+                req.classLinkId = ids[1];
+                req.classId = ids[2];
             }
         } else if (req.query.classLinkId && (req.query.classLinkId).match(re)){
             ids= getIdsFromUrl(req.query.classLinkId);
@@ -84,7 +87,11 @@ async function getSendEmojiPage(req,res) {
             }else if (ids && ids.length === 2){
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
+            }else if (ids && ids.length === 3){
+                req.classLinkId = ids[1];
+                req.classId = ids[2];
             }
+
         } else if (req.headers.referer && (req.headers.referer).match(re).length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
             if (ids && ids.length === 4) {
@@ -96,6 +103,9 @@ async function getSendEmojiPage(req,res) {
             }  else if (ids && ids.length === 2){
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
+            }else if (ids && ids.length === 3){
+                req.classLinkId = ids[1];
+                req.classId = ids[2];
             }
         } else if (req.body.classLinkId && req.body.userId && req.body.classId) {
             req.classLinkId = req.body.classLinkId;
@@ -104,14 +114,17 @@ async function getSendEmojiPage(req,res) {
     }
     req.isAnonymousStatus = req.query.isAnonymousStatus;
     try {
-        if (req.userInfo === undefined){
+        if ( req.userInfo == null && req.body.email || req.userInfo == null && req.query.userid ){
             req.userInfo = req.body.email ? req.body.email : req.query.userid;
         }
-        if (req.userInfo === undefined){
+        if ( req.userInfo == null && req.body.userinfo){
             req.userInfo = req.body.userinfo;
         }
-        if (req.userInfo === undefined){
+        if ( req.userInfo == null && req.body.userId || req.userInfo == null && req.body.userInfo){
             req.userInfo = req.body.userId ? req.body.userId : req.body.userInfo;
+        }
+        if ( req.userInfo  == null && req.user.id){
+            req.userInfo = req.user.id;
         }
 
         rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )

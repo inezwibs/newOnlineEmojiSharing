@@ -29,7 +29,7 @@ let initPassportLocal = () => {
 };
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user);
 });
 
 passport.deserializeUser((id, done) => {

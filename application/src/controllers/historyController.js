@@ -19,13 +19,13 @@ async function checkIfUserIsInstructor(req, res, next) {
   }
 
   let query;
-  req.user = req.body.userid;
+  req.user = req.body.userid ? req.body.userid : req.session.passport.user.id
   if (req.user && req.body.classId){
     query =
         " SELECT * FROM emojidatabase.registrations where classes_id = " + req.body.classId + " and users_id = " + req.user;
   }else{
     query =
-        " SELECT * FROM emojidatabase.registrations where id = " + classLinkId;
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user;
   }
 
   try {
