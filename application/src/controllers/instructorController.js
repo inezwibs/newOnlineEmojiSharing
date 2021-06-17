@@ -13,13 +13,15 @@ async function getInstructorPage (req,res,user) {
     console.log(res.locals);
     console.log(instructorObj);
     let instructorId;
-    if (req.user){
-        instructorId = req.user;
-    }else{
+    if (typeof req.user === 'object' && req.user !== null){
+        instructorId = req.user.id;
+    }else if (instructorObj){
         instructorId = instructorObj[0].id;
+    }else if(typeof req.user === 'number' ){
+        instructorId = req.user;
     }
     let query =
-        " SELECT * FROM emojidatabase.users where id = '" + instructorId + "'";
+        " SELECT * FROM emojidatabase.users where id = '" + instructorId + "' and isInstructor = 1";
 
     try{
         const [rows, err ] = await db.execute(query);
@@ -44,9 +46,13 @@ async function checkLoggedIn (req, res, next) {
     if (!req.isAuthenticated()) {
         return res.redirect("/instructorLogin");
     }else {
-        //
-        let user = req.user;
-        let query = "SELECT id,isInstructor FROM emojidatabase.registrations where users_id = '" + user + "'";
+        let userId;
+        if (typeof req.user === 'object' && req.user !== null){
+            userId = req.user.id;
+        } else if (typeof req.user === 'number' ){
+            userId = req.user;
+        }
+        let query = "SELECT id,isInstructor FROM emojidatabase.registrations where users_id = '" + userId + "'";
         try{
             const[rows,fields] = await db.execute(query);
             //check students who are not in registration because they didn't have class link

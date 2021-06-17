@@ -2,6 +2,8 @@ const db = require("../configs/database.js");
 const localPath = 'http://localhost:4000/history';
 const path = 'http://emotionthermometer.online/history';
 const emojiController = require("../controllers/emojiController");
+const DateService = require( "../services/dateServices" );
+const dateService = new DateService();
 
 async function checkIfUserIsInstructor(req, res, next) {
   let classLinkId
@@ -89,11 +91,8 @@ async function getEmojiRecordsPerMinute(req, res, next) {
     let newRecords = {};
     let isMinFound;
     req.records.forEach( record => {
-      //get the date
-      let dateTimeMilliseconds = Date.parse(record.date_time);
-      let dateTime = new Date(dateTimeMilliseconds);
-      let keyLocaleDateString = dateTime.toLocaleDateString();
-
+      //get the date in local string from db record
+      let keyLocaleDateString = dateService.parseDateTimeRecord(record.date_time);
       // if newRecords does not have key , add key and value
       if (!newRecords.hasOwnProperty(keyLocaleDateString)){
         newRecords[keyLocaleDateString] = [];
@@ -140,19 +139,6 @@ async function getEmojiRecordsPerMinute(req, res, next) {
   } catch (e) {
     console.log("Catch an error: ", e);
   }
-}
-
-
-function getEmptyRecords(){
-  let records = {
-    count_emoji1: 0,
-    count_emoji2: 0,
-    count_emoji3: 0,
-    count_emoji4: 0,
-    count_emoji5: 0,
-    count_notParticipated:0
-  }
-  return records;
 }
 
 function processEmojiRecordsPerDay (emojiRecordsPerDay, req) {

@@ -2,7 +2,7 @@
 //
 // const express = require("express");
 // const router = express.Router();
-// const { User } = require("../configs/user.js"); //User model not being used
+// const { User } = require("../configs/zzzuser.js"); //User model not being used
 // const passport = require("passport");
 // const db = require("../configs/database.js");
 // const bcrypt = require("bcryptjs");

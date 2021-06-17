@@ -1,6 +1,6 @@
 const db = require("../configs/database.js");
-const express = require("express");
-const {url} = require("url");
+const DateService = require( "../services/dateServices" );
+const dateService = new DateService();
 let currentEmoji;
 
 
@@ -297,25 +297,22 @@ async function invalidEmojiPostBranch(req,res,next) {
 }
 async function checkRecordExistsInPostedEmojis(req, res, next) {
     req.insertMinutes = req.currentMinutes - req.classStartMinutes;
-    let query =
-        " SELECT * FROM emojidatabase.posted_emojis where minute = " +
-        req.insertMinutes +
-        " and users_id = " +
-        req.user +
-        " and class_id = " +
-        req.class_id;
+
+    // TODO checking if the record exists needs to look at the date
+    req.currentDateString = dateService.parseDateTimeRecord(new Date());
 
     try {
-        const [rows, err] = await db.execute(query);
-        var recordExistsInPostedEmojis  = false;
-        //if record exists then assign to true
-        if (rows.length !== 0) {
-            recordExistsInPostedEmojis  = true;
-            req.existingRecordInPostedEmojis = rows[0];
+        let recordDate = dateService.parseDateTimeRecord(dateService.getRecordDate(req.body, req.insertMinutes));
+        if (recordDate ===  req.currentDateString){
+            req.recordExistsInPostedEmojis = true;
+        }else {
+            req.recordExistsInPostedEmojis = false
         }
-        req.recordExistsInPostedEmojis = recordExistsInPostedEmojis;
+
     } catch (e) {
         console.log("Catch an error: ", e);
+        res.status( 500 ).send( err );
+
     }
 }
 
@@ -394,32 +391,20 @@ async function insertEmojiRecord(req, res, next) {
 }
 
 async function checkRecordExists(req, res, next) {
-    // var minute = req.insertedEmojiMinutes - req.classStartMinutes - 8 * 60;
-    let query;
     req.thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes;
-    let recordExists = false;
 
-    if (req.thisMinute && req.body.userId && req.class_id){
-         query =
-            " SELECT * FROM emojidatabase.emojiRecordsPerMinute where min = " +
-             req.thisMinute +
-            " and users_id = '" +
-            req.body.userId +
-            "' and classes_id = '" +
-            req.class_id + "'";
-
-        try {
-            const [rows, err] = await db.execute(query);
-            //if record exists then assign to true
-            if (rows != null && rows.length !== 0) {
-                req.existingRecord = rows[0]; // we use this to update/zero out the existing emoji
-                recordExists = true;
-            }
-            req.recordExists = recordExists;
-        } catch (err) {
-            req.recordExists = recordExists;
-            console.log("Catch an error: ", err);
+    try {
+        let record = dateService.parseDateTimeRecord(dateService.getRecordDateFromEmojiRecords(req.body, req.thisMinute));
+        if (record.date_time ===  req.currentDateString){
+            req.recordExists = true;
+            req.existingRecord = record;
+        }else {
+            req.recordExists = false
         }
+
+    } catch (err) {
+        console.log("Catch an error: ", err);
+        res.status( 500 ).send( err );
     }
 }
 
