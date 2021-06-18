@@ -302,16 +302,22 @@ async function checkRecordExistsInPostedEmojis(req, res, next) {
     req.currentDateString = dateService.parseDateTimeRecord(new Date());
 
     try {
-        let recordDate = dateService.parseDateTimeRecord(dateService.getRecordDate(req.body, req.insertMinutes));
-        if (recordDate ===  req.currentDateString){
-            req.recordExistsInPostedEmojis = true;
-        }else {
+        let recordDateTimeObj = await dateService.getRecordDate(req.body, req.insertMinutes);
+        if (recordDateTimeObj.success && recordDateTimeObj.body.length > 0){
+            //TODO manage the case for when body has more than one use recordDate contains
+            let recordResult = dateService.findMatchingRecord(req.currentDateString)
+            if (recordResult.success){
+                req.recordExistsInPostedEmojis = true;
+                req.existingRecordInPostedEmojis = recordResult.body;
+            } else{// if record date and current date is not the same
+                req.recordExistsInPostedEmojis = false
+            }
+        }else { // if success is false getting from db, or [] is empty
             req.recordExistsInPostedEmojis = false
         }
-
     } catch (e) {
         console.log("Catch an error: ", e);
-        res.status( 500 ).send( err );
+        res.status( 500 ).send( e );
 
     }
 }
@@ -375,9 +381,10 @@ async function insertEmojiRecord(req, res, next) {
             console.log("Catch an error: ", e);
         }
     }else {
+        // TODO need to get id for record to update
         query =
             " UPDATE emojidatabase.posted_emojis SET emojis_id = " + req.body.optradio +
-            " where users_id =" + req.user + " and minute = " + req.insertMinutes ;
+            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id;
 
         try {
             const [rows, err] = await db.execute(query);
@@ -394,12 +401,18 @@ async function checkRecordExists(req, res, next) {
     req.thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes;
 
     try {
-        let record = dateService.parseDateTimeRecord(dateService.getRecordDateFromEmojiRecords(req.body, req.thisMinute));
-        if (record.date_time ===  req.currentDateString){
-            req.recordExists = true;
-            req.existingRecord = record;
+        let recordDateTimeObject = await dateService.getRecordDateFromEmojiRecords(req.body, req.thisMinute);
+        if (recordDateTimeObject.success && recordDateTimeObject.body.length > 0 ){
+            //TODO manage the case for when body has more than one use recordDate contains
+            let recordResult = dateService.findMatchingRecord(req.currentDateString)
+            if (recordResult.success){
+                req.recordExists = true;
+                req.existingRecord = recordResult.body;
+            } else{// if record date and current date is not the same
+                req.recordExists = false;
+            }
         }else {
-            req.recordExists = false
+            req.recordExists = false;
         }
 
     } catch (err) {
@@ -451,18 +464,13 @@ async function resetEmojiRecordHelper(req,res){
      */
     try {
         //loop through 1-5 skipping this emoji
-        if (req.existingRecord.users_id === req.user){
+        if (req.existingRecord.users_id.toString() === req.user){
             for (let i = 1; i <= 5; i++){
-                if (i === parseInt(req.thisEmoji)){
-                    continue;
-                }
-
-                query = `UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji${i} =IF(count_emoji${i} > 0,count_emoji${i}-1,count_emoji${i}) `+
-                    ` WHERE min = ${req.insertMinutes} AND classes_id = ${req.class_id} `+
-                    `AND date_time = '${req.currentDate}' AND users_id = ${req.body.userId}`
+                query = `UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji${i} = 0 `+
+                    ` WHERE id = '${req.existingRecord.id}'`
                 const [res, err] = await db.execute(query);
             }
-        }else if (req.existingRecord.users_id !== req.user){
+        }else if (req.existingRecord.users_id.toString() !== req.user){
             req.studentNotContributed = req.studentNotContributed - 1;
         }
 
@@ -486,15 +494,7 @@ async function insertRecordPerMinute(req, res, next) {
             req.thisEmoji  +
             "+1, count_notParticipated = " +
             req.studentNotContributed +
-            " where min = " +
-            req.insertMinutes +
-            " and classes_id = " +
-            req.class_id +
-            " and date_time = '" +
-            req.currentDate +
-            "' " +
-            " and users_id = " +
-            req.body.userId + " and id = " +
+            " WHERE id = " +
             req.existingRecord.id;
 
         try {

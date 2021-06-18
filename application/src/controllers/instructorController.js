@@ -1,12 +1,14 @@
 const db = require("../configs/database.js");
 const registerService = require ("./../services/registerServices");
+const InstructorService = require( "../services/instructorServices" );
+const instructorService = new InstructorService();
 const {url} = require("url");
 
 let instructorObj ={};
 let instructorClassesObj={};
 let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
-
+let doesClassExist = false;
 
 async function getInstructorPage (req,res,user) {
     console.log(req);
@@ -150,10 +152,9 @@ async function insertClasses(req, res, next) {
                 req.body.endTime +
                 "' )";
             try {
-                await db.execute(query);
-                // console.log("insertClasses2");
-                // console.log(query);
-                // req.instructorID = res[0].id;
+                const [res, err] = await db.execute(query);
+
+                req.insertedClassId = res.insertId;
                 next();
             } catch (e) {
                 console.log("Catch an error: ", e);
@@ -161,6 +162,11 @@ async function insertClasses(req, res, next) {
 
         }else{
             console.log('Class already exist')
+            let tempResult = await instructorService.getClassID(req.body);
+            if (tempResult.success){
+                req.insertedClassId = tempResult.body[0].id;
+            }
+            doesClassExist = true;
             next();
         }
     }catch (e) {
@@ -173,26 +179,6 @@ async function insertClasses(req, res, next) {
 
 }
 
-async function getClassID(req, res, next) {
-    let query =
-        " SELECT * FROM emojidatabase.classes where datetime = '" +
-        req.body.weekday +
-        "-" +
-        req.body.startTime +
-        "-" +
-        req.body.endTime +
-        "'";
-    res.locals = req.body;
-    // instructorObj = res.locals;
-    try {
-        const [res, err] = await db.execute(query);
-        // console.log(query);
-        req.classId = res[0].id;
-        next();
-    } catch (e) {
-        console.log("Catch an error: ", e);
-    }
-}
 
 
 async function getInstructorClasses(instructorId) {
@@ -248,33 +234,36 @@ async function getInstructorClassNames(classesArrayFromRegDatabase){
 async function insertToRegistration(req, res, next) {
     let userId;
     if (req.user){
-        userId = req.user;
+        userId = req.user.id;
     }else if (instructorObj){
         userId = instructorObj.id;
     }
-    let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE classes_id='"+
-        req.classId + "' AND users_id = '" + userId + "'" ;
-    let query;
-    try{
-        const [rows, fields] = await db.execute(checkExistingInstructor);
-        if (rows === undefined || rows.length === 0){
-            query =
-                " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-                req.classId +
-                " ," +
-                userId +
-                " , 1 )";
-            try{
-                await db.execute(query);
-            }catch (e) {
-                console.log("Catch an error: ", e);
+    if (!doesClassExist){
+        try{
+            let doesInstructorExist = await instructorService.checkExistingInstructor(req.body,userId);
+
+            if (doesInstructorExist.success && doesInstructorExist.body.length > 0 ){
+                let query =
+                    " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
+                    req.insertedClassId +
+                    " ," +
+                    userId +
+                    " , 1 )";
+                try{
+                    await db.execute(query);
+                }catch (e) {
+                    console.log("Catch an error: ", e);
+                }
             }
-        }
-        next();
+            next();
             //get the reg id from the entered classes
-    }catch (e) {
-        console.log("Catch an error: ", e);
+        }catch (e) {
+            console.log("Catch an error: ", e);
+        }
+    }else {
+        next();
     }
+
 }
 
 async function generateLink(req, res, next) {
@@ -313,7 +302,6 @@ module.exports = {
     insertInstructure:insertInstructure,
     getInstructorID: getInstructorID,
     insertClasses:insertClasses,
-    getClassID:getClassID,
     insertToRegistration:insertToRegistration,
     generateLink:generateLink,
     getInstructorPage: getInstructorPage,

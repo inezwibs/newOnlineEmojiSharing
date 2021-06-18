@@ -274,37 +274,60 @@ async function getUserVisibility(req, res, next) {
 
 async function getHistoryPage(req,res) {
   let tmp = false;
+  let isParamsDateActive = false;
   let emojiDatesArray = Object.keys(req.emojiRecordsPerDay);
 
   if (req.isInstructor === 1) {
     tmp = true;
   }
   let topChartKey;
+  // if a date is passed in through url
   if (req.params.date) {
+    //use the params date
+    isParamsDateActive = true;
     let paramsDate = req.params.date;
     let paramsDateArr = paramsDate.split('-');
     topChartKey = paramsDateArr.join('/');
   } else {
+    // else take the latest
     topChartKey = emojiDatesArray[emojiDatesArray.length - 1];
   }
-  //get current date and compare with the latest
+  //get current date and compare with the topChartKey
   let current = new Date();
   current = current.toLocaleDateString('en-US',{ timeZone: 'America/Los_Angeles'})
   let topChartRecords;
   let topChart;
   let topDate;
-  if (current === topChartKey) {
-    //if current date equal to top Chart key this means we have data  for that day
-    topChart = req.emojiRecordsPerDay[topChartKey];
-    topChartRecords = req.newRecords[topChartKey];
-    topDate = (new Date(Date.parse(topChart[parseInt(0)].date_time))).toLocaleDateString('en-US', {timeZone: 'America/Los_Angeles'});
-  } else {
-    //if current date not equal to top Chart key this means no data yet for that day
-    topDate = current;
-    topChartRecords = '';
-    topChart = '';
+
+  if (!isParamsDateActive){ // if no date in params
+    if (current === topChartKey) {
+      //if current date equal to top Chart key this means we have data for that day
+      topChart = req.emojiRecordsPerDay[topChartKey];
+      topChartRecords = req.newRecords[topChartKey];
+      topDate = (new Date(Date.parse(topChart[parseInt(0)].date_time))).toLocaleDateString('en-US', {timeZone: 'America/Los_Angeles'});
+    }else {
+      //if current date not equal to top Chart key this means no data yet for that day
+      topDate = current;
+      topChartRecords = '';
+      topChart = '';
+    }
+  }else { // if isParamsDateActive is true , i.e. there is date in params
+      //if current date equal to top Chart key this means we have data  for that day
+      topChart = req.emojiRecordsPerDay[topChartKey];
+      topChartRecords = req.newRecords[topChartKey];
+      topDate = topChartKey;
   }
 
+
+  // Todo grab from req.userinfo the date time that match top chart
+  req.userInfoList =[];
+  if (topChartRecords.length !== 0){
+    req.userInfoList = dateService.findMatchingObjectsList(req.userInfo, topChartKey)
+  }
+  // get topChartKey is the date we want to show
+  // for each user info, check date_time, parse it , match itto topChart key
+  // if it matches take it put into anew array
+  // return array empty or full
 
   let query = "SELECT * from emojidatabase.classes where id = " + req.class_id;
   let classInfo;
@@ -323,7 +346,7 @@ async function getHistoryPage(req,res) {
     topChartRecords: topChartRecords,
     isInstructor: tmp,
     postedRecordsPerDay: req.emojiRecordsPerDay,
-    userInfo: req.userInfo,
+    userInfo: req.userInfoList,
     userid: req.body.userid,
     emojiSelected: req.body.emojiSelected,
     isAnonymousStatus: req.body.isAnonymousStatus,
