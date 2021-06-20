@@ -18,7 +18,7 @@ let initWebRoutes = (app) => {
         instructorController.insertToRegistration, instructorController.generateLink);
 
     router.get("/", instructorController.checkLoggedIn, instructorController.getInstructorPage);
-    router.post("/",instructorController.insertInstructure,
+    router.post("/",instructorController.insertInstructor,
         instructorController.getInstructorID,instructorController.checkedInstructor);
 
     router.get("/instructorLogin", instructorController.getInstructorLoginPage);
@@ -29,7 +29,7 @@ let initWebRoutes = (app) => {
         successFlash: true
     }));
     router.get("/instructorRegister", instructorController.getInstructorRegisterPage);
-    router.post("/instructorRegister",instructorController.insertInstructure,
+    router.post("/instructorRegister",instructorController.insertInstructor,
         instructorController.getInstructorID,instructorController.checkedInstructor);
 
     //student get routes they can't go directly, must get class link
@@ -39,11 +39,10 @@ let initWebRoutes = (app) => {
         failureFlash: true,
         successFlash: true,
         successRedirect: "/sendEmoji"}));
-    //student get routes, they can't go dirctly, must get class link
+    //student get routes, they can't go directly, must get class link
     router.get("/register", studentController.getStudentRegisterPage);
-    router.post("/register", studentController.checkUserIsValid,studentController.insertUser,
-    studentController.getUserId,studentController.checkRegistration,studentController.insertRegistration,
-    studentController.getRegistrationId,emojiController.getSendEmojiPage);
+    router.post("/register", studentController.checkUserIsValid,
+        studentController.insertRegistration, emojiController.getSendEmojiPage);
     router.post("/logout", emojiController.studentLogOut);
     router.get("/logout", emojiController.studentLogOut);
 

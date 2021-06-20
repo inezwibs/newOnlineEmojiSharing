@@ -1,12 +1,13 @@
 const db = require("../configs/database.js");
 const {url} = require("url");
-const bcrypt = require("bcryptjs");
-const saltRounds = 10;
+
 let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 const emojiController = require("../controllers/emojiController");
 let classIdValue;
 let classLinkIdValue;
+const StudentServices = require( "../services/studentServices" );
+const studentServices = new StudentServices();
 
 
 async function getClassLinkPage (req, res, next) {
@@ -59,20 +60,73 @@ async function getStudentRegisterPage (req, res, next) {
 
 async function checkUserIsValid(req, res, next) {
     let errors = [];
-    let query =
-        " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
+    let userIsValid = 0;
 
     try {
-        const [rows, err] = await db.execute(query);
-        let userIsValid;
-        let errorMsg;
-        if (rows.length > 0) {
-            userIsValid = 0;
-            errorMsg = "This user with this email exists already. Reset password?"; //which means it is duplicate reg;
-            errors.push({msg: errorMsg})
-        } else {
-            userIsValid = 1;
+        let rows = await studentServices.checkExistingClassRegistration(req.body);
+        let isEmpty = studentServices.isEmptyObject(rows.body);
+        // if user does not exist at all
+        if (rows.success && isEmpty && !rows.isRegistered){
+            let insertUserResult = await studentServices.insertUser(req.body);
+            if (insertUserResult.success){
+                req.user_id = insertUserResult.body.insertId;
+            }
+            // if user exist but not registered for this class
+            // user the same email and password
+            // give them link to login page with class id and class link id
+        }else if (rows.success && !isEmpty && !rows.isRegistered){
+            req.user_id = rows.body.id;
+            req.user_details = rows.body;
+            let insertRegResult = await studentServices.insertRegistration(req.body, req.user_id, classIdValue);
+            if (insertRegResult.success){
+                req.reg_id = insertRegResult.body.insertId;
+                req.classLinkId = classLinkIdValue;
+                req.classId = classIdValue;
+                console.log('Reg Id', req.reg_id)
+                return res.render("login", {
+                    title: "Login",
+                    classId: classLinkIdValue,
+                    classLinkId: classIdValue,
+                    isLoggedIn: req.isAuthenticated(),
+                    alerts: rows.message
+                });
+            }else if (insertRegResult.body === 1){
+                req.reg_id = insertRegResult.body.insertId;
+                req.classLinkId = classLinkIdValue;
+                req.classId = classIdValue;
+                console.log('Reg Id', req.reg_id)
+                return res.render("login", {
+                    title: "Login",
+                    classId: classLinkIdValue,
+                    classLinkId: classIdValue,
+                    isLoggedIn: req.isAuthenticated(),
+                    errors: insertRegResult.error
+                });
+            } else {
+                let errorMessage = "";
+                if (insertRegResult.error){
+                    if (insertRegResult.error[0].msg.errno === 1054){
+                        errorMessage = "We are having trouble completing registration. Please try a new browser window and start a new page."
+                    }
+                }
+                errors.push({msg: errorMessage})
+            }
+            // if user exist and registered for this class
+        }else if (rows.isRegistered) {
+            //rows.success is false
+            req.reg_id = rows.body.insertId;
+            req.classLinkId = classLinkIdValue;
+            req.classId = classIdValue;
+            console.log('Reg Id', req.reg_id)
+            return res.render("login", {
+                title: "Login",
+                classId: classLinkIdValue,
+                classLinkId: classIdValue,
+                isLoggedIn: req.isAuthenticated(),
+                alerts: rows.message
+            });
         }
+        // check for errors
         if (errors.length > 0){
             res.render('register', {
                 errors: errors,
@@ -81,142 +135,56 @@ async function checkUserIsValid(req, res, next) {
                 classLinkId: classLinkIdValue
             })
         }else{
-            req.userIsValid = userIsValid;
-            req.errorMsg = errorMsg;
-            req.class_id = classIdValue;
-            next();
+            next()
         }
     } catch (e) {
         console.log("Catch an error: ", e);
         errors.push({msg: e})
     }
-
-
-}
-async function insertUser(req, res, next) {
-    if (req.userIsValid === 1) {
-        const hash = bcrypt.hashSync(req.body.password, saltRounds);
-        let query =
-            " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
-            req.body.username +
-            "' , '" +
-            req.body.email +
-            "' , '" +
-            hash +
-            "', 0)";
-
-        try {
-            await db.execute(query);
-            next();
-        } catch (e) {
-            console.log("Catch an error: ", e);
-        }
-    } else {
-        next();
-    }
 }
 
-async function getUserId(req, res, next) {
-  let query =
-    " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
-
-  try {
-    const [res, err] = await db.execute(query);
-    req.user_id = res[0].id;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
-  }
-}
-
-async function checkRegistration(req, res, next) {
-  let query =
-    " SELECT * FROM emojidatabase.registrations where id = " +
-    req.class_id +
-    " and users_id = " +
-    req.user_id;
-  try {
-    const [res, err] = await db.execute(query);
-    // console.log(query);
-    let duplicateregistration;
-    if (res.length > 0) {
-      duplicateregistration = 1;
-    } else {
-      duplicateregistration = 0;
-    }
-    req.duplicateregistration = duplicateregistration;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
-  }
-}
 
 async function insertRegistration(req, res, next) {
-  if (req.duplicateregistration === 0) {
+    let errors = [];
     let query =
       " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-      req.class_id +
+      classIdValue +
       " ," +
       req.user_id +
       " , 0 )";
      try {
-      const [res, err] = await db.execute(query);
-      // console.log(query);
-      let duplicateregistration;
-      if (res.length > 0) {
-        duplicateregistration = 1;
-      } else {
-        duplicateregistration = 0;
-      }
-      req.duplicateregistration = duplicateregistration;
-      next();
-    } catch (e) {
-      console.log("Catch an error: ", e);
-    }
-  } else {
-    next();
-  }
+         const [res, err] = await db.execute(query);
+         req.reg_id = res.insertId;
+         req.classLinkId = classLinkIdValue;
+         req.classId = classIdValue;
+         console.log('Reg Id', req.reg_id)
+         next();
+     } catch (e) {
+         console.log("Catch an error: ", e);
+         errors.push({msg: e})
+         res.render('register', {
+             errors: errors,
+             title: "Form Validation",
+             classId: classIdValue,
+             classLinkId: classLinkIdValue
+         })
+     }
 }
 
 async function getStudentLoginPage(req,res) {
-
     return res.render("login", {
         title: "Login",
         classId: req.query.classId,
         classLinkId: req.query.classLinkId,
         isLoggedIn: req.isAuthenticated(),
-  });
-}
-
-
-async function getRegistrationId(req, res, next) {
-    let query =
-        " SELECT * FROM emojidatabase.registrations where classes_id = " +
-        req.class_id +
-        " and users_id = " +
-        req.user_id;
-
-    try {
-        const [res, err] = await db.execute(query);
-        // console.log(query);
-        req.reg_id = res[0].id;
-        req.classLinkId = classLinkIdValue;
-        req.classId = classIdValue;
-        console.log('Reg Id',req.reg_id)
-        next();
-    } catch (e) {
-        console.log("Catch an error: ", e);
-    }
+        alerts: []
+    });
 }
 
 module.exports = {
     getStudentLoginPage: getStudentLoginPage,
-    getRegistrationId: getRegistrationId,
     getStudentRegisterPage: getStudentRegisterPage,
     checkUserIsValid:checkUserIsValid,
-    insertUser:insertUser,
-    getUserId:getUserId,
-    checkRegistration:checkRegistration,
     insertRegistration:insertRegistration,
     getClassLinkPage:getClassLinkPage,
     listClassLinks:listClassLinks

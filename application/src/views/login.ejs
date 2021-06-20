@@ -9,6 +9,13 @@
                 <div id="login-box" class="col-md-12">
                     <form id="login-form" class="form" action="/login?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
                         <h3 class="text-center text-info">Login</h3>
+                        <div>
+                            <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
+                                <p class="alert alert-primary" alerts="alert">
+                                    <%= alerts %>
+                                </p>
+                            <% } %>
+                        </div>
                         <div class="form-group">
                             <label for="email" class="text-info">Email:</label><br>
                                 <input type="hidden" name="classId" id="classId"  >

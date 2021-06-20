@@ -55,6 +55,15 @@
 <div class="row justify-content-center align-items-center">
   <div id="instructorForm-column" class="col-md-6">
     <div id="instructorForm-box" class="col-md-12">
+      <div>
+        <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
+          <ul class="alert alert-primary" role="alert">
+            <% for (var i = 0 ; i < alerts.length ; i++){ %>
+              <li> <%= alerts[i].msg %></li>
+            <% }%>
+          </ul>
+        <% } %>
+      </div>
       <form id="instructorForm" class="form" action="/instructor" method="POST">
         <h3 class="text-center text-info">Welcome Professor <%=newInstructor%></h3>
 

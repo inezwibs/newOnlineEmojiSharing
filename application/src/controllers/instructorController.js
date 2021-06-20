@@ -14,16 +14,15 @@ async function getInstructorPage (req,res,user) {
     console.log(req);
     console.log(res.locals);
     console.log(instructorObj);
-    let instructorId;
     if (typeof req.user === 'object' && req.user !== null){
-        instructorId = req.user.id;
+        res.instructorId = req.user.id;
     }else if (instructorObj){
-        instructorId = instructorObj[0].id;
+        res.instructorId = instructorObj[0].id;
     }else if(typeof req.user === 'number' ){
-        instructorId = req.user;
+        res.instructorId = req.user;
     }
     let query =
-        " SELECT * FROM emojidatabase.users where id = '" + instructorId + "' and isInstructor = 1";
+        " SELECT * FROM emojidatabase.users where id = '" + res.instructorId + "' and isInstructor = 1";
 
     try{
         const [rows, err ] = await db.execute(query);
@@ -31,7 +30,7 @@ async function getInstructorPage (req,res,user) {
     }catch(e){
         console.log('error' , e)
     }
-    let instructorClassesArray = await getInstructorClasses(instructorId);
+    let instructorClassesArray = await getInstructorClasses(res.instructorId);
     let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
     if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
         return res.redirect("/");
@@ -40,7 +39,8 @@ async function getInstructorPage (req,res,user) {
         newInstructor : instructorObj.full_name,
         classes : instructorClassesArray,
         classNames : instructorClassNamesArray,
-        path : path
+        path : path,
+        alerts : res.alerts
     });
 };
 
@@ -79,7 +79,7 @@ let getInstructorRegisterPage = (req,res) => {
 };
 
 //insert instructor to db users
-async function insertInstructure(req, res, next) {
+async function insertInstructor(req, res, next) {
 
 
     let newInstructor = {
@@ -87,14 +87,16 @@ async function insertInstructure(req, res, next) {
         email: req.body.email,
         password: req.body.password,
         isInstructor: 1,
-        instructorID: '',
-        className:''
+        instructorId: '',
     };
 
     try {
         //create new instructor
-        await registerService.createNewInstructor(newInstructor);
-
+        const result = await registerService.createNewInstructor(newInstructor);
+        if (result.success){
+            res.instructorId = result.body.instructorId;
+            res.alert = [result.body.message];
+        }
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -103,7 +105,7 @@ async function insertInstructure(req, res, next) {
 
 async function getInstructorID(req, res, next) {
     let query =
-        " SELECT * FROM emojidatabase.users where email = '" + req.body.email + "'";
+        " SELECT * FROM emojidatabase.users where id = " + res.instructorId;
 
     try {
         const [rows, err] = await db.execute(query);
@@ -153,7 +155,6 @@ async function insertClasses(req, res, next) {
                 "' )";
             try {
                 const [res, err] = await db.execute(query);
-
                 req.insertedClassId = res.insertId;
                 next();
             } catch (e) {
@@ -172,11 +173,8 @@ async function insertClasses(req, res, next) {
     }catch (e) {
         console.log("Catch an error: ", e);
     }
-
     res.locals = req.body;
     instructorClassesObj = res.locals;
-
-
 }
 
 
@@ -299,7 +297,7 @@ async function postLogOut (req, res) {
 
 
 module.exports = {
-    insertInstructure:insertInstructure,
+    insertInstructor:insertInstructor,
     getInstructorID: getInstructorID,
     insertClasses:insertClasses,
     insertToRegistration:insertToRegistration,
