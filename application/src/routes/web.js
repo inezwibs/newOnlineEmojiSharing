@@ -35,7 +35,7 @@ let initWebRoutes = (app) => {
     //student get routes they can't go directly, must get class link
     router.get("/login", studentController.getStudentLoginPage);
     router.post("/login", passport.authenticate("local", {
-        failureRedirect: "/fail",
+        failureRedirect: "/register",
         failureFlash: true,
         successFlash: true,
         successRedirect: "/sendEmoji"}));
