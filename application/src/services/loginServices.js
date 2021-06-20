@@ -1,25 +1,28 @@
 const db = require( "../configs/database");
 const bcrypt = require ("bcryptjs");
 
-let handleLogin = async (email, password) => {
+let handleLogin = async (email, password, reqBody) => {
     //check email is exist or not
     email = email.replace(/\s/gm, "");
     let user = await findUserByEmail(email);
-    let loginResult;
+    let loginResult, message;
     if (user) {
         //compare password
         await bcrypt.compare(password, user[0].password).then((isMatch) => {
             if (isMatch) {
                 console.log("Login successful");
-                loginResult =  user;
+                message = "Login successful"
+                loginResult =  { success: true, user: user, body: reqBody, message: message};
             } else {
                 console.log("The password that you've entered is incorrect");
-                loginResult =  undefined;
+                message = "The password that you've entered is incorrect"
+                loginResult =  { success: false, user: user, body: reqBody, message: message};
             }
         });
     } else {
-        console.log(`This user email "${email}" doesn't exist`);
-        loginResult =  undefined;
+        console.log(`This user email "${email}" doesn't exist for this class`);
+        message = `This user email "${email}" doesn't exist for this class`
+        loginResult =  { success: false, user: user, body: reqBody, message: message};
     }
     return loginResult;
 };
@@ -69,6 +72,7 @@ let comparePassword = (password, userObject) => {
         }
 
 };
+
 
 module.exports = {
     handleLogin: handleLogin,

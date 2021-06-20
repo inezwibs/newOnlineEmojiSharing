@@ -1,9 +1,11 @@
 const db = require("../configs/database.js");
 const {url} = require("url");
-
+const re = /\d+/g;
 let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 const emojiController = require("../controllers/emojiController");
+const ParsingService = require("../services/parsingServices");
+const parsingService = new ParsingService();
 let classIdValue;
 let classLinkIdValue;
 const StudentServices = require( "../services/studentServices" );
@@ -48,14 +50,29 @@ async function listClassLinks (req,res,user) {
 };
 
 async function getStudentRegisterPage (req, res, next) {
-   classLinkIdValue = req.query.classLinkId && req.query.classLinkId.length < 5 ? req.query.classLinkId: emojiController.getIdsFromUrl(req.url)[0];
-   classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
-  res.render("register", {
-    title: "Form Validation",
-    classId: classIdValue,
-    classLinkId: classLinkIdValue
-  });
-  req.session.errors = null;
+    if (req.url && (req.url).match(re)) {
+
+        classLinkIdValue = req.query.classLinkId && req.query.classLinkId.length < 5 ? req.query.classLinkId : emojiController.getIdsFromUrl(req.url)[0];
+        classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
+        res.render("register", {
+            title: "Form Validation",
+            classId: classIdValue,
+            classLinkId: classLinkIdValue
+        });
+        req.session.errors = null;
+    }
+    if (req.user && req.user.body.classLinkId.match(re)){
+        let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
+        classLinkIdValue = result[0];
+        classIdValue = result[1];
+        res.render("register", {
+            title: "Form Validation",
+            classId: classIdValue,
+            classLinkId: classLinkIdValue,
+            alerts: req.user.message
+        });
+        req.session.errors = null;
+    }
 }
 
 async function checkUserIsValid(req, res, next) {

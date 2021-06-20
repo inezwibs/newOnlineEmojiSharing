@@ -12,13 +12,13 @@ let initPassportLocal = () => {
         },
         async (req, email, password, done) => {
             try {
-                const isValidUser = await loginServices.handleLogin(email,password);
-                    if (!isValidUser) {
+                const isValidUser = await loginServices.handleLogin(email,password, req.body);
+                    if (!isValidUser.success) {
                         return done(null, false, req.flash("errors", `This user email "${email}" doesn't exist`));
                     }
                     else{
-                        req.user = isValidUser
-                            return done(null, isValidUser[0], isValidUser)
+                        req.user = isValidUser;
+                            return done(null, isValidUser);
                     }
             } catch (err) {
                 console.log(err);

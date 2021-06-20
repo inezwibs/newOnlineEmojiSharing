@@ -1,6 +1,7 @@
 const db = require("../configs/database.js");
 const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
+const parsingService = require("../services/parsingServices");
 let currentEmoji;
 
 
@@ -125,6 +126,9 @@ async function getSendEmojiPage(req,res) {
         }
         if ( req.userInfo  == null && req.user.id){
             req.userInfo = req.user.id;
+        }
+        if (req.user){
+            req.userInfo = req.user.user[0].id;
         }
 
         rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
