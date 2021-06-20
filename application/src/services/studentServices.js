@@ -175,5 +175,44 @@ class StudentServices {
             return {success: false, error: isDuplicateResult.error};
         }
     }
+    async getEmojiClassData(userInfo, classLinkId, classId) {
+        let userQuery;
+        // let userInfoType = userInfo.indexOf('@');
+        if (userInfo.length > 4) {
+            userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+                "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+                "WHERE u.id = r.users_id " +
+                "AND c.id = r.classes_id " +
+                "AND u.email = '" + userInfo + "'";
+        }else {
+            userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+                "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
+                "WHERE u.id = r.users_id " +
+                "AND c.id = r.classes_id " +
+                "AND u.id = '" + userInfo + "'";
+        }
+        let result;
+        try {
+            const [rows, fields] =  await db.execute(userQuery);
+            if (rows === undefined || rows.length === 0) {
+                console.log("User does not exist. Please register.")
+                result = 0;
+            } else if (classId !== 0 || classId !== undefined ){
+                rows.forEach( row => {
+                    var temp = parseInt(classId);
+                    if (row.classes_id === temp){
+                        result = row;
+                    }
+                });
+            } else if (classId === 0 || classId === undefined && rows){
+                //meaning no regId was provided then we pick first one
+                result = rows[0];
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        return result;
+    }
+
 }
 module.exports = StudentServices;

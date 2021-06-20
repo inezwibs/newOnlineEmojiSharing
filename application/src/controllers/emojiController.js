@@ -127,9 +127,13 @@ async function getSendEmojiPage(req,res) {
         if ( req.userInfo  == null && req.user.id){
             req.userInfo = req.user.id;
         }
-        if (req.user){
+        if (typeof req.user === 'object'){
             req.userInfo = req.user.user[0].id;
+        }else if (typeof req.user === 'string'){
+            req.userInfo = req.user;
         }
+
+
 
         rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
         //TODO: check when rowObj is undefined

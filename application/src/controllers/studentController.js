@@ -61,10 +61,38 @@ async function getStudentRegisterPage (req, res, next) {
         });
         req.session.errors = null;
     }
-    if (req.user && req.user.body.classLinkId.match(re)){
+    if (req.user && req.user.success && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
-        classLinkIdValue = result[0];
-        classIdValue = result[1];
+        if (result.length == 2){
+            classLinkIdValue = result[0];
+            classIdValue = result[1];
+        }else if (result.length < 2 && req.user.body.classLinkId.length >0 && req.user.body.classId.length > 0 ){
+            classLinkIdValue = req.user.body.classLinkId;
+            classIdValue = req.user.body.classId;
+        }
+        let rowsObj = await studentServices.getEmojiClassData (req.user.user[0].id, classLinkIdValue, classIdValue )
+
+        res.render("emojiSharing", {
+            alerts: req.user.message,
+            classLinkId: classLinkIdValue,
+            regId : classLinkIdValue,
+            classId: classIdValue,//id shows undefined?
+            userId: req.user.user[0].id,
+            userObj: rowsObj,
+            emojiSelected: '3',
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+        });
+    }
+    if (req.user && !req.user.success && req.user.body.classLinkId.match(re)){
+        let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
+        if (result.length == 2){
+            classLinkIdValue = result[0];
+            classIdValue = result[1];
+        }else if (result.length < 2 && req.user.body.classLinkId.length >0 && req.user.body.classId.length > 0 ){
+            classLinkIdValue = req.user.body.classLinkId;
+            classIdValue = req.user.body.classId;
+        }
+
         res.render("register", {
             title: "Form Validation",
             classId: classIdValue,
@@ -102,8 +130,8 @@ async function checkUserIsValid(req, res, next) {
                 console.log('Reg Id', req.reg_id)
                 return res.render("login", {
                     title: "Login",
-                    classId: classLinkIdValue,
-                    classLinkId: classIdValue,
+                    classId: classIdValue,
+                    classLinkId: classLinkIdValue,
                     isLoggedIn: req.isAuthenticated(),
                     alerts: rows.message
                 });
@@ -114,8 +142,8 @@ async function checkUserIsValid(req, res, next) {
                 console.log('Reg Id', req.reg_id)
                 return res.render("login", {
                     title: "Login",
-                    classId: classLinkIdValue,
-                    classLinkId: classIdValue,
+                    classId: classIdValue,
+                    classLinkId: classLinkIdValue,
                     isLoggedIn: req.isAuthenticated(),
                     errors: insertRegResult.error
                 });
@@ -137,8 +165,8 @@ async function checkUserIsValid(req, res, next) {
             console.log('Reg Id', req.reg_id)
             return res.render("login", {
                 title: "Login",
-                classId: classLinkIdValue,
-                classLinkId: classIdValue,
+                classId: classIdValue,
+                classLinkId: classLinkIdValue,
                 isLoggedIn: req.isAuthenticated(),
                 alerts: rows.message
             });
