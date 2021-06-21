@@ -35,7 +35,7 @@ let createNewInstructor = async (data) => {
         } catch (err) {
             console.log("Catch an error: ", err);
             message = `There was an error caught while inserting to database. Error message: "${err}"`;
-            return { success: true, body: [], message: message };
+            return { success: false, body: [], message: message };
         }
     }
 };

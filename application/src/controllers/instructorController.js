@@ -15,7 +15,7 @@ async function getInstructorPage (req,res,user) {
     console.log(res.locals);
     console.log(instructorObj);
     if (typeof req.user === 'object' && req.user !== null){
-        res.instructorId = req.user.id;
+        res.instructorId = req.user.user[0].id;
     }else if (instructorObj){
         res.instructorId = instructorObj[0].id;
     }else if(typeof req.user === 'number' ){
@@ -36,6 +36,7 @@ async function getInstructorPage (req,res,user) {
         return res.redirect("/");
     }
     return res.render("instructorAccount.ejs" ,{
+        instructorObject : instructorObj,
         newInstructor : instructorObj.full_name,
         classes : instructorClassesArray,
         classNames : instructorClassNamesArray,
@@ -50,7 +51,7 @@ async function checkLoggedIn (req, res, next) {
     }else {
         let userId;
         if (typeof req.user === 'object' && req.user !== null){
-            userId = req.user.id;
+            userId = req.user.user[0].id;
         } else if (typeof req.user === 'number' ){
             userId = req.user;
         }
@@ -94,8 +95,15 @@ async function insertInstructor(req, res, next) {
         //create new instructor
         const result = await registerService.createNewInstructor(newInstructor);
         if (result.success){
-            res.instructorId = result.body.instructorId;
-            res.alert = [result.body.message];
+            req.instructorId = result.body[0].instructorId;
+            req.alert = [result.body.message];
+        }else if (!result.success){
+            if (result.body.length > 0){
+                req.instructorId = result.body[0].id;
+                req.alert = [result.body.message];
+            }else{
+                throw new Error(result.message);
+            }
         }
         next();
     } catch (e) {
@@ -105,7 +113,7 @@ async function insertInstructor(req, res, next) {
 
 async function getInstructorID(req, res, next) {
     let query =
-        " SELECT * FROM emojidatabase.users where id = " + res.instructorId;
+        " SELECT * FROM emojidatabase.users where id = " + req.instructorId;
 
     try {
         const [rows, err] = await db.execute(query);
@@ -138,6 +146,7 @@ if currentTimeInMinutes is between startTimeInMinutes and endTimeInMinutes
 
 //create classes
 async function insertClasses(req, res, next) {
+    req.body.instructorObject = instructorService.parseInstructorObject(req.body);
     let isClassUniqueQuery = " SELECT * FROM emojidatabase.classes where class_name = '"+req.body.className+ "'" +
         " and datetime = '" + req.body.weekday + "-" + req.body.startTime + "-" + req.body.endTime + "'";
     try{
@@ -163,18 +172,26 @@ async function insertClasses(req, res, next) {
 
         }else{
             console.log('Class already exist')
+            doesClassExist = true;
             let tempResult = await instructorService.getClassID(req.body);
             if (tempResult.success){
                 req.insertedClassId = tempResult.body[0].id;
             }
-            doesClassExist = true;
+            let classIsRegisteredResult = await instructorService.getClassRegistrationID(req.body, req.insertedClassId);
+            if (classIsRegisteredResult.success && classIsRegisteredResult.body.length > 0 ){
+                req.classIsRegisteredResult = true;
+            }else if (classIsRegisteredResult.success && classIsRegisteredResult.body.length === 0 ){
+                req.classIsRegisteredResult = false;
+            }else{
+                throw new Error();
+            }
+            res.locals = req.body;
+            instructorClassesObj = res.locals;
             next();
         }
     }catch (e) {
         console.log("Catch an error: ", e);
     }
-    res.locals = req.body;
-    instructorClassesObj = res.locals;
 }
 
 
@@ -231,14 +248,16 @@ async function getInstructorClassNames(classesArrayFromRegDatabase){
 
 async function insertToRegistration(req, res, next) {
     let userId;
-    if (req.user){
+    if (typeof req.user == 'string'){
         userId = req.user.id;
-    }else if (instructorObj){
+    }else if (instructorObj.length > 0 ){
         userId = instructorObj.id;
+    }else if (typeof req.user == 'object'){
+        userId = req.user.user[0].id;
     }
-    if (!doesClassExist){
+    if (!doesClassExist || doesClassExist && !req.classIsRegisteredResult){
         try{
-            let doesInstructorExist = await instructorService.checkExistingInstructor(req.body,userId);
+            let doesInstructorExist = await instructorService.checkExistingInstructor(req.body);
 
             if (doesInstructorExist.success && doesInstructorExist.body.length > 0 ){
                 let query =
@@ -248,7 +267,8 @@ async function insertToRegistration(req, res, next) {
                     userId +
                     " , 1 )";
                 try{
-                    await db.execute(query);
+                    const [res,err] = await db.execute(query);
+                    req.insertedClassRegId = res.insertId;
                 }catch (e) {
                     console.log("Catch an error: ", e);
                 }
@@ -266,7 +286,7 @@ async function insertToRegistration(req, res, next) {
 
 async function generateLink(req, res, next) {
 
-    currentInstructor = instructorObj.id;
+    currentInstructor = instructorObj.id ? instructorObj.id : req.body.instructorObject.id;
     let query =" SELECT * FROM emojidatabase.registrations where users_id ='" + currentInstructor +"'";
 
     try {

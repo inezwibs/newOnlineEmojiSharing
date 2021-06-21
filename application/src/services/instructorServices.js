@@ -6,9 +6,9 @@ class InstructorServices {
 
     }
 
-    async checkExistingInstructor ( reqBody, userId ) {
+    async checkExistingInstructor ( reqBody ) {
         let query = "SELECT * FROM emojidatabase.registrations WHERE isInstructor ="+
-            1 + " AND users_id = '" + userId + "'" ;
+            1 + " AND users_id = '" + reqBody.instructorObject.id + "'" ;
 
         try {
             // We only pass the body object, never the req object
@@ -33,7 +33,29 @@ class InstructorServices {
         // instructorObj = res.locals;
         try {
             const [rows, err] = await db.execute(query);
-            // console.log(query);
+            return { success: true, body: rows };
+        } catch (e) {
+            console.log("Catch an error: ", e);
+            return { success: false, body: e };
+        }
+    }
+
+    parseInstructorObject(reqBody){
+        if (reqBody.instructorObject.length > 0 && typeof reqBody.instructorObject == 'string'){
+            reqBody.instructorObject = JSON.parse(reqBody.instructorObject);
+            return reqBody.instructorObject;
+        }
+        return reqBody.instructorObject;
+    }
+
+    async getClassRegistrationID(reqBody, insertedClassId) {
+
+        let query =
+            " SELECT * FROM emojidatabase.registrations where classes_id = " + insertedClassId +
+            " and users_id = " + reqBody.instructorObject.id;
+        // instructorObj = res.locals;
+        try {
+            const [rows, err] = await db.execute(query);
             return { success: true, body: rows };
         } catch (e) {
             console.log("Catch an error: ", e);
