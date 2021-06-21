@@ -60,8 +60,7 @@ async function getStudentRegisterPage (req, res, next) {
             classLinkId: classLinkIdValue
         });
         req.session.errors = null;
-    }
-    if (req.user && req.user.success && req.user.body.classLinkId.match(re)){
+    } else if (req.user && req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
         if (result.length == 2){
             classLinkIdValue = result[0];
@@ -82,8 +81,7 @@ async function getStudentRegisterPage (req, res, next) {
             emojiSelected: '3',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
         });
-    }
-    if (req.user && !req.user.success && req.user.body.classLinkId.match(re)){
+    }else if (req.user && !req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
         if (result.length == 2){
             classLinkIdValue = result[0];
