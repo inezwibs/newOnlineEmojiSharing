@@ -138,7 +138,7 @@ async function getSendEmojiPage(req,res) {
             rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
             //TODO: check when rowObj is undefined
             if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
-                errorMsg = "This user is not registered to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
+                errorMsg = "This user is not a registered student to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
                 // errors.push({msg: errorMsg});
                 throw new Error(errorMsg);
             }
@@ -247,6 +247,8 @@ async function getClassStartTime(req, res, next) {
 
 async function getEmojiClassData(userInfo, classLinkId, classId) {
     let userQuery;
+    var temp = parseInt(classId);
+
     // let userInfoType = userInfo.indexOf('@');
     if (userInfo.length > 4) {
         userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
@@ -269,7 +271,6 @@ async function getEmojiClassData(userInfo, classLinkId, classId) {
             result = 0;
         } else if (classId !== 0 || classId !== undefined ){
             rows.forEach( row => {
-                var temp = parseInt(classId);
                 if (row.classes_id === temp){
                     result = row;
                 }
