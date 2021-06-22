@@ -22,9 +22,7 @@ class StudentServices {
         }
         // if user exist but maybe or maybe not for this class
         if (checkResult.success && checkResult.body.length > 0) {
-            let query = `SELECT *
-                         FROM emojidatabase.registrations
-                         where users_id = ${checkResult.body[0].id}`;
+            let query = `SELECT * FROM emojidatabase.registrations where users_id = ${checkResult.body[0].id}`;
             try {
                 const [rows, err] = await db.execute(query);
                 console.log(rows);

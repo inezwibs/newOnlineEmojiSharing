@@ -114,7 +114,7 @@ async function getSendEmojiPage(req,res) {
         }
     }
     req.isAnonymousStatus = req.query.isAnonymousStatus;
-    try {
+
         if ( req.userInfo == null && req.body.email || req.userInfo == null && req.query.userid ){
             req.userInfo = req.body.email ? req.body.email : req.query.userid;
         }
@@ -134,15 +134,15 @@ async function getSendEmojiPage(req,res) {
         }
 
 
-
-        rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
-        //TODO: check when rowObj is undefined
-        if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
-            errorMsg = "This user is not registered to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
-            errors.push({msg: errorMsg});
-            throw new Error();
-        }
-    } catch (e) {
+        try{
+            rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
+            //TODO: check when rowObj is undefined
+            if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
+                errorMsg = "This user is not registered to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
+                // errors.push({msg: errorMsg});
+                throw new Error(errorMsg);
+            }
+        } catch (e) {
         console.log(e);
         errors.push({msg: e});
         if (errors.length > 0){

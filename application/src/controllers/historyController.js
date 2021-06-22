@@ -368,7 +368,7 @@ async function getHistoryPage(req,res) {
   }
 
   res.render('newHistory', {
-    path:localPath,
+    path:path,
     emojiDatesArray: emojiDatesArray,
     topDate: topDate,
     topChart: topChart,

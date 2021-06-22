@@ -37,7 +37,7 @@
     <ul>
       <% for (var i = 0; i < classes.length ; i++){ %>
         <li class="class-list"><a target="_blank" href=<%= path+classes[i].id%>?classId=<%= classes[i].classes_id%>>Go to Emoji Sharing app for
-              class link id: <%= classes[i].id %>, class id: <%=classes[i].classes_id%> <%=classNames[i][0].class_name%> on <%=classNames[i][0].datetime%> </a>
+            class id: <%=classes[i].classes_id%>, class name: <%=classNames[i][0].class_name%>, on <%=classNames[i][0].datetime%> </a>
         </li>
       <% }%>
     </ul>
