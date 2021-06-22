@@ -14,6 +14,7 @@ let initPassportLocal = () => {
             try {
                 const isValidUser = await loginServices.handleLogin(email,password, req.body);
                     if (!isValidUser.success) {
+                        req.user = isValidUser;
                         return done(null, false, isValidUser);
                     }
                     else{

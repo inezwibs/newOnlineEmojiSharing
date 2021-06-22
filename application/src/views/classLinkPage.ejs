@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link
+            href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+            rel="stylesheet"
+            id="bootstrap-css"
+    />
 </head>
 <body>
 
     <form id="studentForm" class="form" action="/getClassLink" method="POST">
-        <% if (typeof classObj === "undefined") {%>
+        <div>
+            <% if (typeof message !== 'undefined' && message.length > 0) { %>
+                <p class="alert alert-primary" alerts="alert">
+                    <%= message %>
+                </p>
+            <% } %>
+        </div>
+        <% if (typeof classObj === "undefined" || typeof classObj == 'object' && Object.keys(classObj).length === 0) {%>
             <h1>Look up your class link with by entering your class id :</h1>
 
             <p>Enter class id for the classes you have registered in: <p>

@@ -6,7 +6,7 @@ const {url} = require("url");
 
 let instructorObj ={};
 let instructorClassesObj={};
-let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
+let path = 'http://emotionthermometer.online/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 let doesClassExist = false;
 
@@ -26,14 +26,29 @@ async function getInstructorPage (req,res,user) {
 
     try{
         const [rows, err ] = await db.execute(query);
-        instructorObj = rows[0];
+        if (rows && rows.length == 0 || rows == null){
+            //not an instructor
+            let message = "This user is not registered as an instructor."
+            return res.render("classLinkPage.ejs" ,{
+                classObj: {},
+                path : path,
+                message: message
+            });
+        }else if (rows && rows.length > 0 ){
+            instructorObj = rows[0];
+        }
     }catch(e){
         console.log('error' , e)
     }
     let instructorClassesArray = await getInstructorClasses(res.instructorId);
     let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
     if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
-        return res.redirect("/");
+        message = "This user is not a registered instructor."
+        return res.render("classLinkPage.ejs" ,{
+            classObj: classObj,
+            path : path,
+            message: message
+        });
     }
     return res.render("instructorAccount.ejs" ,{
         instructorObject : instructorObj,
@@ -60,7 +75,12 @@ async function checkLoggedIn (req, res, next) {
             const[rows,fields] = await db.execute(query);
             //check students who are not in registration because they didn't have class link
             if (rows === undefined || rows.length ===0 || (rows && rows[0].isInstructor === 0)){
-                return res.render('classLinkPage');// students can input instructor name and class date time
+                message = "This user is not a registered instructor."
+                return res.render('classLinkPage', {
+                    classObj: classObj,
+                    path : path,
+                    message: message
+                });// students can input instructor name and class date time
             }else if (rows && rows[0].isInstructor === 1){
                 //for instructor
                 next();
@@ -72,7 +92,22 @@ async function checkLoggedIn (req, res, next) {
 };
 
 let getInstructorLoginPage = (req,res) => {
-    return res.render("instructorLogin")
+    let message = "";
+    if (req.user && req.user.message){
+        message = req.user.message;
+        return res.render("instructorLogin",{
+            message: message
+        })
+    }else if (req.session.flash && req.session.flash.error.length > 0){
+        message = req.session.flash.error[0];
+        return res.render("instructorLogin",{
+            message: message
+        })
+    }else{
+        return res.render("instructorLogin",{
+            message: ""
+        });
+    }
 };
 
 let getInstructorRegisterPage = (req,res) => {
@@ -310,7 +345,9 @@ async function generateLink(req, res, next) {
 }
 async function postLogOut (req, res) {
     req.session.destroy(function(err) {
-        return res.redirect("/instructorLogin");
+        return res.redirect("/instructorLogin",{
+            message: ""
+        });
     });
 }
 

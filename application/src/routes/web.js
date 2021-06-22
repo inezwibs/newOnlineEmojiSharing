@@ -24,7 +24,7 @@ let initWebRoutes = (app) => {
     router.get("/instructorLogin", instructorController.getInstructorLoginPage);
     router.post("/instructorLogin", passport.authenticate("local", {
         successRedirect: "/instructor",
-        failureRedirect: "/instructorlogin",
+        failureRedirect: "/instructorLogin",
         failureFlash: true,
         successFlash: true
     }));
@@ -61,9 +61,9 @@ let initWebRoutes = (app) => {
     router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
 
     //accessing using history routes
-    router.get("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords, historyController.getText,
+    router.get("/history/:classLinkId/:classId/:date",historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage);
-    router.post("/history/:classLinkId/:date",historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
+    router.post("/history/:classLinkId/:classId/:date",historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
         historyController.getUserVisibility,historyController.getHistoryPage);
     //accessing from other pages
     router.get("/history", historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords,historyController.getText,

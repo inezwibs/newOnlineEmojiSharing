@@ -6,12 +6,20 @@ const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
 
 async function checkIfUserIsInstructor(req, res, next) {
-  let classLinkId
-
-  if (req.params.classLinkId){
+  let classLinkId;
+  let classId;
+  if (req.params.classLinkId && req.params.classId){
     classLinkId = req.params.classLinkId;
+    classId = req.params.classId;
   }else if (req.query.classLinkId) {
-    classLinkId = req.query.classLinkId;
+    const re = /\d+/g;
+    if (req.query.classLinkId.match(re)){
+      let numbersInUrl = emojiController.getIdsFromUrl(req.query.classLinkId);
+      if (numbersInUrl.length === 2){
+        classLinkId = numbersInUrl[0];
+        classId = numbersInUrl[1];
+      }
+    }
   }else if (req.headers.referer){
     let numbersInUrl = emojiController.getIdsFromUrl(req.headers.referer);
     if (numbersInUrl.length >= 3 ){
@@ -21,24 +29,37 @@ async function checkIfUserIsInstructor(req, res, next) {
   }
 
   let query;
-  req.user = req.body.userid ? req.body.userid : req.session.passport.user.id
+  req.user = req.body.userid ? req.body.userid : req.session.passport.user.user[0].id
   if (req.user && req.body.classId){
     query =
         " SELECT * FROM emojidatabase.registrations where classes_id = " + req.body.classId + " and users_id = " + req.user;
-  }else{
+  }else if (req.query && Object.keys(req.query).length > 0 && req.user && req.user.body){
+    req.user = req.query.userId;
     query =
-        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user;
-  }
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + req.body.classId;
+  }else if (!req.user && classId){
+    if (req.query){
+      req.user = req.query.userId;
+    }
+    query =
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
 
-  try {
-    const [res, err] = await db.execute(query);
-    // console.log(query);
-    req.isInstructor = res[0].isInstructor;
-    req.class_id = res[0].classes_id;
-    req.classLinkId = classLinkId;
-    next();
-  } catch (e) {
-    console.log("Catch an error: ", e);
+  }
+  if (req.user && classId){
+    query =
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
+    try {
+      const [res, err] = await db.execute(query);
+      // console.log(query);
+      req.isInstructor = res[0].isInstructor;
+      req.class_id = res[0].classes_id;
+      req.classLinkId = classLinkId;
+      next();
+    } catch (e) {
+      console.log("Catch an error: ", e);
+    }
+  }else{
+    res.redirect.back();
   }
 }
 
@@ -321,9 +342,17 @@ async function getHistoryPage(req,res) {
 
   // Todo grab from req.userinfo the date time that match top chart
   req.userInfoList =[];
-  if (topChartRecords.length !== 0){
-    req.userInfoList = dateService.findMatchingObjectsList(req.userInfo, topChartKey)
+  if (topChartRecords){
+    if (topChartRecords.length !== 0){
+      req.userInfoList = dateService.findMatchingObjectsList(req.userInfo, topChartKey)
+    }else{
+      req.userInfoList = [];
+    }
+  }else{
+    topChartRecords = '';
+    topChart = '';
   }
+
   // get topChartKey is the date we want to show
   // for each user info, check date_time, parse it , match itto topChart key
   // if it matches take it put into anew array
@@ -339,7 +368,7 @@ async function getHistoryPage(req,res) {
   }
 
   res.render('newHistory', {
-    path:path,
+    path:localPath,
     emojiDatesArray: emojiDatesArray,
     topDate: topDate,
     topChart: topChart,

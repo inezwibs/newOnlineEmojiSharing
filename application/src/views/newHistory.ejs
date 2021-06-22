@@ -20,7 +20,7 @@
 
     <title>Emoji History</title>
 
-    <meta http-equiv="Refresh" content="60">
+<!--    <meta http-equiv="Refresh" content="60">-->
 
     <script type="text/javascript">
         window.onload = function () {
@@ -225,7 +225,7 @@
                         <div >
                             <ul class="chart-history">
                                 <% for (var i = emojiDatesArray.length-1 ; i > -1 ; i--){ %>
-                                    <li><a href=<%= path %>/<%=classLinkId%>/<%= (emojiDatesArray[i].split('/')).join('-') %>>View history for <%= emojiDatesArray[i] %> </a>
+                                    <li><a href=<%= path %>/<%=classLinkId%>/<%=classId%>/<%= (emojiDatesArray[i].split('/')).join('-') %>?userId=<%=userid%>>View history for <%= emojiDatesArray[i] %> </a>
                                     </li>
                                 <% }%>
                             </ul>

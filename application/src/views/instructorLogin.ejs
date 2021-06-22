@@ -43,7 +43,14 @@
                       class="form-control"
                       required>
             </div>
+            <div>
+              <% if (typeof message !== 'undefined' && message.length > 0) { %>
+                <p class="alert alert-primary" alerts="alert">
+                  <%= message %>
+                </p>
+              <% } else if (typeof message === 'undefined' || message.length === 0) { %>
 
+            <% } %>
             <div class="form-group">
               <input
                       type="submit"
