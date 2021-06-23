@@ -6,7 +6,7 @@ const {url} = require("url");
 
 let instructorObj ={};
 let instructorClassesObj={};
-let path = 'http://emotionthermometer.online/EmojiSharing?classLinkId=';
+let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 let doesClassExist = false;
 
