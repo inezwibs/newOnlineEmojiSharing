@@ -145,6 +145,21 @@ async function getSendEmojiPage(req,res) {
         } catch (e) {
         console.log(e);
         errors.push({msg: e});
+            if (errors.length > 0){
+                res.render('login', {
+                    errors: errors,
+                    title: "Login",
+                    classId: req.classId,
+                    classLinkId: req.classLinkId,
+                    isLoggedIn: req.isAuthenticated(),
+                })
+            }
+        }
+
+    //TODO classes_id showing undefined for new registrants
+    if (rowsObj == null){
+        console.log(e);
+        errors.push({msg: e});
         if (errors.length > 0){
             res.render('login', {
                 errors: errors,
@@ -154,13 +169,11 @@ async function getSendEmojiPage(req,res) {
                 isLoggedIn: req.isAuthenticated(),
             })
         }
-    }
-
-    //TODO classes_id showing undefined for new registrants
-    let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
-    let userIdValue = rowsObj.id;
-    let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
-    res.render("emojiSharing", {
+    } else{
+        let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
+        let userIdValue = rowsObj.id;
+        let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
+        res.render("emojiSharing", {
             classLinkId: req.classLinkId,
             regId : req.classLinkId,
             classId: classIdValue,//id shows undefined?
@@ -168,7 +181,8 @@ async function getSendEmojiPage(req,res) {
             userObj: rowsObj,
             emojiSelected: emojiValue ? emojiValue : "3",
             isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus
-    });
+        });
+    }
 }
 function getIntegerDatetime(daysArray){
     let temp = [];
