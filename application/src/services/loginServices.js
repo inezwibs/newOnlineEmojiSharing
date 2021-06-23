@@ -36,10 +36,10 @@ let findUserByEmail = async (email, pass) => {
 
         console.log(rows);
 
-        if (!email || !rows || rows.length === 0) {
-            return false
+        if (rows) {
+            return rows
         } else {
-            return rows;
+            return false;
         }
     } catch (err) {
         console.log("Catch an error: ", err);
