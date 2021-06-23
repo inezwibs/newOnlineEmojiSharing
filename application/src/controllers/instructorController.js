@@ -55,7 +55,7 @@ async function getInstructorPage (req,res,user) {
         newInstructor : instructorObj.full_name,
         classes : instructorClassesArray,
         classNames : instructorClassNamesArray,
-        path : localPath,
+        path : path,
         alerts : res.alerts
     });
 };
