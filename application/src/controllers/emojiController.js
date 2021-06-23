@@ -142,15 +142,10 @@ async function getSendEmojiPage(req,res) {
                 // errors.push({msg: errorMsg});
                 throw new Error(errorMsg);
             }else {
-                res.render("emojiSharing", {
-                    classLinkId: req.classLinkId,
-                    regId : req.classLinkId,
-                    classId: classIdValue,//id shows undefined?
-                    userId: userIdValue,
-                    userObj: rowsObj,
-                    emojiSelected: emojiValue ? emojiValue : "3",
-                    isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus
-                });
+                let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
+                let userIdValue = rowsObj.id;
+                let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
+
             }
         } catch (e) {
         console.log(e);
