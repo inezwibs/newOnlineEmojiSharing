@@ -141,6 +141,16 @@ async function getSendEmojiPage(req,res) {
                 errorMsg = "This user is not a registered student to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
                 // errors.push({msg: errorMsg});
                 throw new Error(errorMsg);
+            }else {
+                res.render("emojiSharing", {
+                    classLinkId: req.classLinkId,
+                    regId : req.classLinkId,
+                    classId: classIdValue,//id shows undefined?
+                    userId: userIdValue,
+                    userObj: rowsObj,
+                    emojiSelected: emojiValue ? emojiValue : "3",
+                    isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus
+                });
             }
         } catch (e) {
         console.log(e);
