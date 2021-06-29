@@ -19,9 +19,19 @@ var options = {
     password: "1600holloway",
     host: "127.0.0.1",
     waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-    };
+    checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
+    expiration: 1512671400000,// The maximum age of a valid session; milliseconds.
+    createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
+    connectionLimit: 10,// Number of connections when creating a connection pool
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
+};
 
 var sessionStore = new MySQLStore(options);
 const app = express();
@@ -37,21 +47,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(bodyParser.json());
 
+//Config view engine
+configViewEngine(app);
+
 // config express session
 app.use(
     session({
-      secret: "CSC Class",
-      saveUninitialized: false,
-      store: sessionStore,
-      resave: true,
+        secret: "emoji-session",
+        saveUninitialized: false, // won't save session when user have not logged in , and just visited
+        store: sessionStore,
+        resave: true,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 // 86400000 1 day
         }
     })
-  );
-
-//Config view engine
-configViewEngine(app);
+);
 
 //Enable flash message
 app.use(connectFlash());

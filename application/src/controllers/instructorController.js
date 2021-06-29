@@ -61,7 +61,7 @@ async function getInstructorPage (req,res,user) {
 };
 
 async function checkLoggedIn (req, res, next) {
-    if (!req.isAuthenticated()) {
+    if (!req.session.isAuthenticated) { // if user is not authenticated yet then
         return res.redirect("/instructorLogin");
     }else {
         let userId;
@@ -93,6 +93,7 @@ async function checkLoggedIn (req, res, next) {
 
 let getInstructorLoginPage = (req,res) => {
     let message = "";
+    console.log("this is session **", req.session);
     if (req.user && req.user.message){
         message = req.user.message;
         return res.render("instructorLogin",{

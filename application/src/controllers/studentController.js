@@ -215,13 +215,36 @@ async function insertRegistration(req, res, next) {
 }
 
 async function getStudentLoginPage(req,res) {
-    return res.render("login", {
-        title: "Login",
-        classId: req.query.classId,
-        classLinkId: req.query.classLinkId,
-        isLoggedIn: req.isAuthenticated(),
-        alerts: []
-    });
+
+    console.log("Session from get student login page**", req.session);
+    let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
+    let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
+    let isAuthenticated = req.isAuthenticated();
+    if (isAuthenticated){
+        let userObj = req.session.passport.user.user[0];
+        let emojiValue = req.body.optradio ? req.body.optradio  : '';
+
+        let rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue )
+
+        return res.render("emojiSharing", {
+            classLinkId: classLinkIdValue,
+            regId : classIdValue,
+            classId: classIdValue,//id shows undefined?
+            userId: userObj.id,
+            userObj: rowsObj,
+            emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+        });
+
+    }else{
+        return res.render("login", {
+            title: "Login",
+            classId: classIdValue,
+            classLinkId: classLinkIdValue,
+            isLoggedIn: isAuthenticated,
+            alerts: []
+        });
+    }
 }
 
 module.exports = {
