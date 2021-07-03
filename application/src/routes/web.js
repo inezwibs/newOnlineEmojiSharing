@@ -4,6 +4,7 @@ const studentController = require("../controllers/studentController");
 const emojiController = require("../controllers/emojiController");
 const historyController = require("../controllers/historyController");
 const passwordController = require("../controllers/passwordController")
+const scriptsController = require("../controllers/scriptsController")
 const passport = require('passport');
 const initPassportLocal = require( "../controllers/passportController");
 
@@ -13,6 +14,7 @@ initPassportLocal();
 let router = express.Router();
 
 let initWebRoutes = (app) => {
+    router.get('/scripts', scriptsController.getIntervalWorker);
     router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertClasses,
         instructorController.insertToRegistration, instructorController.generateLink);

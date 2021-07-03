@@ -3,6 +3,10 @@ const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
 const parsingService = require("../services/parsingServices");
 let currentEmoji;
+const {
+    Worker, isMainThread, parentPort, workerData
+} = require('worker_threads');
+
 
 
 async function getStudentClassId(req, res, next) {
@@ -313,8 +317,8 @@ async function invalidEmojiPostBranch(req,res,next) {
                    res.render("emojiSharing", {
                        classLinkId: ids[0],
                        regId : ids[0],
-                        userId : ids[1],
-                       classId: rowsObj.classes_id ? rowsObj.classes_id : classId,//id shows undefined?
+                        userId : req.user,
+                       classId: rowsObj.classes_id ? rowsObj.classes_id : ids[1],//id shows undefined?
                        userObj: rowsObj,
                        emojiSelected: req.body ? req.body.optradio : '3',
                        isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
@@ -452,7 +456,7 @@ async function checkRecordExists(req, res, next) {
  async function getClassRegisteredStudentsCount(req, res, next) {
     let query =
         " SELECT count(*) as count FROM emojidatabase.registrations where classes_id = '" +
-        req.class_id + "' AND isInstructor = \'0\' ";
+        req.class_id +"'";
 
     try {
         const [rows, err] =  await db.execute(query);
@@ -473,6 +477,10 @@ async function getContributedStudentsCount(req, res, next) {
         //TODO modify the way we do this
         req.studentNotContributed =
             req.classRegisteredStudentsCount - req.contributedStudentsCount;
+        //reset to 0 if the number is negative
+        if (req.studentNotContributed < 0){
+            req.studentNotContributed = 0;
+        }
     } catch (e) {
         console.log("Catch an error: ", e);
     }

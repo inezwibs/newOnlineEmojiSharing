@@ -226,6 +226,12 @@ async function getStudentLoginPage(req,res) {
 
         let rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue )
 
+        if (rowsObj){
+            
+            full_name = "";
+            date_time =  "";
+
+        }
         return res.render("emojiSharing", {
             classLinkId: classLinkIdValue,
             regId : classIdValue,
