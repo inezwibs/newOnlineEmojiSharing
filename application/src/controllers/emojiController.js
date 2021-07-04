@@ -312,7 +312,8 @@ async function invalidEmojiPostBranch(req,res,next) {
     if (req.currentMinutes===0){
         if (req.query.regId || req.url) {
             let ids = getIdsFromUrl(req.url);
-            let rowsObj = await getEmojiClassData(req.user,ids[0],ids[1])
+            let rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
+            let message = "You have submitted an emotion outside of class time. It will not be recorded."
             if (ids && ids.length === 2 && rowsObj) {
                    res.render("emojiSharing", {
                        classLinkId: ids[0],
@@ -321,7 +322,8 @@ async function invalidEmojiPostBranch(req,res,next) {
                        classId: rowsObj.classes_id ? rowsObj.classes_id : ids[1],//id shows undefined?
                        userObj: rowsObj,
                        emojiSelected: req.body ? req.body.optradio : '3',
-                       isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+                       isAnonymousStatus: false,
+                       alerts: message
                    });
             }
         }

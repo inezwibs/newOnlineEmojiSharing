@@ -61,15 +61,22 @@ async function getInstructorPage (req,res,user) {
 };
 
 async function checkLoggedIn (req, res, next) {
-    if (!req.session.isAuthenticated) { // if user is not authenticated yet then
+    let isAuthenticated = req.isAuthenticated();
+    let message;
+    let classObj;
+    if (!isAuthenticated) { // if user is not authenticated yet then
         return res.redirect("/instructorLogin");
     }else {
         let userId;
-        if (typeof req.user === 'object' && req.user !== null){
+        if (isAuthenticated){
+            let userObj = req.session.passport.user.user[0];
+            userId = userObj.id;
+        }else if (typeof req.user === 'object' && req.user !== null){
             userId = req.user.user[0].id;
         } else if (typeof req.user === 'number' ){
             userId = req.user;
         }
+
         let query = "SELECT id,isInstructor FROM emojidatabase.registrations where users_id = '" + userId + "'";
         try{
             const[rows,fields] = await db.execute(query);
@@ -77,7 +84,7 @@ async function checkLoggedIn (req, res, next) {
             if (rows === undefined || rows.length ===0 || (rows && rows[0].isInstructor === 0)){
                 message = "This user is not a registered instructor."
                 return res.render('classLinkPage', {
-                    classObj: classObj,
+                    classObj: classObj ? classObj : {},
                     path : path,
                     message: message
                 });// students can input instructor name and class date time
@@ -89,26 +96,15 @@ async function checkLoggedIn (req, res, next) {
 
         }
     }
-};
+}
 
 let getInstructorLoginPage = (req,res) => {
     let message = "";
-    console.log("this is session **", req.session);
-    if (req.user && req.user.message){
-        message = req.user.message;
-        return res.render("instructorLogin",{
-            message: message
-        })
-    }else if (req.session.flash && req.session.flash.error.length > 0){
-        message = req.session.flash.error[0];
-        return res.render("instructorLogin",{
-            message: message
-        })
-    }else{
-        return res.render("instructorLogin",{
-            message: ""
-        });
-    }
+
+    return res.render("instructorLogin",{
+        message: message
+    });
+
 };
 
 let getInstructorRegisterPage = (req,res) => {
@@ -117,7 +113,6 @@ let getInstructorRegisterPage = (req,res) => {
 
 //insert instructor to db users
 async function insertInstructor(req, res, next) {
-
 
     let newInstructor = {
         fullName: req.body.name,
@@ -346,8 +341,8 @@ async function generateLink(req, res, next) {
 }
 async function postLogOut (req, res) {
     req.session.destroy(function(err) {
-        return res.redirect("/instructorLogin",{
-            message: ""
+        res.render("instructorLogin",{
+            message: "You have been logged out."
         });
     });
 }

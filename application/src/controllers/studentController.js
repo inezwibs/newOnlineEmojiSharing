@@ -231,6 +231,14 @@ async function getStudentLoginPage(req,res) {
             full_name = "";
             date_time =  "";
 
+        }else{
+            let message= 'We could not find any classes in which you\'ve registered. Look up your class link, click on the link, and please register.';
+            let classObj;
+            res.render("classLinkPage", {
+                classObj: classObj ? classObj : {},
+                path : path,
+                message: message
+            })
         }
         return res.render("emojiSharing", {
             classLinkId: classLinkIdValue,
@@ -239,7 +247,7 @@ async function getStudentLoginPage(req,res) {
             userId: userObj.id,
             userObj: rowsObj,
             emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
-            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+            isAnonymousStatus: false
         });
 
     }else{
