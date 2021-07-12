@@ -257,8 +257,7 @@ async function getStudentLoginPage(req,res) {
             userObj: rowsObj,
             emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
             isAnonymousStatus: false,
-            path:localPath,
-            io:io
+            path:localPath
         });
 
     }else{
