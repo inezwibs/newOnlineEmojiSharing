@@ -12,8 +12,6 @@ router.get("/EmojiSharing",(req, res) => {
             classId: numArr[1],
             dateStringParams:dateStringParams
         });
-
-
 });
 
 router.get("/fail",(req, res) => {

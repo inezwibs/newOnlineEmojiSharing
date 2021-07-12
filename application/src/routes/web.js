@@ -10,10 +10,10 @@ const initPassportLocal = require( "../controllers/passportController");
 
 // Init all passport
 initPassportLocal();
-
 let router = express.Router();
 
 let initWebRoutes = (app) => {
+
     router.get('/scripts', scriptsController.getIntervalWorker);
     router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertClasses,
@@ -54,7 +54,7 @@ let initWebRoutes = (app) => {
 
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
-    router.post("/sendEmoji" ,emojiController.getStudentClassId, emojiController.triageBasedOnTime,
+    router.post("/sendEmoji" ,emojiController.initUserSocketListener, emojiController.getStudentClassId, emojiController.triageBasedOnTime,
         emojiController.insertRecords);
     //forget password
     router.get("/forget-password", passwordController.getForgotPasswordPage);
@@ -77,5 +77,6 @@ let initWebRoutes = (app) => {
 
     return app.use("/", router);
 };
+
 module.exports = initWebRoutes
 

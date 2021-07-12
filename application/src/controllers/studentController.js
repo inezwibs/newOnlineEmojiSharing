@@ -11,7 +11,6 @@ let classLinkIdValue;
 const StudentServices = require( "../services/studentServices" );
 const studentServices = new StudentServices();
 
-
 async function getClassLinkPage (req, res, next) {
     res.render("classLinkPage");
 }
@@ -79,7 +78,9 @@ async function getStudentRegisterPage (req, res, next) {
             userId: req.user.user[0].id,
             userObj: rowsObj,
             emojiSelected: '3',
-            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
+            path:localPath,
+            io:io
         });
     }else if (req.user && !req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
@@ -220,6 +221,7 @@ async function getStudentLoginPage(req,res) {
     let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
     let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
     let isAuthenticated = req.isAuthenticated();
+    let errors = [];
     if (isAuthenticated){
         let userObj = req.session.passport.user.user[0];
         let emojiValue = req.body.optradio ? req.body.optradio  : '';
@@ -232,13 +234,20 @@ async function getStudentLoginPage(req,res) {
             date_time =  "";
 
         }else{
-            let message= 'We could not find any classes in which you\'ve registered. Look up your class link, click on the link, and please register.';
+            let message= 'You are not registered for this class. Please register or look up your class link to register for a different class.';
             let classObj;
-            res.render("classLinkPage", {
-                classObj: classObj ? classObj : {},
-                path : path,
-                message: message
+            errors.push({msg: message})
+            return res.render('register', {
+                errors: errors,
+                title: "Form Validation",
+                classId: classIdValue,
+                classLinkId: classLinkIdValue
             })
+            // return res.render("classLinkPage", {
+            //     classObj: classObj ? classObj : {},
+            //     path : path,
+            //     message: message
+            // });
         }
         return res.render("emojiSharing", {
             classLinkId: classLinkIdValue,
@@ -247,7 +256,9 @@ async function getStudentLoginPage(req,res) {
             userId: userObj.id,
             userObj: rowsObj,
             emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
-            isAnonymousStatus: false
+            isAnonymousStatus: false,
+            path:localPath,
+            io:io
         });
 
     }else{

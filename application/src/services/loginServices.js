@@ -73,7 +73,6 @@ let comparePassword = (password, userObject) => {
 
 };
 
-
 module.exports = {
     handleLogin: handleLogin,
     findUserByEmail: findUserByEmail,

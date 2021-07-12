@@ -15,7 +15,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
             integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
             crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/styles.css">
+        <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+        <link rel="stylesheet" href="/styles.css">
     <!--<script src="/js/my.js"></script>-->
 
     <title>Emoji History</title>
@@ -25,7 +27,8 @@
     <script type="text/javascript">
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
-                [//colorSet Array   
+                [//colorSet Array
+                    "#a9a9a9",//darkgray
                     "#D3D3D3",//gray
                     "#FF0000",//red
                     "#FFA500",//orange
@@ -57,7 +60,11 @@
             " <% } %>"
             var dps1 = [];
             "<% for(var i=0; i < topChart.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_notParticipated %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps1.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_online_notParticipated %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            " <% } %>"
+            var dps0 = [];
+            "<% for(var i=0; i < topChart.length; i++) { %>"
+            dps0.push({ y: parseInt("<%= topChart[parseInt(i)].records.count_offline %>"), label: "<%=(new Date(Date.parse(topChart[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
@@ -67,6 +74,13 @@
                         text: "Emojis count per minute for <%=topDate%>, class <%=classInfo.class_name%>, on <%=classInfo.datetime%>"
                     },
                     data: [
+                        {
+                            //darkgray
+                            type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "Offline",
+                            dataPoints: dps0
+                        },
                         {
                             //gray
                             type: "stackedColumn",

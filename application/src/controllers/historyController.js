@@ -5,6 +5,17 @@ const emojiController = require("../controllers/emojiController");
 const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
 
+
+function historySocket() {
+  // global.io.on('connection',(socket)=> {
+  //   console.log("Connection from history controller");
+    global.io.on('user online', socket => {
+      console.log("User online array in history controller" , socket);
+      return socket;
+    })
+  // })
+}
+
 async function checkIfUserIsInstructor(req, res, next) {
   let classLinkId;
   let classId;
@@ -139,10 +150,8 @@ async function getEmojiRecordsPerMinute(req, res, next) {
                 newRecords[keyLocaleDateString][i][`count_emoji${j}`] += record[`count_emoji${j}`];
                 sumCountEmoji += newRecords[keyLocaleDateString][i][`count_emoji${j}`];
               }
-              let sumCountNotParticipate = req.classRegisteredStudentsCount - sumCountEmoji;
-              //non participant number should not be negative
-              sumCountNotParticipate = sumCountNotParticipate < 0 ? 0 : sumCountNotParticipate;
-              newRecords[keyLocaleDateString][i]['count_notParticipated'] = sumCountNotParticipate;
+
+
             }
             //done adding to existing record, we don't add record to newRecords
             break;
@@ -389,6 +398,7 @@ async function getHistoryPage(req,res) {
 
 
 module.exports = {
+  historySocket: historySocket,
   checkIfUserIsInstructor:checkIfUserIsInstructor,
   getClassID:getClassID,
   getEmojiRecordsPerMinute:getEmojiRecordsPerMinute,

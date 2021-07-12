@@ -96,6 +96,7 @@ class StudentServices {
 
     async checkForDuplicateRegistration(reqBody,user_id, classIdValue) {
         let errors = [];
+        let duplicateregistration = 0;
         let query =
             " SELECT * FROM emojidatabase.registrations where classes_id = " +
             classIdValue +
@@ -104,13 +105,11 @@ class StudentServices {
         try {
             const [rows, err] = await db.execute(query);
             // console.log(query);
-            let duplicateregistration;
             if (rows !== null && rows.length > 0) {
                 duplicateregistration = 1;
                 errors.push({msg: "You are already registered for this class. You can proceed to login."})
                 return {success: false, body: duplicateregistration, message: errors};
             } else {
-                duplicateregistration = 0;
                 return {success: true, body: duplicateregistration};
             }
         } catch (e) {

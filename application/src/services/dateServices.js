@@ -11,6 +11,28 @@ class DateService {
         return dateTime.toLocaleDateString();
     }
 
+    async matchDateInDatabase(dateString, classId, thisMinute){
+        let query =
+            `SELECT  * FROM emojidatabase.posted_emojis WHERE class_id = ${classId} AND minute = ${thisMinute}`
+        let parsedDateString = this.parseDateTimeRecord(dateString);
+        let rowDateTime;
+        let results =[];
+        try {
+            const [rows, err] = await db.execute(query);
+            rows.forEach( row =>{
+                //look at each date_time
+                rowDateTime = this.parseDateTimeRecord(row.date_time)
+                if (parsedDateString === rowDateTime ){
+                    results.push(row.users_id);
+                }
+            });
+            return {success: true, body: results};
+        }catch(e){
+            console.log("Catch an error: ", e);
+            return {success: false, error: e};
+        }
+    }
+
     async getRecordDate ( reqBody, insertMinutes ) {
         let query =
             " SELECT * FROM emojidatabase.posted_emojis where minute = " +
