@@ -25,7 +25,8 @@
     <script type="text/javascript">
         window.onload = function () {
             CanvasJS.addColorSet("myShades",
-                [//colorSet Array   
+                [//colorSet Array
+                    "#a9a9a9",//darkgray
                     "#D3D3D3",//gray
                     "#FF0000",//red
                     "#FFA500",//orange
@@ -57,7 +58,12 @@
             " <% } %>"
             var dps1 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_notParticipated %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps1.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_online_notParticipated %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            " <% } %>"
+
+            var dps0 = [];
+            "<% for(var i=0; i < topChartRecords.length; i++) { %>"
+            dps0.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_offline %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
@@ -68,10 +74,17 @@
                     },
                     data: [
                         {
+                            //darkgray
+                            type: "stackedColumn",
+                            showInLegend: true,
+                            legendText: "Offline",
+                            dataPoints: dps0
+                        },
+                        {
                             //gray
                             type: "stackedColumn",
                             showInLegend: true,
-                            legendText: "Did not participate",
+                            legendText: "Online, did not participate",
                             dataPoints: dps1
                         },
                         {
