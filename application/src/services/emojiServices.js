@@ -117,7 +117,7 @@ class EmojiServices {
     };
 
     getStudentOffline() {
-        this.studentOffline =  this.studentRegistered - this.studentOnlineIds.length;
+        this.studentOffline =  this.studentRegistered - this.getOnlineStudentIds().length;
         return this.studentOffline;
     };
 

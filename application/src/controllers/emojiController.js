@@ -390,7 +390,7 @@ async function insertRecords(req,res,next){
     await insertEmojiRecord(req,res,next);
     await processRegisteredStudentsCount(req,res,next);
     await processContributedStudentsCount(req,res,next);
-    await getContributedStudentsCount(req,res,next);
+    // await getContributedStudentsCount(req,res,next);
     await insertRecordPerMinute(req,res,next);
     await getSendEmojiPage(req,res);
 }
@@ -533,25 +533,25 @@ async function checkRecordExists(req, res, next) {
     }
 }
 
-async function getContributedStudentsCount(req, res, next) {
-    let thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes
-    let query =
-        " SELECT count(distinct id) as count FROM emojidatabase.posted_emojis where class_id = " +
-        req.class_id + " and minute = " + thisMinute;
-    try {
-        const [rows, fields] = await db.execute(query);
-        req.contributedStudentsCount = rows[0].count;
-        //TODO modify the way we do this
-        req.studentNotContributed =
-            req.classRegisteredStudentsCount - req.contributedStudentsCount;
-        //reset to 0 if the number is negative
-        if (req.studentNotContributed < 0){
-            req.studentNotContributed = 0;
-        }
-    } catch (e) {
-        console.log("Catch an error: ", e);
-    }
-}
+// async function getContributedStudentsCount(req, res, next) {
+//     let thisMinute = req.insertMinutes ? req.insertMinutes : req.currentMinutes
+//     let query =
+//         " SELECT count(distinct id) as count FROM emojidatabase.posted_emojis where class_id = " +
+//         req.class_id + " and minute = " + thisMinute;
+//     try {
+//         const [rows, fields] = await db.execute(query);
+//         req.contributedStudentsCount = rows[0].count;
+//         //TODO modify the way we do this
+//         req.studentNotContributed =
+//             req.classRegisteredStudentsCount - req.contributedStudentsCount;
+//         //reset to 0 if the number is negative
+//         if (req.studentNotContributed < 0){
+//             req.studentNotContributed = 0;
+//         }
+//     } catch (e) {
+//         console.log("Catch an error: ", e);
+//     }
+// }
 
 async function resetEmojiRecordHelper(req,res){
     let query;
@@ -681,7 +681,7 @@ module.exports = {
     insertRecords:insertRecords,
     checkRecordExists: checkRecordExists,
     getClassRegisteredStudentsCount: getClassRegisteredStudentsCount,
-    getContributedStudentsCount: getContributedStudentsCount,
+    // getContributedStudentsCount: getContributedStudentsCount,
     insertRecordPerMinute: insertRecordPerMinute,
     getRegIdFromQuery:getRegIdFromQuery,
     getIdsFromUrl:getIdsFromUrl,
