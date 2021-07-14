@@ -47,7 +47,8 @@ class EmojiServices {
             if (results.success && results.body.length > 0) {
                 // req.contributedStudentsCount = rows[0].count;
                 results.body.forEach(row =>{
-                    this.studentContributed.push(row);
+                    if (this.studentContributed.indexOf(row))
+                        this.studentContributed.push(row);
                 })
                 // req.studentNotContributed =
                 //     req.classRegisteredStudentsCount - req.contributedStudentsCount;
@@ -105,7 +106,7 @@ class EmojiServices {
         usersOnline = this.getOnlineStudentIds();
         this.studentOnlineIds = usersOnline;
         this.studentOnlineIds.forEach( onlineStudentId => {
-            if (this.studentContributed.length != 0){
+            if (this.studentContributed.length !== 0){
                 if (this.studentContributed.indexOf(onlineStudentId) < 0){ // meaning not found
                     studentOnlineNotParticipated.push(onlineStudentId);
                 }
