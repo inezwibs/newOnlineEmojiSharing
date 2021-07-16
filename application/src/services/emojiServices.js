@@ -47,8 +47,9 @@ class EmojiServices {
             if (results.success && results.body.length > 0) {
                 // req.contributedStudentsCount = rows[0].count;
                 results.body.forEach(row =>{
-                    if (this.studentContributed.indexOf(row))
+                    if (this.studentContributed.indexOf(row) < 0){
                         this.studentContributed.push(row);
+                    }//TODO: need to account for students who contributed more than once in a minute
                 })
                 // req.studentNotContributed =
                 //     req.classRegisteredStudentsCount - req.contributedStudentsCount;
@@ -61,6 +62,7 @@ class EmojiServices {
                     count:  this.studentContributed.length ,
                     id:  this.studentContributed
                 };
+                console.log('student contributed = ', this.studentContributed);
                 return {success: true, body: contributedStudents};
             } else {
                 let rows = {};
@@ -87,6 +89,7 @@ class EmojiServices {
                     count: this.studentRegistered,
                     id: rows
                 };
+                console.log('student registered = ', this.studentRegistered);
                 return {success: true, body: registeredStudents};
             } else {
                 let rows = {};
@@ -111,19 +114,24 @@ class EmojiServices {
                     studentOnlineNotParticipated.push(onlineStudentId);
                 }
             }else {
-                return this.studentOnlineIds;
+                console.log('student online not participated = ', studentOnlineNotParticipated.length)
+                return studentOnlineNotParticipated;
             }
         });
+        console.log('student online not participated = ', studentOnlineNotParticipated.length)
         return studentOnlineNotParticipated;
     };
 
     getStudentOffline() {
         this.studentOffline =  this.studentRegistered - this.getOnlineStudentIds().length;
+        console.log('student offline = ', this.studentOffline);
         return this.studentOffline;
     };
 
-    getOnlineStudentIds() {
-        this.studentOnlineIds = socketService.getUserSocketData();
+    async getOnlineStudentIds() {
+        this.studentOnlineIds = await socketService.getUserSocketData();
+        console.log('student online = ', this.studentOnlineIds.length);
+        //TODO not a stable number from get user socket data, why
         return this.studentOnlineIds;
     };
 }

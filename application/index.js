@@ -97,6 +97,8 @@ io.on('connection', (socket) => {
     userSet.add(socket.request.user.user[0].id)
     socket.userId = socket.request.user.user[0].id;
     io.emit('user', [...userSet])
+    module.exports.emittedUserIdSet = userSet;
+
     uniqueUsers = userSet.size;
     io.emit('userCount',uniqueUsers);
     console.log('A user has connected. Current unique user count: ', uniqueUsers);
@@ -105,8 +107,8 @@ io.on('connection', (socket) => {
         module.exports.userOnlineData = data;
     });
 
-    socket.on('disconnect', () => {
-        console.log('A user has disconnected');
+    socket.on('disconnect', (reason) => {
+        console.log('A user has disconnected, reason : ', reason);
         userSet.delete(socket.userId);
         io.emit('user disconnected', socket.userId);
         uniqueUsers = userSet.size;
@@ -150,7 +152,7 @@ initWebRoutes(app);
 
 //server set up
 // app.listen(PORT... previously
-http.listen(PORT, () => console.log("server started on port", PORT));
+module.exports = http.listen(PORT, () => console.log("server started on port", PORT));
 // const io = require('socket.io')(server, options);
 //init sockets
 // let io = require('socket.io')(4000);
