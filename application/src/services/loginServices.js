@@ -30,13 +30,12 @@ let handleLogin = async (email, password, reqBody) => {
 let findUserByEmail = async (email, pass) => {
     let queryString =
         " SELECT * FROM emojidatabase.users where email = '" + email + "'";
-    // console.log("hellloooo2");
     try {
         const [rows, fields] = await db.execute(queryString);
 
         console.log(rows);
 
-        if (rows) {
+        if (rows && rows.length > 0) {
             return rows
         } else {
             return false;

@@ -43,8 +43,7 @@ let initWebRoutes = (app) => {
         successRedirect: "/sendEmoji"}));
     //student get routes, they can't go directly, must get class link
     router.get("/register", studentController.getStudentRegisterPage);
-    router.post("/register", studentController.checkUserIsValid,
-        studentController.insertRegistration, emojiController.getSendEmojiPage);
+    router.post("/register", studentController.checkUserIsValid, emojiController.getSendEmojiPage);
     router.post("/logout", emojiController.studentLogOut);
     router.get("/logout", emojiController.studentLogOut);
 
