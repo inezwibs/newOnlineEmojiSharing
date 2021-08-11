@@ -17,29 +17,43 @@ class StudentServices {
         let checkResult = await this.doesUserExist();
         // if user does not exist at all
         if (checkResult.success && checkResult.body.length === 0) {
-            message = "Let's create a new user account.";
-            return {success: true, body: {}, isRegistered: false, message: message};
+            //user does not exist at all , not for any class
+            let insertResult = await this.insertUser(reqBody);
+            if (insertResult.success){
+                message = "You now have a new user account. Proceed to login.";
+                return {success: true, body: insertResult, isRegistered: true, message: message};
+            }else{
+                message = insertResult.error;
+                return {success: false, body: {}, isRegistered: false, message: message};
+            }
         }
         // if user exist but maybe or maybe not for this class
-        if (checkResult.success && checkResult.body.length > 0) {
+        else if (checkResult.success && checkResult.body.length > 0) {
+
             let query = `SELECT * FROM emojidatabase.registrations where users_id = ${checkResult.body[0].id}`;
             try {
                 const [rows, err] = await db.execute(query);
                 console.log(rows);
                 this._result = rows;
                 let resultObject = this.isPersonAlreadyRegisteredToThisClass(reqBody.classId);
-
+                //TODO test if person is already registered next
                 if (resultObject.isRegistered) {
-                    //then give them message to reset
+                    // if user is registered already for this class
                     let classObject = await this.getClassDetails(resultObject.body.classes_id);
-                    message = `You are already registered for this class ${classObject.body[0].class_name}
-                with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${checkResult.body[0].email} and password.`
+                    message = `You are already registered for this class ${classObject.body[0].class_name} with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${checkResult.body[0].email} and password.`
                     return {success: true, body: classObject, isRegistered: true, message: message};
                 } else {//is not yet registered
                     //then let them register
-                    message = `You are already a registered user for other classes.\nYou are now also registered for this class id = ${reqBody.classId}.\n` +
-                        `Please login with your existing email = ${checkResult.body[0].email} and password.`;
-                    return {success: true, body: checkResult.body[0], isRegistered: false, message: message};
+                    let insertResults = await this.insertRegistration(reqBody, checkResult.body[0].id, reqBody.classId);
+                    if (insertResults.success) {
+                        message = `You are now registered for this class, with class id = ${reqBody.classId}.\n` +
+                            `Please login with your existing email = ${checkResult.body[0].email} and password.`
+                        // return {success: true, body: checkResult.body[0], isRegistered: false, message: message};
+                        return {success: true, body: insertResults, isRegistered: true, message: message};
+                    }
+                    //     message = `You are now registered for this class, with class id = ${reqBody.classId}.\n` +
+                    //     `Please login with your existing email = ${checkResult.body[0].email} and password.`;
+                    // return {success: true, body: checkResult.body[0], isRegistered: false, message: message};
                 }
             } catch (err) {
                 message = "A system error happened."

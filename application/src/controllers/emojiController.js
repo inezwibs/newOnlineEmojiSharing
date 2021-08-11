@@ -18,8 +18,8 @@ const socketService = new SocketService();
 //init sockets
 const io = require('socket.io-client');
 
-function initUserSocketListener(req,res,next){
-    req.usersOnline = socketService.getUserSocketData();
+async function initUserSocketListener(req,res,next){
+    req.usersOnline = await socketService.getUserSocketData();
     next();
 }
 
@@ -84,95 +84,105 @@ async function getSendEmojiPage(req,res) {
     const re = /\d+/g;
     let errors = [];
 
-    if (!req.classLinkId || !req.user_id || !req.userEmail){
-        if (req.url && (req.url).match(re)){
-            ids= getIdsFromUrl(req.url);
-            if (ids && ids.length === 4){
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-                req.userInfo = ids[2];
-                req.emojiSelected = ids[3];
-            }else if (ids && ids.length === 2){
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-            }else if (ids && ids.length === 3){
-                req.classLinkId = ids[1];
-                req.classId = ids[2];
-            }
-        } else if (req.query.classLinkId && (req.query.classLinkId).match(re)){
-            ids= getIdsFromUrl(req.query.classLinkId);
-            if (ids && ids.length === 4){
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-                req.userInfo = ids[2];
-                req.emojiSelected = ids[3];
-            }else if (ids && ids.length === 2){
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-            }else if (ids && ids.length === 3){
-                req.classLinkId = ids[1];
-                req.classId = ids[2];
-            }
-
-        } else if (req.headers.referer && (req.headers.referer).match(re).length > 2){
+    // if (!req.classLinkId || !req.user_id || !req.userEmail){
+    //     if (req.url && (req.url).match(re)){
+    //         ids= getIdsFromUrl(req.url);
+    //         if (ids && ids.length === 4){
+    //             req.classLinkId = ids[0];
+    //             req.classId = ids[1];
+    //             req.userInfo = ids[2];
+    //             req.emojiSelected = ids[3];
+    //         }else if (ids && ids.length === 2){
+    //             req.classLinkId = ids[0];
+    //             req.classId = ids[1];
+    //         }else if (ids && ids.length === 3){
+    //             req.classLinkId = ids[1];
+    //             req.classId = ids[2];
+    //         }
+    //     } else if (req.query.classLinkId && (req.query.classLinkId).match(re)){
+    //         ids= getIdsFromUrl(req.query.classLinkId);
+    //         if (ids && ids.length === 4){
+    //             req.classLinkId = ids[0];
+    //             req.classId = ids[1];
+    //             req.userInfo = ids[2];
+    //             req.emojiSelected = ids[3];
+    //         }else if (ids && ids.length === 2){
+    //             req.classLinkId = ids[0];
+    //             req.classId = ids[1];
+    //         }else if (ids && ids.length === 3){
+    //             req.classLinkId = ids[1];
+    //             req.classId = ids[2];
+    //         }
+// } else
+    if (req.headers.referer && (req.headers.referer).match(re).length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
-            if (ids && ids.length === 4) {
-
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-                req.userInfo = ids[2];
-                req.emojiSelected = ids[3];
-            }  else if (ids && ids.length === 2){
-                req.classLinkId = ids[0];
-                req.classId = ids[1];
-            }else if (ids && ids.length === 3){
-                req.classLinkId = ids[1];
-                req.classId = ids[2];
-            }
-        } else if (req.body.classLinkId && req.body.userId && req.body.classId) {
-            req.classLinkId = req.body.classLinkId;
-            req.classId = req.body.classId;
+                ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
+        if (ids && ids.length === 2) {
+            req.classLinkId = ids[0];
+            req.classId = ids[1];
         }
+    } else if (req.user.body.classLinkId && req.user.body.classId) {
+        req.classLinkId = req.body.classLinkId;
+        req.classId = req.body.classId;
     }
+
     req.isAnonymousStatus = req.query.isAnonymousStatus;
 
-        if ( req.userInfo == null && req.body.email || req.userInfo == null && req.query.userid ){
-            req.userInfo = req.body.email ? req.body.email : req.query.userid;
-        }
-        if ( req.userInfo == null && req.body.userinfo){
-            req.userInfo = req.body.userinfo;
-        }
-        if ( req.userInfo == null && req.body.userId || req.userInfo == null && req.body.userInfo){
-            req.userInfo = req.body.userId ? req.body.userId : req.body.userInfo;
-        }
-        if ( req.userInfo  == null && req.user.id){
-            req.userInfo = req.user.id;
-        }
-        if (typeof req.user === 'object'){
-            req.userInfo = req.user.user[0].id;
-        }else if (typeof req.user === 'string'){
-            req.userInfo = req.user;
-        }
+        // if ( req.userInfo == null && req.body.email || req.userInfo == null && req.query.userid ){
+        //     req.userInfo = req.body.email ? req.body.email : req.query.userid;
+        // }
+        // if ( req.userInfo == null && req.body.userinfo){
+        //     req.userInfo = req.body.userinfo;
+        // }
+        // if ( req.userInfo == null && req.body.userId || req.userInfo == null && req.body.userInfo){
+        //     req.userInfo = req.body.userId ? req.body.userId : req.body.userInfo;
+        // }
+
+    if (typeof req.user === 'object'){
+        req.userInfo = req.user.user[0].id;
+    }else if (typeof req.user === 'string'){
+        req.userInfo = req.user;
+    }
 
 
         try{
             rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
-            //TODO: check when rowObj is undefined
             if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
-                errorMsg = "This user is not a registered student to this class. Would you like to look up your class link?"; //which means it is duplicate reg;
-                // errors.push({msg: errorMsg});
-                throw new Error(errorMsg);
+                let errorMsg = "This user is not a registered student to this class. Use the links below to register for this class or look up your class link."; //which means it is duplicate reg;
+                errors.push({msg: errorMsg});
+                // throw new Error(errorMsg);
+
+                if (errors.length > 0){
+                    return res.render('login', {
+                        errors: errors,
+                        title: "Login",
+                        classId: req.classId,
+                        classLinkId: req.classLinkId,
+                        isLoggedIn: req.isAuthenticated(),
+                    })
+                }
             }else {
                 let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
                 let userIdValue = rowsObj.id;
                 let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
-
+                res.render("emojiSharing", {
+                    classLinkId: req.classLinkId,
+                    regId : req.classLinkId,
+                    classId: classIdValue,//id shows undefined?
+                    userId: userIdValue,
+                    userObj: rowsObj,
+                    emojiSelected: emojiValue ? emojiValue : "3",
+                    isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
+                    //TODO change this to path instead of localPath before pushing to aws
+                    path: localPath
+                    // path: path
+                });
             }
         } catch (e) {
         console.log(e);
         errors.push({msg: e});
             if (errors.length > 0){
-                res.render('login', {
+                return res.render('login', {
                     errors: errors,
                     title: "Login",
                     classId: req.classId,
@@ -182,34 +192,23 @@ async function getSendEmojiPage(req,res) {
             }
         }
 
-    //TODO classes_id showing undefined for new registrants
-    if (rowsObj == null){
-        console.log(e);
-        errors.push({msg: e});
-        if (errors.length > 0){
-            res.render('login', {
-                errors: errors,
-                title: "Login",
-                classId: req.classId,
-                classLinkId: req.classLinkId,
-                isLoggedIn: req.isAuthenticated(),
-            })
-        }
-    } else{
-        let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
-        let userIdValue = rowsObj.id;
-        let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
-        res.render("emojiSharing", {
-            classLinkId: req.classLinkId,
-            regId : req.classLinkId,
-            classId: classIdValue,//id shows undefined?
-            userId: userIdValue,
-            userObj: rowsObj,
-            emojiSelected: emojiValue ? emojiValue : "3",
-            isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-            path: localPath
-        });
-    }
+    // if (rowsObj == null){
+    //
+    // } else{
+    //     let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
+    //     let userIdValue = rowsObj.id;
+    //     let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
+    //     res.render("emojiSharing", {
+    //         classLinkId: req.classLinkId,
+    //         regId : req.classLinkId,
+    //         classId: classIdValue,//id shows undefined?
+    //         userId: userIdValue,
+    //         userObj: rowsObj,
+    //         emojiSelected: emojiValue ? emojiValue : "3",
+    //         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
+    //         path: localPath
+    //     });
+    // }
 }
 function getIntegerDatetime(daysArray){
     let temp = [];
@@ -288,16 +287,10 @@ async function getClassStartTime(req, res, next) {
 
 async function getEmojiClassData(userInfo, classLinkId, classId) {
     let userQuery;
-    var temp = parseInt(classId);
+    let temp = parseInt(classId);
 
     // let userInfoType = userInfo.indexOf('@');
-    if (userInfo.length > 4) {
-        userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
-            "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
-            "WHERE u.id = r.users_id " +
-            "AND c.id = r.classes_id " +
-            "AND u.email = '" + userInfo + "'";
-    }else {
+    if (userInfo){
         userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
             "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
             "WHERE u.id = r.users_id " +
