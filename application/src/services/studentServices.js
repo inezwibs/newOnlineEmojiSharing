@@ -23,8 +23,7 @@ class StudentServices {
             //user does not exist at all , not for any class, insert user in Users dbase
             let insertResult = await this.insertUser();
             if (insertResult.success){
-                // message = "You now have a new user account. Proceed to login.";
-                // return {success: true, body: insertResult, isRegistered: true, message: message};
+                doesUserExistResult = await this.doesUserExist(); //second time to get the id
                 //user now exist , but not for any class, register user in Registrations dbase
                 const result = await this.registerUserIntoCurrentClass(doesUserExistResult)
                 return result;

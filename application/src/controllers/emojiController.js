@@ -82,7 +82,7 @@ async function getSendEmojiPage(req,res) {
     let rowsObj;
     let ids;
     const re = /\d+/g;
-    let errors = [];
+    https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz    let errors = [];
 
     if (req.headers.referer && (req.headers.referer).match(re).length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
@@ -91,7 +91,10 @@ async function getSendEmojiPage(req,res) {
             req.classLinkId = ids[0];
             req.classId = ids[1];
         }
-    } else if (req.user.body.classLinkId && req.user.body.classId) {
+    } else if (req.user.body && req.user.body.classLinkId && req.user.body.classId) {
+        req.classLinkId = req.body.classLinkId;
+        req.classId = req.body.classId;
+    } else if (req.body && req.body.classId && req.body.classLinkId){
         req.classLinkId = req.body.classLinkId;
         req.classId = req.body.classId;
     }
