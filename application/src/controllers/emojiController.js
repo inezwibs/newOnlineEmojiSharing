@@ -72,7 +72,7 @@ async function getStudentClassId(req, res, next) {
             userObj: '',
             emojiSelected: '',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-            path: localPath
+            path: path
         });
     }
 }
@@ -137,7 +137,7 @@ async function getSendEmojiPage(req,res) {
                     emojiSelected: emojiValue ? emojiValue : "3",
                     isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
                     //TODO change this to path instead of localPath before pushing to aws
-                    path: localPath
+                    path: path
                     // path: path
                 });
             }
@@ -298,7 +298,7 @@ async function invalidEmojiPostBranch(req,res,next) {
                        emojiSelected: req.body ? req.body.optradio : '3',
                        isAnonymousStatus: false,
                        alerts: message,
-                       path:localPath
+                       path:path
                    });
             }
         }
