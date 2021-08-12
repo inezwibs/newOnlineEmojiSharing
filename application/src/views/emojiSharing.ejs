@@ -10,61 +10,16 @@
     <title>Play</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"  type="text/javascript"></script>
-    <script type="text/javascript">
-     setInterval(function() {
-       //select the 2nd form which is emoji submit
-       // document.forms[1].submit();
-       document.getElementById("emojiSubmit").submit();
-     }, 60000);//every 1 minute value = 1 * 60 * 1000 = 60000
-    </script>
-<!--    <script type="text/javascript" defer>-->
-<!--        // let emojiDocument = document.forms[1];-->
 
-<!--        window.onload = () => {-->
-<!--            let worker;-->
-<!--            let domElement = document.getElementById("emojiSubmit");-->
-<!--            let emojiFunc = function sendForm(dom) {setInterval( ()=> {console.log('Hello'); dom.submit()}, 60000);}-->
-<!--            // document.getElementById("emojiSubmit").submit();-->
-<!--            // let obj = {-->
-<!--            //     sendFormFunc : sendForm()-->
-<!--            // };-->
-<!--            let functionStringified = emojiFunc.toString();-->
-<!--            let domStringified = domElement.toString();-->
-<!--            //-->
-<!--            // // let mylib = URL.createObjectURL(new Blob([sendForm().toString()]));-->
-<!--            // // let functionBody = sendForm().toString();-->
-<!--            // // let functionBlob = new Blob(functionBody);-->
-<!--            // // let functionUrl = URL.createObjectURL(functionBlob);-->
-<!--            //-->
-<!--            // let functionStringified = JSON.stringify(obj, function(key, value) {-->
-<!--            //     if (typeof value === "function") {-->
-<!--            //         return "/Function(" + value.toString() + ")/";-->
-<!--            //     }-->
-<!--            //     return value;-->
-<!--            // });-->
-<!--            // let worker = new Worker(functionUrl);-->
-<!--            // worker.onmessage = function(event) {-->
-<!--            //     const message = event.data;-->
-<!--            //     console.log(`[From Worker]: ${message}`);-->
-<!--            // }-->
-<!--            // worker.postMessage({-->
-<!--            //     type: "init",-->
-<!--            //     content: functionUrl2-->
-<!--            // });-->
-<!--            // console.log(emojiDocument);-->
-<!--            worker = new Worker("/scripts")-->
-<!--            worker.onmessage = e => {-->
-<!--                const message = e.data;-->
-<!--                console.log(`[From Worker]: ${message}`);-->
-<!--            };-->
-<!--            // // &lt;!&ndash; post message to worker &ndash;&gt;-->
-<!--            // // worker.postMessage("Sending form!");-->
-<!--            worker.postMessage({-->
-<!--                emojiFunction: functionStringified,-->
-<!--                domElementString: domStringified-->
-<!--            });-->
-<!--        }-->
+    <!--TODO Remember to uncomment before pushing  -->
+<!--    <script type="text/javascript">-->
+<!--     setInterval(function() {-->
+<!--       //select the 2nd form which is emoji submit-->
+<!--       // document.forms[1].submit();-->
+<!--       document.getElementById("emojiSubmit").submit();-->
+<!--     }, 60000);//every 1 minute value = 1 * 60 * 1000 = 60000-->
 <!--    </script>-->
+
     <script type="text/javascript">
         setInterval(function() {
             $("#emoji3").attr('checked','checked');

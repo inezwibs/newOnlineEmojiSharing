@@ -15,10 +15,10 @@ const SocketService = require( "../services/socketServices" );
 const socketService = new SocketService();
 
 
-//init sockets
+//get sockets
 const io = require('socket.io-client');
 
-async function initUserSocketListener(req,res,next){
+async function getUserSocketListener(req,res,next){
     req.usersOnline = await socketService.getUserSocketData();
     next();
 }
@@ -84,36 +84,6 @@ async function getSendEmojiPage(req,res) {
     const re = /\d+/g;
     let errors = [];
 
-    // if (!req.classLinkId || !req.user_id || !req.userEmail){
-    //     if (req.url && (req.url).match(re)){
-    //         ids= getIdsFromUrl(req.url);
-    //         if (ids && ids.length === 4){
-    //             req.classLinkId = ids[0];
-    //             req.classId = ids[1];
-    //             req.userInfo = ids[2];
-    //             req.emojiSelected = ids[3];
-    //         }else if (ids && ids.length === 2){
-    //             req.classLinkId = ids[0];
-    //             req.classId = ids[1];
-    //         }else if (ids && ids.length === 3){
-    //             req.classLinkId = ids[1];
-    //             req.classId = ids[2];
-    //         }
-    //     } else if (req.query.classLinkId && (req.query.classLinkId).match(re)){
-    //         ids= getIdsFromUrl(req.query.classLinkId);
-    //         if (ids && ids.length === 4){
-    //             req.classLinkId = ids[0];
-    //             req.classId = ids[1];
-    //             req.userInfo = ids[2];
-    //             req.emojiSelected = ids[3];
-    //         }else if (ids && ids.length === 2){
-    //             req.classLinkId = ids[0];
-    //             req.classId = ids[1];
-    //         }else if (ids && ids.length === 3){
-    //             req.classLinkId = ids[1];
-    //             req.classId = ids[2];
-    //         }
-// } else
     if (req.headers.referer && (req.headers.referer).match(re).length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
                 ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
@@ -127,16 +97,6 @@ async function getSendEmojiPage(req,res) {
     }
 
     req.isAnonymousStatus = req.query.isAnonymousStatus;
-
-        // if ( req.userInfo == null && req.body.email || req.userInfo == null && req.query.userid ){
-        //     req.userInfo = req.body.email ? req.body.email : req.query.userid;
-        // }
-        // if ( req.userInfo == null && req.body.userinfo){
-        //     req.userInfo = req.body.userinfo;
-        // }
-        // if ( req.userInfo == null && req.body.userId || req.userInfo == null && req.body.userInfo){
-        //     req.userInfo = req.body.userId ? req.body.userId : req.body.userInfo;
-        // }
 
     if (typeof req.user === 'object'){
         req.userInfo = req.user.user[0].id;
@@ -383,7 +343,6 @@ async function insertRecords(req,res,next){
     await insertEmojiRecord(req,res,next);
     await processRegisteredStudentsCount(req,res,next);
     await processContributedStudentsCount(req,res,next);
-    // await getContributedStudentsCount(req,res,next);
     await insertRecordPerMinute(req,res,next);
     await getSendEmojiPage(req,res);
 }
@@ -410,8 +369,10 @@ async function processContributedStudentsCount(req, res, next) {
         })
     }
     let studentsOnlineNotParticipated = emojiService.getStudentOnlineNotParticipated(req.usersOnline);
+
+    //TODO debug
     req.studentOnlineNotParticipated = studentsOnlineNotParticipated.length;
-    req.studentsOffline = emojiService.getStudentOffline();
+    req.studentsOffline = emojiService.getStudentOffline(req.classRegisteredStudentsCount);
 }
 
 async function processRegisteredStudentsCount(req, res, next) {
@@ -665,7 +626,7 @@ async function studentLogOut (req, res) {
 }
 
 module.exports = {
-    initUserSocketListener:initUserSocketListener,
+    getUserSocketListener:getUserSocketListener,
     getSendEmojiPage: getSendEmojiPage,
     getStudentClassId: getStudentClassId,
     triageBasedOnTime: triageBasedOnTime,

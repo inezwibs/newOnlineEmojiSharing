@@ -53,7 +53,7 @@ let initWebRoutes = (app) => {
 
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
-    router.post("/sendEmoji" ,emojiController.initUserSocketListener, emojiController.getStudentClassId, emojiController.triageBasedOnTime,
+    router.post("/sendEmoji" ,emojiController.getUserSocketListener, emojiController.getStudentClassId, emojiController.triageBasedOnTime,
         emojiController.insertRecords);
     //forget password
     router.get("/forget-password", passwordController.getForgotPasswordPage);

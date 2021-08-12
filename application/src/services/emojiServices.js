@@ -106,24 +106,31 @@ class EmojiServices {
         // get ids of contributed students getContributedStudentsCountAndId
         // foreach online students not in contributed, add to count of online not participate
         let studentOnlineNotParticipated =[];
-        usersOnline = this.getOnlineStudentIds();
+        // const result = await this.getOnlineStudentIds();
         this.studentOnlineIds = usersOnline;
         this.studentOnlineIds.forEach( onlineStudentId => {
+            //of students who are online
+            //if student contributed is not 0
             if (this.studentContributed.length !== 0){
+                // we compare those contributed to those online
+                // those online is not in the student contributed array
                 if (this.studentContributed.indexOf(onlineStudentId) < 0){ // meaning not found
                     studentOnlineNotParticipated.push(onlineStudentId);
                 }
-            }else {
-                console.log('student online not participated = ', studentOnlineNotParticipated.length)
-                return studentOnlineNotParticipated;
+                // if those online is in the student contributed array, continue
             }
+            //if student contributed is 0
+            else {
+                console.log('No student online has participated ');
+            }
+
         });
         console.log('student online not participated = ', studentOnlineNotParticipated.length)
         return studentOnlineNotParticipated;
     };
 
-    getStudentOffline() {
-        this.studentOffline =  this.studentRegistered - this.getOnlineStudentIds().length;
+    getStudentOffline(studentRegistered) {
+        this.studentOffline =  (this.studentRegistered ? this.studentRegistered : studentRegistered ) - this.studentOnlineIds.length;
         console.log('student offline = ', this.studentOffline);
         return this.studentOffline;
     };

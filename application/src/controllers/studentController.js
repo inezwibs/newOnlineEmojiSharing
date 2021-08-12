@@ -110,10 +110,10 @@ async function getStudentRegisterPage (req, res, next) {
 
                 res.render("login", {
                     title: "Form Validation",
-                    classId: ids[0],
-                    classLinkId: ids[1],
+                    classId: req.classId,
+                    classLinkId: req.classLinkId,
                     isLoggedIn: req.isAuthenticated(),
-                    alerts: `This user is not yet registered for this class. Use links below to register for class id = ${ids[0]} or look up your class id.`
+                    alerts: `This user is not yet registered for this class. Use links below to register for class id = ${req.classId} or look up your class id.`
                 });
             }
         }
@@ -126,7 +126,7 @@ async function checkUserIsValid(req, res, next) {
 
     try {
         //main query
-        let rows = await studentServices.checkExistingClassRegistration(req.body);
+        let rows = await studentServices.checkExistingClassRegistration(req.body,classIdValue);
         let isEmpty = studentServices.isEmptyObject(rows.body);
         // if user does not exist at all
         if (rows.success && isEmpty && !rows.isRegistered){
@@ -148,14 +148,14 @@ async function checkUserIsValid(req, res, next) {
             // req.user_details = rows.body;
             // let insertRegResult = await studentServices.insertRegistration(req.body, req.user_id, classIdValue);
             // if user existed for this class
-            if (rows.success && Array.isArray(rows.body.body)) {
+            if (rows.success && rows.body.id) {
                 // if user is registered already for this class
-                req.reg_id = rows.body.body[0].id;
+                req.reg_id = rows.body.id;
                 console.log('Reg Id', req.reg_id)
                 // if user is not registered already for this class and was just registered
-            } else if (rows.success && rows.body.body.insertId) {
+            } else if (rows.success && rows.body.insertId) {
                 // if user is already registered and attempts to register again
-                req.reg_id = rows.body.body.insertId;
+                req.reg_id = rows.body.insertId;
                 console.log('Reg Id', req.reg_id)
             }
 
@@ -166,9 +166,9 @@ async function checkUserIsValid(req, res, next) {
                 isLoggedIn: req.isAuthenticated(),
                 alerts: rows.message
             });
-        } else if (rows.error){
+        } else if (rows.error) {
             let errorMessage = "";
-            if (rows.error[0].msg.errno === 1054){
+            if (rows.error[0].msg.errno === 1054) {
                 errorMessage = "We are having trouble completing registration. Please try a new browser window and start a new page."
             }
 
@@ -179,8 +179,19 @@ async function checkUserIsValid(req, res, next) {
                 classId: classIdValue,
                 classLinkId: classLinkIdValue
             })
+        } else if (!rows.success) {
+            let errorMessage = "";
+
+            errors.push({msg: rows.body})
+            res.render('register', {
+                errors: errors,
+                title: "Form Validation",
+                classId: classIdValue,
+                classLinkId: classLinkIdValue
+            })
 
         }
+
         // next(); // go to getSendEmoji
     } catch (e) {
         console.log("Catch an error: ", e);

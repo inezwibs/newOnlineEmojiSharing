@@ -19,7 +19,7 @@ let initPassportLocal = () => {
                     }
                     else{
                         req.user = isValidUser;
-                            return done(null, isValidUser);
+                        return done(null, isValidUser);
                     }
             } catch (err) {
                 console.log(err);
