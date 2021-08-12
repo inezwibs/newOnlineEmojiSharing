@@ -79,8 +79,7 @@ async function getStudentRegisterPage (req, res, next) {
             userObj: rowsObj,
             emojiSelected: '3',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-            path:localPath,
-            io:io
+            path:localPath
         });
     }else if (req.user && !req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
@@ -100,7 +99,6 @@ async function getStudentRegisterPage (req, res, next) {
         });
         req.session.errors = null;
     }else{
-        // http://localhost:4000/login?classLinkId=370&classId=400&submit=Login
         if (req.headers.referer && (req.headers.referer).match(re).length > 2){
             let ids= parsingService.getIdsFromUrl(req.headers.referer);
             ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
@@ -116,6 +114,14 @@ async function getStudentRegisterPage (req, res, next) {
                     alerts: `This user is not yet registered for this class. Use links below to register for class id = ${req.classId} or look up your class id.`
                 });
             }
+        }else{
+            res.render("login", {
+                title: "Form Validation",
+                classId: req.classId,
+                classLinkId: req.classLinkId,
+                isLoggedIn: req.isAuthenticated(),
+                alerts: `A system error occurred.`
+            });
         }
     }
 }

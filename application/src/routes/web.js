@@ -6,10 +6,10 @@ const historyController = require("../controllers/historyController");
 const passwordController = require("../controllers/passwordController")
 const scriptsController = require("../controllers/scriptsController")
 const passport = require('passport');
-const initPassportLocal = require( "../controllers/passportController");
+const passportController = require( "../controllers/passportController");
 
 // Init all passport
-initPassportLocal();
+passportController.initPassportLocal();
 let router = express.Router();
 
 let initWebRoutes = (app) => {
@@ -36,11 +36,12 @@ let initWebRoutes = (app) => {
 
     //student get routes they can't go directly, must get class link
     router.get("/login", studentController.getStudentLoginPage);
-    router.post("/login", passport.authenticate("local", {
+    // router.post("/login", passportController.executeAuthenticate);
+     router.post("/login", passport.authenticate("local", {
         failureRedirect: "/register",
         failureFlash: true,
         successFlash: true,
-        successRedirect: "/sendEmoji"}));
+        successRedirect: "/sendEmoji"}, ));
     //student get routes, they can't go directly, must get class link
     router.get("/register", studentController.getStudentRegisterPage);
     router.post("/register", studentController.checkUserIsValid, emojiController.getSendEmojiPage);

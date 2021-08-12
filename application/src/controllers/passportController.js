@@ -1,8 +1,18 @@
-const passportLocal = require( "passport-local");
-const passport = require( "passport");
+const passport = require( "passport"),LocalStrategy = require( "passport-local").Strategy;
+
 const loginServices = require( "../services/loginServices");
 
-let LocalStrategy = passportLocal.Strategy;
+// let LocalStrategy = passportLocal.Strategy;
+
+// function executeAuthenticate(req,res,next) {
+//     passport.authenticate("local", function (err, user, info) {
+//         if (err) {
+//             return res.redirect("/register")
+//         } else {
+//             return res.redirect("/sendEmoji")
+//         }
+//     }) (req,res,next);
+// }
 
 let initPassportLocal = () => {
     passport.use(new LocalStrategy({
@@ -38,4 +48,7 @@ passport.deserializeUser((id, done) => {
     done(null, id);
 });
 
-module.exports = initPassportLocal;
+module.exports = {
+    initPassportLocal: initPassportLocal,
+    // executeAuthenticate:executeAuthenticate
+};
