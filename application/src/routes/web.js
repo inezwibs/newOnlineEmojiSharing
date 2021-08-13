@@ -41,7 +41,7 @@ let initWebRoutes = (app) => {
         failureRedirect: "/register",
         failureFlash: true,
         successFlash: true,
-        successRedirect: "/sendEmoji"}, ));
+        successRedirect: "/sendEmoji"}));
     //student get routes, they can't go directly, must get class link
     router.get("/register", studentController.getStudentRegisterPage);
     router.post("/register", studentController.checkUserIsValid, emojiController.getSendEmojiPage);

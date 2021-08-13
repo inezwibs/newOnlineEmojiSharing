@@ -107,7 +107,7 @@ async function getSendEmojiPage(req,res) {
         req.userInfo = req.user;
     }
 
-
+    let errors =[];
         try{
             rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
             if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {

@@ -1,8 +1,8 @@
-const passport = require( "passport"),LocalStrategy = require( "passport-local").Strategy;
-
+const passportLocal = require( "passport-local");
+const passport = require( "passport");
 const loginServices = require( "../services/loginServices");
 
-// let LocalStrategy = passportLocal.Strategy;
+let LocalStrategy = passportLocal.Strategy;
 
 // function executeAuthenticate(req,res,next) {
 //     passport.authenticate("local", function (err, user, info) {

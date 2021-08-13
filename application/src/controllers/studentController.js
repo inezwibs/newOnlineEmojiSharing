@@ -148,8 +148,8 @@ async function checkUserIsValid(req, res, next) {
             }
         // if user exist but maybe or maybe not for this class
         } else if (rows.success && !isEmpty && rows.isRegistered) {
-            req.classLinkId = classLinkIdValue;
-            req.classId = classIdValue;
+            req.classLinkId = classLinkIdValue ? classLinkIdValue : req.body.classLinkId;
+            req.classId = classIdValue ? classIdValue : req.body.classId;
             // req.user_id = rows.body.id;
             // req.user_details = rows.body;
             // let insertRegResult = await studentServices.insertRegistration(req.body, req.user_id, classIdValue);
