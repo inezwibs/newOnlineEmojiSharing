@@ -281,20 +281,29 @@
                         <div>
                             <div class="row">
                                 <div class="ex1">
-                                    <% for(var i=0; i < userInfo.length; i++) { %>
-                                    <div>
-                                        <div>
+                                        <table style="width: 100%">
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>Name</th>
+                                                <th>Text</th>
+                                            </tr>
+                                            <% for(var i=0; i < userInfo.length; i++) { %>
 
-                                            <%if (userInfo[i].isAnonymous === 0) { %>
-                                                <h5 ><%= userInfo[i].full_name %></h5>
-                                            <% }else{ %>
-
-                                                <h5 >Anonymous user</h5>
+                                            <tr>
+                                               <td><h6><%=(new Date(Date.parse(userInfo[i].date_time))).toLocaleString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %></h6></td>
+                                                <td><h6>
+                                                        <%if (userInfo[i].isAnonymous === 0) { %>
+                                                            <%= userInfo[i].full_name %>
+                                                        <% }else{ %>
+                                                                Anonymous user
+                                                        <% } %>
+                                                    </h6>
+                                                </td>
+                                                <td><h6><%= userInfo[i].text %></h6></td>
+                                            </tr>
                                             <% } %>
-                                            <small class="col-lg-10"><%= userInfo[i].text %></small>
-                                        </div>
-                                    </div>
-                                    <% } %>
+
+                                        </table>
                                 </div>
                             </div>
                         </div>

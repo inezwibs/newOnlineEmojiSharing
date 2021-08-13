@@ -136,9 +136,7 @@ async function getSendEmojiPage(req,res) {
                     userObj: rowsObj,
                     emojiSelected: emojiValue ? emojiValue : "3",
                     isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-                    //TODO change this to path instead of localPath before pushing to aws
                     path: path
-                    // path: path
                 });
             }
         } catch (e) {
@@ -444,6 +442,19 @@ async function insertEmojiRecord(req, res, next) {
 
         try {
             const [rows, err] = await db.execute(query);
+            req.posted_record_id = rows.insertId;
+            // next();
+        } catch (e) {
+            console.log("Catch an error: ", e);
+        }
+        //cleaning text of any symbols
+        cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
+        let queryForText =
+            " UPDATE emojidatabase.posted_emojis SET text = " + cleanText +
+            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.posted_record_id; // from previous query
+
+        try {
+            const [rows, err] = await db.execute(queryForText);
             req.posted_record_id = rows.insertId;
             // next();
         } catch (e) {
