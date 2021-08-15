@@ -17,10 +17,9 @@ let createNewInstructor = async (data) => {
         let query =
             " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
             data.fullName +
-            "' , " +
-            //TODO put quotes back between email
+            "' , '" +
             data.email +
-            " , '" +
+            "' , '" +
             hashedPassword +
             "','" +
             data.isInstructor +
