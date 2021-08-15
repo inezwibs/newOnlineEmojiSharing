@@ -447,7 +447,7 @@ async function insertEmojiRecord(req, res, next) {
         } catch (e) {
             console.log("Catch an error: ", e);
         }
-        //cleaning text of any symbols
+        //2nd call to update the text
         cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
         let queryForText =
             " UPDATE emojidatabase.posted_emojis SET text = " + cleanText +

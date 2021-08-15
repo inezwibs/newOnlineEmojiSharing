@@ -17,9 +17,10 @@ let createNewInstructor = async (data) => {
         let query =
             " INSERT INTO emojidatabase.users (full_name, email, password, isInstructor) VALUES ( '" +
             data.fullName +
-            "' , '" +
+            "' , " +
+            //TODO put quotes back between email
             data.email +
-            "' , '" +
+            " , '" +
             hashedPassword +
             "','" +
             data.isInstructor +
@@ -34,8 +35,8 @@ let createNewInstructor = async (data) => {
             return { success: true, body: data, message: message };
         } catch (err) {
             console.log("Catch an error: ", err);
-            message = `There was an error caught while inserting to database. Error message: "${err}"`;
-            return { success: false, body: [], message: message };
+            message = `${err}`;
+            return { success: false, body: {}, message: message };
         }
     }
 };
@@ -48,10 +49,10 @@ let checkExistEmail = async (email) => {
         console.log(rows);
         if (rows.length > 0){
             // return rows[0].email.length ==0 | rows[0].email.length == undefined ? false : true;
-            return { doesExist: true, body: rows };
+            return { doesExist: true, body: rows[0] };
 
         }else{
-            return { doesExist: false, body: [] };
+            return { doesExist: false, body: {} };
         }
     } catch (err) {
         console.log("Catch an error: ", err);

@@ -29,7 +29,7 @@
 <!--         was /action home-->
           <form id="instructorForm" name="instructorForm" class="form" action="/instructorRegister" method="POST"
                 onsubmit="return checkForm(this);">
-            <h3 class="text-center text-info">Instructor Form</h3>
+            <h3 class="text-center text-info">Instructor Registration Form</h3>
 
             <div class="form-group">
               <label for="firstName" class="text-info">Instructor Full Name:</label><br />
@@ -55,7 +55,16 @@
             <div class="form-group">
               <input type="submit" name="submit" class="btn btn-info btn-md" value="Create Instructor Account" />
             </div>
-
+            <div>
+              <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                <ul class="alert alert-primary" role="alert">
+                  <% for (var i = 0 ; i < errors.length ; i++){ %>
+                    <li> <%= errors[i].msg %>
+                    </li>
+                  <% }%>
+                </ul>
+              <% } %>
+            </div>
             <div>
               If you already have an account. <a href="/instructorLogin">Log in</a>.
             </div>

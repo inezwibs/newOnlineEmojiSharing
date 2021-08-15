@@ -113,7 +113,7 @@ let getInstructorRegisterPage = (req,res) => {
 
 //insert instructor to db users
 async function insertInstructor(req, res, next) {
-
+    let errors = [];
     let newInstructor = {
         fullName: req.body.name,
         email: req.body.email,
@@ -126,19 +126,24 @@ async function insertInstructor(req, res, next) {
         //create new instructor
         const result = await registerService.createNewInstructor(newInstructor);
         if (result.success){
-            req.instructorId = result.body[0].instructorId;
+            req.instructorId = result.body.instructorId;
             req.alert = [result.body.message];
         }else if (!result.success){
-            if (result.body.length > 0){
-                req.instructorId = result.body[0].id;
+            //TODO need to handle empty body object
+            if (typeof result.body !== "undefined" && result.body.id){
+                req.instructorId = result.body.id;
                 req.alert = [result.body.message];
             }else{
-                throw new Error(result.message);
+                throw result.message;
             }
         }
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
+        errors.push({msg: e});
+        return res.render("instructorRegister" ,{
+            errors : errors
+        });
     }
 }
 
@@ -162,18 +167,6 @@ async function getInstructorID(req, res, next) {
 async function checkedInstructor(req, res, next) {
     return res.redirect('/instructor');
 }
-
-/*
-get class tues thur 15:00 16:00
-convert tues and thur to numeric value
-current = new Date()
-if current.getDay() - class day1  or class day2 == 0
-then
-get start time, convert to minutes , calculate minutes of class time
-currentTimeInMinutes = current.getHours() * 60 + current.getMinutes()
-if currentTimeInMinutes is between startTimeInMinutes and endTimeInMinutes
-
- */
 
 //create classes
 async function insertClasses(req, res, next) {
