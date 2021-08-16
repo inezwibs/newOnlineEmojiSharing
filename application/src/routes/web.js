@@ -52,6 +52,9 @@ let initWebRoutes = (app) => {
     router.get("/getClassLink", studentController.getClassLinkPage);
     router.post("/getClassLink", studentController.listClassLinks);
 
+    //if students are registered for one class but want to register for another
+    router.post("/signUp",studentController.checkUserIsValid);
+
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );
     router.post("/sendEmoji" ,emojiController.getUserSocketListener, emojiController.getStudentClassId, emojiController.triageBasedOnTime,

@@ -15,6 +15,10 @@ async function getClassLinkPage (req, res, next) {
     res.render("classLinkPage");
 }
 
+async function getSignUpPage (req, res, next) {
+    res.render("signUp");
+}
+
 async function listClassLinks (req,res,user) {
     let classIdQuery;
     if (req.body.classId){
@@ -23,12 +27,6 @@ async function listClassLinks (req,res,user) {
             "WHERE u.id = r.users_id " +
             "AND c.id = r.classes_id AND r.classes_id = " + req.body.classId + " AND r.isInstructor = \'1\' ";
     }
-    // else if (req.body.email){
-    //     classIdQuery = "SELECT c.class_name, c.datetime, r.id, r.classes_id " +
-    //         "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
-    //         "WHERE u.id = r.users_id " +
-    //         "AND c.id = r.classes_id AND u.email = " + req.body.email + " AND r.isInstructor = \'1\' ";
-    // }
 
     let classObj;
     try{
@@ -105,7 +103,7 @@ async function getStudentRegisterPage (req, res, next) {
             if (ids && ids.length === 2) {
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
-
+                //TODO need to differentiate between not registered at all or not registered for the class. Both go here
                 res.render("login", {
                     title: "Form Validation",
                     classId: req.classId,

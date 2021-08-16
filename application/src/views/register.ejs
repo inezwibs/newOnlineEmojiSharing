@@ -30,14 +30,38 @@
     <div id="login-row" class="row justify-content-center align-items-center">
       <div id="login-column" class="col-md-6">
         <div id="login-box" class="col-md-12">
-          <form
+
+          <h3 class="text-center text-info">Register</h3>
+          <% if (typeof classId !== 'undefined' && classId.length > 0) { %>
+          <div class="text-info mt-4"  >Already a registered student for another class?
+            <form class="form-inline" action="/signUp?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
+              <div class="form-group ">
+                <label class="text-info"> Enter your email here to add this class: </label>
+                <input type="email" class="form-control" name="email" />
+                <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
+                <input type="hidden" name="classId" value="<%=classId%>" />
+                <input
+                        type="submit"
+                        name="submit"
+                        class="btn btn-info btn-md ml-1"
+                        value="Add"
+                />
+              </div>
+            </form>
+          </div>
+          <% } %>
+          <div class="text-info mt-4">
+            <h4>Not yet a registered student for any class? </h4>
+            <p>Please fill this form below.</p>
+          </div>
+            <form
             id="login-form"
             class="form"
             action="/register?classLinkId=<%=classLinkId%>?classId=<%=classId%>"
             method="post"
             onsubmit="return checkForm(this);"
           >
-            <h3 class="text-center text-info">Register</h3>
+
             <div>
               <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
                 <p class="alert alert-primary" alerts="alert">
@@ -45,7 +69,7 @@
                 </p>
               <% } %>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-1">
               <label for="username" class="text-info">Full Name:</label><br />
               <input
                 type="text"
