@@ -7,6 +7,7 @@ const passwordController = require("../controllers/passwordController")
 const scriptsController = require("../controllers/scriptsController")
 const passport = require('passport');
 const passportController = require( "../controllers/passportController");
+const req = require("express");
 
 // Init all passport
 passportController.initPassportLocal();
@@ -53,7 +54,7 @@ let initWebRoutes = (app) => {
     router.post("/getClassLink", studentController.listClassLinks);
 
     //if students are registered for one class but want to register for another
-    router.post("/signUp",studentController.checkUserIsValid);
+    router.post("/signUp",studentController.checkIfUserExists, studentController.checkUserIsValid,  emojiController.getSendEmojiPage);
 
     //emoji routes
     router.get("/sendEmoji",  emojiController.getSendEmojiPage );

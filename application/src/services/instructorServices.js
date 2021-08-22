@@ -5,7 +5,7 @@ class InstructorServices {
     constructor() {
 
     }
-
+    //TODO check references, check existing instructor needs to be going to user table
     async checkExistingInstructor ( reqBody ) {
         let query = "SELECT * FROM emojidatabase.registrations WHERE isInstructor ="+
             1 + " AND users_id = '" + reqBody.instructorObject.id + "'" ;

@@ -1,18 +1,17 @@
 const passportLocal = require( "passport-local");
 const passport = require( "passport");
 const loginServices = require( "../services/loginServices");
-
+const { serialize, deserialize } = require("v8")
 let LocalStrategy = passportLocal.Strategy;
 
-// function executeAuthenticate(req,res,next) {
-//     passport.authenticate("local", function (err, user, info) {
-//         if (err) {
-//             return res.redirect("/register")
-//         } else {
-//             return res.redirect("/sendEmoji")
-//         }
-//     }) (req,res,next);
-// }
+function executeAuthenticate(req,res,next) {
+    passport.authenticate("local", {
+           failureRedirect: "/register",
+           failureFlash: true,
+           successFlash: true,
+           successRedirect: "/sendEmoji"
+    })(req,res,next);
+}
 
 let initPassportLocal = () => {
     passport.use(new LocalStrategy({
@@ -26,6 +25,7 @@ let initPassportLocal = () => {
                     if (!isValidUser.success) {
                         req.user = isValidUser;
                         req.id = isValidUser;
+                        // res.json = encodeURIComponent(){isValidUser};
                         return done(null, false, isValidUser);
                     }
                     else{
@@ -51,5 +51,5 @@ passport.deserializeUser((id, done) => {
 
 module.exports = {
     initPassportLocal: initPassportLocal,
-    // executeAuthenticate:executeAuthenticate
+    executeAuthenticate:executeAuthenticate
 };

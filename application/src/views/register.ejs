@@ -34,22 +34,25 @@
           <h3 class="text-center text-info">Register</h3>
           <% if (typeof classId !== 'undefined' && classId.length > 0) { %>
           <div class="text-info mt-4"  >Already a registered student for another class?
-            <form class="form-inline" action="/signUp?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
+            <form action="/signUp?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
               <div class="form-group ">
                 <label class="text-info"> Enter your email here to add this class: </label>
-                <input type="email" class="form-control" name="email" />
+                <input type="email" id="signUpEmail" class="form-control form-inline" name="email"
+                        <%= disabled ? 'disabled' :'' %>
+                />
                 <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
                 <input type="hidden" name="classId" value="<%=classId%>" />
                 <input
                         type="submit"
                         name="submit"
-                        class="btn btn-info btn-md ml-1"
-                        value="Add"
+                        class="btn btn-info btn-md mt-2"
+                        value="Sign up to class with id = <%=classId%>"
                 />
               </div>
             </form>
           </div>
           <% } %>
+
           <div class="text-info mt-4">
             <h4>Not yet a registered student for any class? </h4>
             <p>Please fill this form below.</p>

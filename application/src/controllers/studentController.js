@@ -54,7 +54,8 @@ async function getStudentRegisterPage (req, res, next) {
         res.render("register", {
             title: "Form Validation",
             classId: classIdValue,
-            classLinkId: classLinkIdValue
+            classLinkId: classLinkIdValue,
+            disabled: false
         });
         req.session.errors = null;
     } else if (req.user && req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
@@ -93,7 +94,8 @@ async function getStudentRegisterPage (req, res, next) {
             title: "Form Validation",
             classId: classIdValue,
             classLinkId: classLinkIdValue,
-            alerts: req.user.message
+            alerts: req.user.message,
+            disabled: false
         });
         req.session.errors = null;
     }else{
@@ -103,34 +105,76 @@ async function getStudentRegisterPage (req, res, next) {
             if (ids && ids.length === 2) {
                 req.classLinkId = ids[0];
                 req.classId = ids[1];
-                //TODO need to differentiate between not registered at all or not registered for the class. Both go here
-                res.render("login", {
-                    title: "Form Validation",
-                    classId: req.classId,
-                    classLinkId: req.classLinkId,
-                    isLoggedIn: req.isAuthenticated(),
-                    alerts: `This user is not yet registered for this class. Use links below to register for class id = ${req.classId} or look up your class id.`
-                });
+                if (req.session.flash.error.length >0){
+                    res.render("login", {
+                        title: "Form Validation",
+                        classId: req.classId,
+                        classLinkId: req.classLinkId,
+                        isLoggedIn: req.isAuthenticated(),
+                        alerts: req.session.flash.error[0]
+                    });
+                }else{
+                    res.render("login", {
+                        title: "Form Validation",
+                        classId: req.classId,
+                        classLinkId: req.classLinkId,
+                        isLoggedIn: req.isAuthenticated(),
+                        alerts: `This user is not yet registered for this class. Use links below to register for class id = ${req.classId} or look up your class id.`
+                    });
+                }
             }
-        }else{
-            res.render("login", {
+        }
+        else{
+            res.render("register", {
                 title: "Form Validation",
                 classId: req.classId,
                 classLinkId: req.classLinkId,
                 isLoggedIn: req.isAuthenticated(),
-                alerts: `A system error occurred.`
+                alerts: `Failed to login. Please register using links below or look up your class id to register.`
             });
         }
     }
 }
 
+async function checkIfUserExists(req,res,next){
+    let rows;
+    try {
+        rows = await studentServices.doesUserExist(req.body);
+        if (rows.success && rows.body.length === 0) {
+            //user doesn't exist at all TESTED
+            res.render("register", {
+                alerts: rows.message,
+                title: "Form Validation",
+                classId: classIdValue,
+                classLinkId: classLinkIdValue,
+                disabled: true
+            })
+        }else if (rows.success && rows.body.length > 0) {
+            //user exists
+            //TODO testing in progress
+            req.doesUserExist = true;
+            next();
+        }
+    }catch (e) {
+        //error caught
+        res.render("register", {
+            alerts: rows.error,
+            title: "Form Validation",
+            classId: classIdValue,
+            classLinkId: classLinkIdValue,
+            disabled: true
+        })
+    }
+}
+
 async function checkUserIsValid(req, res, next) {
     let errors = [];
-    let userIsValid = 0;
+    //come here from signUp or from register post calls
+    req.doesUserExist = req.doesUserExist ? req.doesUserExist: false;
 
     try {
-        //main query
-        let rows = await studentServices.checkExistingClassRegistration(req.body,classIdValue);
+        //main query passing req.body containing doesUserExist
+        let rows = await studentServices.checkExistingClassRegistration(req.body,classIdValue, req.doesUserExist);
         let isEmpty = studentServices.isEmptyObject(rows.body);
         // if user does not exist at all
         if (rows.success && isEmpty && !rows.isRegistered){
@@ -177,25 +221,19 @@ async function checkUserIsValid(req, res, next) {
             }
 
             errors.push({msg: errorMessage})
-            res.render('register', {
-                errors: errors,
-                title: "Form Validation",
-                classId: classIdValue,
-                classLinkId: classLinkIdValue
-            })
+
         } else if (!rows.success) {
             let errorMessage = "";
 
-            errors.push({msg: rows.body})
+            errors.push({msg: rows.message})
             res.render('register', {
                 errors: errors,
                 title: "Form Validation",
                 classId: classIdValue,
-                classLinkId: classLinkIdValue
+                classLinkId: classLinkIdValue,
+                disabled: false
             })
-
         }
-
         // next(); // go to getSendEmoji
     } catch (e) {
         console.log("Catch an error: ", e);
@@ -205,7 +243,8 @@ async function checkUserIsValid(req, res, next) {
                 errors: errors,
                 title: "Form Validation",
                 classId: classIdValue,
-                classLinkId: classLinkIdValue
+                classLinkId: classLinkIdValue,
+                disabled: false
             })
         }
     }
@@ -265,7 +304,8 @@ async function getStudentLoginPage(req,res) {
                 errors: errors,
                 title: "Form Validation",
                 classId: classIdValue,
-                classLinkId: classLinkIdValue
+                classLinkId: classLinkIdValue,
+                disabled: false
             })
             // return res.render("classLinkPage", {
             //     classObj: classObj ? classObj : {},
@@ -300,6 +340,7 @@ module.exports = {
     getStudentRegisterPage: getStudentRegisterPage,
     checkUserIsValid:checkUserIsValid,
     insertRegistration:insertRegistration,
+    checkIfUserExists:checkIfUserExists,
     getClassLinkPage:getClassLinkPage,
     listClassLinks:listClassLinks
 }

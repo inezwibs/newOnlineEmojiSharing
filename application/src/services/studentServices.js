@@ -7,25 +7,26 @@ class StudentServices {
     _isRegistered = false;
     _reqBody = {};
     _classIdValue = "";
-
+    _doesUserExist = {};
     constructor() {
 
     }
 
-    async checkExistingClassRegistration(reqBody,classIdValue) {
+    async checkExistingClassRegistration(reqBody,classIdValue, doesUserExist) {
         this._reqBody = reqBody;
         this._classIdValue = classIdValue;
         let message = "";
-        let doesUserExistResult = await this.doesUserExist();
-
+        this._doesUserExistResult = doesUserExist ;
         // if user does not exist at all
-        if (doesUserExistResult.success && doesUserExistResult.body.length === 0) {
+        let userDetails;
+        if (!this._doesUserExistResult) {
             //user does not exist at all , not for any class, insert user in Users dbase
             let insertResult = await this.insertUser();
             if (insertResult.success){
-                doesUserExistResult = await this.doesUserExist(); //second time to get the id
+                userDetails = await this.doesUserExist(); //second time to get the id
                 //user now exist , but not for any class, register user in Registrations dbase
-                const result = await this.registerUserIntoCurrentClass(doesUserExistResult, reqBody)
+                //TODO test this
+                const result = await this.registerUserIntoCurrentClass(userDetails, reqBody)
                 return result;
             }else{
                 message = insertResult.error;
@@ -33,28 +34,29 @@ class StudentServices {
             }
         }
         // if user exist but maybe or maybe not for this class
-        else if (doesUserExistResult.success && doesUserExistResult.body.length > 0) {
-            const result = await this.registerUserIntoCurrentClass(doesUserExistResult, reqBody)
+        else if (this._doesUserExistResult) {
+            userDetails = await this.doesUserExist(); //second time to get the id
+            const result = await this.registerUserIntoCurrentClass(userDetails, reqBody)
             return result;
-            //tested
+            //TODO testing
         }
     }
 
-    async registerUserIntoCurrentClass(doesUserExistResult, reqBody) {
+    async registerUserIntoCurrentClass(userDetails, reqBody) {
         let resultObject;
-
-        if (this._classIdValue && Array.isArray(doesUserExistResult.body)){
-            resultObject = await this.isPersonAlreadyRegisteredToThisClass(this._classIdValue, doesUserExistResult.body[0].id);
+        //TODO doesUserExistResult.body does not exist anymore
+        if (this._classIdValue && Array.isArray(userDetails.body)){
+            resultObject = await this.isPersonAlreadyRegisteredToThisClass(this._classIdValue, userDetails.body[0].id);
         }else if (reqBody){
-            resultObject = await this.isPersonAlreadyRegisteredToThisClass(reqBody.classId, doesUserExistResult.body[0].id);
+            resultObject = await this.isPersonAlreadyRegisteredToThisClass(reqBody.classId, userDetails.body[0].id);
         }
         let errors = [];
         let message;
         //TODO test if person is already registered next
-        if (resultObject.isRegistered) {
+        if (resultObject.isRegisteredForClass) {
             // if user is registered already for this class
             let classObject = await this.getClassDetails(resultObject.body.classes_id);
-            message = `You are already registered for this class ${classObject.body[0].class_name} with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${doesUserExistResult.body[0].email} and password.`
+            message = `You are already registered for this class ${classObject.body[0].class_name} with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${this._doesUserExistResult.body[0].email} and password.`
             if (classObject.success) {
                 return {
                     success: true,
@@ -75,14 +77,14 @@ class StudentServices {
         } else {//is not yet registered
             //then let them register
             let insertResults;
-            if (this._classIdValue && Array.isArray(doesUserExistResult.body)) {
-                insertResults = await this.insertRegistration(doesUserExistResult.body[0].id, this._classIdValue);
+            if (this._classIdValue && Array.isArray(userDetails.body)) {
+                insertResults = await this.insertRegistration(userDetails.body[0].id, this._classIdValue);
             }else if (reqBody){
-                insertResults = await this.insertRegistration(doesUserExistResult.body[0].id, reqBody.classId);
+                insertResults = await this.insertRegistration(userDetails.body[0].id, reqBody.classId);
             }
                 if (insertResults.success) {
                 message = `You are now a user registered for this class, with class id = ${this._classIdValue}.\n` +
-                    `Please login with your existing email = ${doesUserExistResult.body[0].email} and password.`
+                    `Please login with your existing email = ${userDetails.body[0].email} and password.`
                 return {success: insertResults.success, body: insertResults.body, isRegistered: true, message: message};
             } else {
                 message = `A system error occurred.`
@@ -121,7 +123,7 @@ class StudentServices {
             message = "A system error occurred."
             return {success: false, error: err, message: message};
         }
-        return {isRegistered: isFound, body: classRecordReturn};
+        return {isRegisteredForClass: isFound, body: classRecordReturn};
     }
 
     async insertRegistration(user_id,classIdValue) {
@@ -140,16 +142,19 @@ class StudentServices {
             }
     }
 
-    async doesUserExist() {
+    //TESTED
+    async doesUserExist(reqBody = this._reqBody) {
         let query = `Select *
                      from emojidatabase.users
-                     where email = '${this._reqBody.email}'`;
+                     where email = '${reqBody.email}'`;
         try {
             const [rows, err] = await db.execute(query);
-            if (rows !== null) {
+            if (rows !== null && rows.length > 0) {
+                //user exists
                 return {success: true, body: rows};
             } else {
-                return {success: true, body: []};
+                //user does not exist
+                return {success: true, body: [], message: "There is no account for the email you entered. Register to create your username and password."};
             }
         } catch (e) {
             return {success: false, error: e};
@@ -241,6 +246,22 @@ class StudentServices {
         }
         return result;
     }
-
+    async getSessionData(reqBody = this._reqBody) {
+        let query = `Select *
+                     from emojidatabase.sessions
+                     where id = '${reqBody.id}'`;
+        try {
+            const [rows, err] = await db.execute(query);
+            if (rows !== null && rows.length > 0) {
+                //user exists
+                return {success: true, body: rows};
+            } else {
+                //user does not exist
+                return {success: true, body: [], message: "There is no data. Register to create your username and password."};
+            }
+        } catch (e) {
+            return {success: false, error: e};
+        }
+    }
 }
 module.exports = StudentServices;

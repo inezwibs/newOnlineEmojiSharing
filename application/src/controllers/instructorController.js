@@ -201,6 +201,7 @@ async function insertClasses(req, res, next) {
             if (tempResult.success){
                 req.insertedClassId = tempResult.body[0].id;
             }
+            //TODO can't get this reg id because class is not yet registered in registration table at this point
             let classIsRegisteredResult = await instructorService.getClassRegistrationID(req.body, req.insertedClassId);
             if (classIsRegisteredResult.success && classIsRegisteredResult.body.length > 0 ){
                 req.classIsRegisteredResult = true;
@@ -281,6 +282,7 @@ async function insertToRegistration(req, res, next) {
     }
     if (!doesClassExist || doesClassExist && !req.classIsRegisteredResult){
         try{
+            //TODO need to go users table not registration table
             let doesInstructorExist = await instructorService.checkExistingInstructor(req.body);
 
             if (doesInstructorExist.success && doesInstructorExist.body.length > 0 ){
@@ -314,10 +316,12 @@ async function generateLink(req, res, next) {
     let query =" SELECT * FROM emojidatabase.registrations where users_id ='" + currentInstructor +"'";
 
     try {
-        const [rows, fields] = await db.execute(query);
+        const [
+            rows, fields] = await db.execute(query);
         let numClasses = rows.length;
         let classesArray = rows;
         //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classId=
+        //TODO write if statement for when rows is empty
         let newClassIdLink = 'http://emotionthermometer.online/EmojiSharing?classLinkId=' + rows[numClasses-1].id;
         // let newClassIdLink = "http://54.215.121.49:4000/EmojiSharing?classLinkId=" + rows[numClasses-1].id;
 
@@ -339,7 +343,6 @@ async function postLogOut (req, res) {
         });
     });
 }
-
 
 
 module.exports = {
