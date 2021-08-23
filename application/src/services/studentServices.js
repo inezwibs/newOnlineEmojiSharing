@@ -175,8 +175,19 @@ class StudentServices {
 
         }
     }
+    async getUserAndClassDetails(regId, classId) {
+        let query = `SELECT u.id, u.full_name, r.id, r.users_id, c.id, c.class_name, c.datetime 
+                    FROM emojidatabase.users u,emojidatabase.registrations r, emojidatabase.classes c 
+                    WHERE r.id = ${regId} AND c.id = ${classId} AND u.id = r.users_id`
 
+        try {
+            const [rows, err] = await db.execute(query);
+            return {success: true, body: rows};
+        } catch (err) {
+            return {success: false, error: err};
 
+        }
+    }
 
     isEmptyObject(obj) {
         let item;

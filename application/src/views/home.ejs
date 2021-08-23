@@ -12,12 +12,20 @@
   <body>
 
     <div>
-      <h2 class="text-center text-info mt-2">Welcome to the Emotion Thermometer homepage.</h2>
+      <% if (typeof classDetails === "undefined" || typeof classDetails == 'object' && Object.keys(classDetails).length === 0) {%>
+        <h2 class="text-center text-info mt-2">Welcome to the Emotion Thermometer homepage.</h2>
+    <%}else {%>
+          <h2 class="text-center text-info mt-2">Welcome to the Emotion Thermometer homepage.</h2>
+          <h2 class="text-center text-info mt-2"><%=classDetails.class_name%> By Professor <%=classDetails.full_name%></h2>
+          <p class="text-center text-info mt-2">on <%=classDetails.datetime%> </p>
+
+      <%}%>
     </div>
 
-    <div>
+
+  <div>
       <img src="https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz" width="450" height="350"
-           class="center" />
+        class="center" />
     </div>
 
     <div  class="center-buttons">
