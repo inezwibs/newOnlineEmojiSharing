@@ -18,6 +18,7 @@ async function getInstructorPage (req,res,user) {
         res.instructorId = req.user.user[0].id;
     }else if (instructorObj){
         res.instructorId = instructorObj[0].id;
+        res.instructorObj = instructorObj;
     }else if(typeof req.user === 'number' ){
         res.instructorId = req.user;
     }
@@ -40,8 +41,8 @@ async function getInstructorPage (req,res,user) {
     }catch(e){
         console.log('error' , e)
     }
-    let instructorClassesArray = await getInstructorClasses(res.instructorId);
-    let instructorClassNamesArray = await getInstructorClassNames(instructorClassesArray);
+    let instructorClassesArray = await instructorService.getInstructorClasses(res.instructorId);
+    let instructorClassNamesArray = await instructorService.getInstructorClassNames(instructorClassesArray);
     if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
         message = "This user is not a registered instructor."
         return res.render("classLinkPage.ejs" ,{
@@ -100,7 +101,9 @@ async function checkLoggedIn (req, res, next) {
 
 let getInstructorLoginPage = (req,res) => {
     let message = "";
-
+    if (req.session.flash && req.session.flash.error.length > 0){
+        message = req.session.flash.error[0]
+    }
     return res.render("instructorLogin",{
         message: message
     });
@@ -201,14 +204,13 @@ async function insertClasses(req, res, next) {
             if (tempResult.success){
                 req.insertedClassId = tempResult.body[0].id;
             }
-            //TODO can't get this reg id because class is not yet registered in registration table at this point
             let classIsRegisteredResult = await instructorService.getClassRegistrationID(req.body, req.insertedClassId);
             if (classIsRegisteredResult.success && classIsRegisteredResult.body.length > 0 ){
                 req.classIsRegisteredResult = true;
             }else if (classIsRegisteredResult.success && classIsRegisteredResult.body.length === 0 ){
-                req.classIsRegisteredResult = false;
+                req.classIsRegisteredResult = false; //testing
             }else{
-                throw new Error();
+                throw classIsRegisteredResult.body;
             }
             res.locals = req.body;
             instructorClassesObj = res.locals;
@@ -218,58 +220,6 @@ async function insertClasses(req, res, next) {
         console.log("Catch an error: ", e);
     }
 }
-
-
-
-async function getInstructorClasses(instructorId) {
-    let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE users_id='"+
-        instructorId + "'";
-    try {
-        const [rows, fields] = await db.execute(checkExistingInstructor);
-        if (rows.length !== 0) {
-            console.log('found!');
-            return rows;
-        } else {
-            console.log('not found');
-            //new classes id would be last record in database + 1
-            return 0;
-        }
-    } catch (e) {
-        console.log("Catch an error: ", e);
-    }
-}
-
-async function getInstructorClassNames(classesArrayFromRegDatabase){
-    let classesIdArr = [];
-    let classNamesArr = [];
-    if (classesArrayFromRegDatabase !==0 ){
-        classesArrayFromRegDatabase.forEach( (obj) => {
-            classesIdArr.push(obj.classes_id);
-        });
-        for (let i = 0 ; i<classesIdArr.length; i++){
-            let getClassName = "SELECT class_name, datetime FROM emojidatabase.classes WHERE id='"+
-                classesIdArr[i] + "'";
-            try {
-                const [rows, fields] = await db.execute(getClassName);
-                if (rows.length !== 0) {
-                    console.log('found!');
-                    classNamesArr.push(rows);
-                } else {
-                    console.log('not found');
-                    //new classes id would be last record in database + 1
-                    return 0;
-                }
-            } catch (e) {
-                console.log("Catch an error: ", e);
-            }
-
-        }
-        return classNamesArr;
-    }else{
-        return 0;
-    }
-}
-
 
 async function insertToRegistration(req, res, next) {
     let userId;
@@ -283,9 +233,9 @@ async function insertToRegistration(req, res, next) {
     if (!doesClassExist || doesClassExist && !req.classIsRegisteredResult){
         try{
             //TODO need to go users table not registration table
-            let doesInstructorExist = await instructorService.checkExistingInstructor(req.body);
+            let doesInstructorExist = await instructorService.checkExistingInstructorClasses(req.body);
 
-            if (doesInstructorExist.success && doesInstructorExist.body.length > 0 ){
+            if (doesInstructorExist.success ){
                 let query =
                     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
                     req.insertedClassId +
@@ -298,11 +248,14 @@ async function insertToRegistration(req, res, next) {
                 }catch (e) {
                     console.log("Catch an error: ", e);
                 }
+            }else{
+                throw doesInstructorExist.error;
             }
             next();
             //get the reg id from the entered classes
         }catch (e) {
             console.log("Catch an error: ", e);
+            res.redirect('/instructor');
         }
     }else {
         next();
@@ -312,12 +265,11 @@ async function insertToRegistration(req, res, next) {
 
 async function generateLink(req, res, next) {
 
-    currentInstructor = instructorObj.id ? instructorObj.id : req.body.instructorObject.id;
+    let currentInstructor = instructorObj.id ? instructorObj.id : req.body.instructorObject.id;
     let query =" SELECT * FROM emojidatabase.registrations where users_id ='" + currentInstructor +"'";
 
     try {
-        const [
-            rows, fields] = await db.execute(query);
+        const [rows, fields] = await db.execute(query);
         let numClasses = rows.length;
         let classesArray = rows;
         //4000 redirects to http://54.215.121.49:4000/EmojiSharing/?classId=

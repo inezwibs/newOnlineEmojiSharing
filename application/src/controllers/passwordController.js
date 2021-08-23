@@ -25,9 +25,13 @@ async function handlePostForgotPasswordPage (req, res, next) {
             id: userObject.id
         }
         const token = jwt.sign(payload,secret, {expiresIn: '15m'})
-        const link = path + `${userObject.id}/${token}`;
+        const link =path+ `${userObject.id}/${token}`;
+
         console.log(link);
-        res.send(`Here\'s the password link ${link}`);
+        // res.send(`Here\'s the password link ${link}`);
+        res.render('../views/resetPasswordLink.ejs',{
+            passwordLink: link
+        });
     } else {
         res.send(`User with ${email} was not found`);
     }
