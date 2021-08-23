@@ -192,6 +192,7 @@ async function insertClasses(req, res, next) {
             try {
                 const [res, err] = await db.execute(query);
                 req.insertedClassId = res.insertId;
+                doesClassExist = true;
                 next();
             } catch (e) {
                 console.log("Catch an error: ", e);
@@ -203,6 +204,7 @@ async function insertClasses(req, res, next) {
             let tempResult = await instructorService.getClassID(req.body);
             if (tempResult.success){
                 req.insertedClassId = tempResult.body[0].id;
+                req.insertedClass = tempResult.body[0];
             }
             let classIsRegisteredResult = await instructorService.getClassRegistrationID(req.body, req.insertedClassId);
             if (classIsRegisteredResult.success && classIsRegisteredResult.body.length > 0 ){
@@ -230,7 +232,7 @@ async function insertToRegistration(req, res, next) {
     }else if (typeof req.user == 'object'){
         userId = req.user.user[0].id;
     }
-    if (!doesClassExist || doesClassExist && !req.classIsRegisteredResult){
+    if ( doesClassExist && !req.classIsRegisteredResult ){
         try{
             //TODO need to go users table not registration table
             let doesInstructorExist = await instructorService.checkExistingInstructorClasses(req.body);
