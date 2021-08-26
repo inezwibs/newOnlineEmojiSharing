@@ -1,6 +1,9 @@
 const db = require("../configs/database.js");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
+const ParsingService = require("../services/parsingServices");
+const parsingService = new ParsingService();
+const re = /\d+/g;
 
 class StudentServices {
     _result = {};
@@ -12,7 +15,26 @@ class StudentServices {
 
     }
 
-    async checkExistingClassRegistration(reqBody,classIdValue, doesUserExist) {
+    getClassDetailsFromReq(reqBody, reqHeaders){
+        if (reqBody.classId){
+            return reqBody.classId;
+        } else if (reqHeaders.referer) {
+            if (reqHeaders.referer.match(re).length > 2) {
+                let ids = parsingService.getIdsFromUrl(reqHeaders.referer);
+                ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
+                if (ids && ids.length === 2) {
+                    return ids[1];
+                }
+            }else{
+                return -1;
+            }
+        }else{
+            return -1;
+        }
+    }
+
+
+    async checkExistingClassRegistration(reqBody, classIdValue, doesUserExist) {
         this._reqBody = reqBody;
         this._classIdValue = classIdValue;
         let message = "";
@@ -24,9 +46,9 @@ class StudentServices {
             let insertResult = await this.insertUser();
             if (insertResult.success){
                 userDetails = await this.doesUserExist(); //second time to get the id
-                //user now exist , but not for any class, register user in Registrations dbase
-                //TODO test this
-                const result = await this.registerUserIntoCurrentClass(userDetails, reqBody)
+                //user now exist , but not for any class yet
+                // check if we have the class details i.e class id check reqbody or classidValue
+                const result = await this.registerUserIntoCurrentClass(userDetails)
                 return result;
             }else{
                 message = insertResult.error;
@@ -36,23 +58,20 @@ class StudentServices {
         // if user exist but maybe or maybe not for this class
         else if (this._doesUserExistResult) {
             userDetails = await this.doesUserExist(); //second time to get the id
-            const result = await this.registerUserIntoCurrentClass(userDetails, reqBody)
+            const result = await this.registerUserIntoCurrentClass(userDetails)
             return result;
-            //TODO testing
         }
     }
 
-    async registerUserIntoCurrentClass(userDetails, reqBody) {
-        let resultObject;
-        //TODO doesUserExistResult.body does not exist anymore
-        if (this._classIdValue && Array.isArray(userDetails.body)){
-            resultObject = await this.isPersonAlreadyRegisteredToThisClass(this._classIdValue, userDetails.body[0].id);
-        }else if (reqBody){
-            resultObject = await this.isPersonAlreadyRegisteredToThisClass(reqBody.classId, userDetails.body[0].id);
-        }
+    async registerUserIntoCurrentClass(userDetails) {
+        let resultObject = await this.isPersonAlreadyRegisteredToThisClass(this._classIdValue, userDetails.body[0].id);
+
+        // else if (reqBody){
+        //     resultObject = await this.isPersonAlreadyRegisteredToThisClass(reqBody.classId, userDetails.body[0].id);
+        // }
+
         let errors = [];
         let message;
-        //TODO test if person is already registered next
         if (resultObject.isRegisteredForClass) {
             // if user is registered already for this class
             let classObject = await this.getClassDetails(resultObject.body.classes_id);
@@ -76,16 +95,13 @@ class StudentServices {
             }
         } else {//is not yet registered
             //then let them register
-            let insertResults;
-            if (this._classIdValue && Array.isArray(userDetails.body)) {
-                insertResults = await this.insertRegistration(userDetails.body[0].id, this._classIdValue);
-            }else if (reqBody){
-                insertResults = await this.insertRegistration(userDetails.body[0].id, reqBody.classId);
-            }
+             let insertResults = await this.insertRegistration(userDetails.body[0].id, this._classIdValue);
+
                 if (insertResults.success) {
                 message = `You are now a user registered for this class, with class id = ${this._classIdValue}.\n` +
                     `Please login with your existing email = ${userDetails.body[0].email} and password.`
-                return {success: insertResults.success, body: insertResults.body, isRegistered: true, message: message};
+                return {success: insertResults.success, body: insertResults.body, isRegistered: true, message: message
+                };
             } else {
                 message = `A system error occurred.`
                 // when system error occurs no body obj occurs in results object

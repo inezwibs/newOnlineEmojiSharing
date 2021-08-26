@@ -14,7 +14,11 @@ const studentServices = new StudentServices();
 async function getClassLinkPage (req, res, next) {
     res.render("classLinkPage");
 }
-
+/*
+ classLinkId : req.body.classLinkId,
+        classObj: classObj,
+        path : path
+ */
 async function getSignUpPage (req, res, next) {
     res.render("signUp");
 }
@@ -171,10 +175,26 @@ async function checkUserIsValid(req, res, next) {
     let errors = [];
     //come here from signUp or from register post calls
     req.doesUserExist = req.doesUserExist ? req.doesUserExist: false;
-
+    //guard
+    if (!classIdValue){
+        let classIdResult = studentServices.getClassDetailsFromReq(req.body, req.headers);
+        if (classIdResult === -1){
+            errors.push({msg: "Failed to register. Please look up your unique class link to register."})
+            return res.render('register', {
+                errors: errors,
+                title: "Form Validation",
+                classId: classIdValue ? classIdValue: 'not_found',
+                classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
+                disabled: false
+            })
+        }else{
+            classIdValue = classIdResult;
+        }
+    }
     try {
         //main query passing req.body containing doesUserExist
-        let rows = await studentServices.checkExistingClassRegistration(req.body,classIdValue, req.doesUserExist);
+
+        let rows = await studentServices.checkExistingClassRegistration(req.body, classIdValue, req.doesUserExist);
         let isEmpty = studentServices.isEmptyObject(rows.body);
         // if user does not exist at all
         if (rows.success && isEmpty && !rows.isRegistered){
@@ -229,8 +249,8 @@ async function checkUserIsValid(req, res, next) {
             res.render('register', {
                 errors: errors,
                 title: "Form Validation",
-                classId: classIdValue,
-                classLinkId: classLinkIdValue,
+                classId: classIdValue ? classIdValue: 'not_found',
+                classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
                 disabled: false
             })
         }

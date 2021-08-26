@@ -305,13 +305,11 @@ async function invalidEmojiPostBranch(req,res,next) {
 async function checkRecordExistsInPostedEmojis(req, res, next) {
     req.insertMinutes = req.currentMinutes - req.classStartMinutes;
 
-    // TODO checking if the record exists needs to look at the date
     req.currentDateString = dateService.parseDateTimeRecord(new Date());
 
     try {
         let recordDateTimeObj = await dateService.getRecordDate(req.body, req.insertMinutes);
         if (recordDateTimeObj.success && recordDateTimeObj.body.length > 0){
-            //TODO manage the case for when body has more than one use recordDate contains
             let recordResult = dateService.findMatchingRecord(req.currentDateString)
             if (recordResult.success){
                 req.recordExistsInPostedEmojis = true;
@@ -371,7 +369,6 @@ async function processContributedStudentsCount(req, res, next) {
     }
     let studentsOnlineNotParticipated = emojiService.getStudentOnlineNotParticipated(req.usersOnline);
 
-    //TODO debug
     req.studentOnlineNotParticipated = studentsOnlineNotParticipated.length;
     req.studentsOffline = emojiService.getStudentOffline(req.classRegisteredStudentsCount);
 }
@@ -435,7 +432,6 @@ async function insertEmojiRecord(req, res, next) {
             console.log("Catch an error: ", e);
         }
     }else {
-        // TODO need to get id for record to update
         query =
             " UPDATE emojidatabase.posted_emojis SET emojis_id = " + req.body.optradio +
             " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id;
