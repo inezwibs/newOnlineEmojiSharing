@@ -96,11 +96,11 @@ io.on('connection', (socket) => {
     // console.log(newUser);
     userSet.add(socket.request.user.user[0].id)
     socket.userId = socket.request.user.user[0].id;
-    let emitDataObj = {
-        user: [...userSet],
-        body: socket.request.user.body,
-    }
-    io.emit('user', [emitDataObj])
+    // let emitDataObj = {
+    //     user: [...userSet],
+    //     body: socket.request.user.body,
+    // }
+    io.emit('user', [...userSet])
     uniqueUsers = userSet.size;
     io.emit('userCount',uniqueUsers);
     console.log('A user has connected. Current unique user count: ', uniqueUsers);

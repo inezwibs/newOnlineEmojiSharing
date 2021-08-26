@@ -18,8 +18,8 @@ const socketService = new SocketService();
 //get sockets
 const io = require('socket.io-client');
 
-async function getUserSocketListener(req,res,next){
-    req.usersOnline = await socketService.getUserSocketData();
+ function getUserSocketListener(req,res,next){
+    req.usersOnline = socketService.getUserSocketData();
     next();
 }
 

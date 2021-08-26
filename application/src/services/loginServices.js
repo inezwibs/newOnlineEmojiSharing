@@ -1,12 +1,15 @@
 const db = require( "../configs/database");
 const bcrypt = require ("bcryptjs");
+const ParsingService = require("../services/parsingServices");
+const parsingService = new ParsingService();
+const re = /\d+/g;
 
-let handleLogin = async (email, password, reqBody) => {
+let handleLogin = async (email, password, reqBody, reqHeaders) => {
     //check email is exist or not
     email = email.replace(/\s/gm, "");
     let user = await findUserByEmail(email);
     let loginResult, message;
-    if (user) {
+    if (user && user[0].isInstructor) {
         //compare password
         await bcrypt.compare(password, user[0].password).then((isMatch) => {
             if (isMatch) {
@@ -19,12 +22,80 @@ let handleLogin = async (email, password, reqBody) => {
                 loginResult =  { success: false, user: user, body: reqBody, message: message};
             }
         });
-    } else {
-        console.log(`This user email "${email}" doesn't exist for this class`);
-        message = `This user email "${email}" doesn't exist for this class`
+    } else if (user && !user[0].isInstructor) {
+        // exist or not for this class
+        let isRegisteredForClass;
+        let classId;
+
+        if (reqBody) {
+            if (reqBody.classId) {
+                classId = reqBody.classId;
+            } else if (!reqBody.classId && reqHeaders.referer) {
+                if (reqHeaders.referer.match(re).length > 2) {
+                    let ids = parsingService.getIdsFromUrl(reqHeaders.referer);
+                    ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
+                    if (ids && ids.length === 2) {
+                        let classLinkId = ids[0];
+                        classId = ids[1];
+                    }
+                }
+            } else {
+                // else if user exists, not an instructor and reqbody has no class id,  we can't determine which class they are registered
+                message = "User exists as a student but no class info can be determined. Students should be use a unique class link. Please look up your class link and register/login there. "
+                console.log(message);
+                loginResult = {success: false, user: user, body: reqBody, message: message};
+            }
+            isRegisteredForClass = await findUserClassReg(user[0].id, classId)
+            if (isRegisteredForClass) {
+                await bcrypt.compare(password, user[0].password).then((isMatch) => {
+                    if (isMatch) {
+                        console.log("Login successful");
+                        message = "Login successful"
+                        loginResult = {success: true, user: user, body: reqBody, message: message};
+                    } else {
+                        console.log("The password that you've entered is incorrect");
+                        message = "The password that you've entered is incorrect"
+                        loginResult = {success: false, user: user, body: reqBody, message: message};
+                    }
+                });
+            } else {
+                message = `This user email "${email}" doesn't exist for this class. Please register.`
+                console.log(message);
+                loginResult = {success: false, user: user, body: reqBody, message: message};
+            }
+        } else{
+        // else if user exists, not an instructor and reqbody has no class id,  we can't determine which class they are registered
+        message = "User exists as a student but no class info provided. Students should be use a unique class link. Please look up your class link and register/login there. "
+        console.log(message);
+        loginResult = {success: false, user: user, body: reqBody, message: message};
+        }
+
+    } else{
+        console.log(`This user email "${email}" doesn't exist in our records. Please register.`);
+        message = `This user email "${email}" doesn't exist in our records. Please register.`
         loginResult =  { success: false, user: user, body: reqBody, message: message};
     }
     return loginResult;
+};
+
+let findUserClassReg = async (id, classId) => {
+
+    let queryString = `SELECT * FROM emojidatabase.registrations WHERE users_id = ${id} AND classes_id = ${classId}`
+
+    try {
+        const [rows, fields] = await db.execute(queryString);
+
+        console.log(rows);
+
+        if (rows && rows.length > 0) {
+            return rows
+        } else {
+            return false;
+        }
+    } catch (err) {
+        console.log("Catch an error: ", err);
+        console.log(`There was an error caught while finding user in database. Error message: "${err}"`);
+    }
 };
 
 let findUserByEmail = async (email, pass) => {

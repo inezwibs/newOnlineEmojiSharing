@@ -56,12 +56,12 @@ class StudentServices {
         if (resultObject.isRegisteredForClass) {
             // if user is registered already for this class
             let classObject = await this.getClassDetails(resultObject.body.classes_id);
-            message = `You are already registered for this class ${classObject.body[0].class_name} with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${this._doesUserExistResult.body[0].email} and password.`
+            message = `You are already registered for this class ${classObject.body[0].class_name} with class id ${classObject.body[0].id}. You can proceed to login using your existing email ${userDetails.body[0].email} and password.`
             if (classObject.success) {
                 return {
                     success: true,
                     body: resultObject.body,
-                    isRegistered: resultObject.isRegistered,
+                    isRegistered: resultObject.isRegisteredForClass,
                     message: message
                 };
             } else {
@@ -70,7 +70,7 @@ class StudentServices {
                 return {
                     success: false,
                     body: classObject.error,
-                    isRegistered: resultObject.isRegistered,
+                    isRegistered: resultObject.isRegisteredForClass,
                     message: message
                 };
             }

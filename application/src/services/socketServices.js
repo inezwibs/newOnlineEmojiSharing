@@ -20,8 +20,8 @@ class SocketServices {
     //
     // }
 
-    async getUserSocketData(){
-        this.currentUser = await exportedApp.userOnlineData;
+     getUserSocketData(){
+        this.currentUser =  exportedApp.userOnlineData;
         // this.currentUser = exportedApp.emittedUserIdSet;
         return this.currentUser;
     }

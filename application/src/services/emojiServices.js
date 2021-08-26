@@ -135,8 +135,8 @@ class EmojiServices {
         return this.studentOffline;
     };
 
-    async getOnlineStudentIds() {
-        this.studentOnlineIds = await socketService.getUserSocketData();
+     getOnlineStudentIds() {
+        this.studentOnlineIds =  socketService.getUserSocketData();
         console.log('student online = ', this.studentOnlineIds.length);
         //TODO not a stable number from get user socket data, why
         return this.studentOnlineIds;

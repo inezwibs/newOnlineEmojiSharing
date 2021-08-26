@@ -102,7 +102,7 @@ async function checkLoggedIn (req, res, next) {
 let getInstructorLoginPage = (req,res) => {
     let message = "";
     if (req.session.flash && req.session.flash.error.length > 0){
-        message = req.session.flash.error[0]
+        message = req.session.flash.error[req.session.flash.error.length - 1] ; // getting the latest error message in this session
     }
     return res.render("instructorLogin",{
         message: message

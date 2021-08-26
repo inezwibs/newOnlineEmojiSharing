@@ -111,7 +111,7 @@ async function getStudentRegisterPage (req, res, next) {
                         classId: req.classId,
                         classLinkId: req.classLinkId,
                         isLoggedIn: req.isAuthenticated(),
-                        alerts: req.session.flash.error[0]
+                        alerts: req.session.flash.error[req.session.flash.error.length - 1 ]
                     });
                 }else{
                     res.render("login", {

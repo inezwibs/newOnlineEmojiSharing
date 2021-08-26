@@ -21,7 +21,7 @@ let initPassportLocal = () => {
         },
         async (req, email, password, done) => {
             try {
-                const isValidUser = await loginServices.handleLogin(email,password, req.body);
+                const isValidUser = await loginServices.handleLogin(email,password, req.body, req.headers);
                     if (!isValidUser.success) {
                         req.user = isValidUser;
                         req.id = isValidUser;

@@ -5,13 +5,17 @@
 <h1>Link for your new class is generated</h1>
 <% if (typeof newClassLink !== 'undefined') {%>
     <p>For class <%=newClass.className%> </p>
-    <a href=<%= newClassLink %>?classId=<%= newClassId%>>Go to Emoji Sharing App for new class id <%= classArr[classArr.length-1].classes_id%> </a>
+
+    <p>This is your unique link for the class you just created. You can share this link with your students: <%= classArr[classArr.length-1].classes_id%>
+        <a href=<%= newClassLink %>?classId=<%= newClassId%>><%= newClassLink %>?classId=<%= newClassId%></a>
+
+    </p>
     <h2>Here are all your registered classes: </h2>
     <div>
         <ul>
             <% for (var i = 0; i < classArr.length ; i++){ %>
-                <li><a href=<%= path+classArr[i].id %>?classId=<%= classArr[i].classes_id%>>Go to Emoji Sharing app for
-                        class id <%= classArr[i].classes_id %> </a>
+                <li>Emoji Sharing unique link for class id <%= classArr[i].classes_id %>
+                    <a href=<%= path+classArr[i].id %>?classId=<%= classArr[i].classes_id%>><%= path+classArr[i].id %>?classId=<%= classArr[i].classes_id%></a>
                 </li>
             <% }%>
         </ul>
