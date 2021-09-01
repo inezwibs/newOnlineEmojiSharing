@@ -127,20 +127,25 @@ async function insertInstructor(req, res, next) {
 
     try {
         //create new instructor
-        const result = await registerService.createNewInstructor(newInstructor);
-        if (result.success){
-            req.instructorId = result.body.instructorId;
-            req.alert = [result.message];
-        }else if (!result.success){
-            //TODO need to handle empty body object
-            if (typeof result.body !== "undefined" && result.body.id){
-                req.instructorId = result.body.id;
+        if (newInstructor){
+            const result = await registerService.createNewInstructor(newInstructor);
+            if (result.success){
+                req.instructorId = result.body.instructorId;
                 req.alert = [result.message];
-            }else{
-                throw result.message;
+            }else if (!result.success){
+                //TODO need to handle empty body object
+                if (typeof result.body !== "undefined" && result.body.id){
+                    req.instructorId = result.body.id;
+                    req.alert = [result.message];
+                }else{
+                    throw result.message;
+                }
             }
+            next();
+        }else{
+            throw "Instructor undefined. Please create a new account if you are an instructor, or look up your class link if you are a student.";
         }
-        next();
+
     } catch (e) {
         console.log("Catch an error: ", e);
         errors.push({msg: e});
