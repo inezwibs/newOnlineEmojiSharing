@@ -149,7 +149,7 @@ async function checkIfUserExists(req,res,next){
         if (rows.success && rows.body.length === 0) {
             //user doesn't exist at all TESTED
             res.render("register", {
-                alerts: rows.message,
+                alerts: rows.message ? rows.message : "",
                 title: "Form Validation",
                 classId: classIdValue,
                 classLinkId: classLinkIdValue,
