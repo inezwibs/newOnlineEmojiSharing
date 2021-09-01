@@ -16,27 +16,28 @@ class StudentServices {
     }
 
     getClassDetailsFromReq(reqBody, reqHeaders){
-        if (reqBody.classId){
-            return reqBody.classId;
+        if (reqBody.classId && reqBody.classLinkId){
+            return {classLinkId: reqBody.classLinkId, classId : reqBody.classId};
         } else if (reqHeaders.referer) {
-            if (reqHeaders.referer.match(re).length > 2) {
+            if (reqHeaders.referer.match(re)?.length > 2) {
                 let ids = parsingService.getIdsFromUrl(reqHeaders.referer);
                 ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
                 if (ids && ids.length === 2) {
-                    return ids[1];
+                    return {classLinkId:ids[0], classId : ids[1]};
                 }
             }else{
-                return -1;
+                return {};
             }
         }else{
-            return -1;
+            return {};
         }
     }
 
 
-    async checkExistingClassRegistration(reqBody, classIdValue, doesUserExist) {
+    async checkExistingClassRegistration(reqBody, classLinkIdValue, classIdValue, doesUserExist) {
         this._reqBody = reqBody;
         this._classIdValue = classIdValue;
+        this._classLinkIdValue = classLinkIdValue;
         let message = "";
         this._doesUserExistResult = doesUserExist ;
         // if user does not exist at all
@@ -94,7 +95,7 @@ class StudentServices {
                 };
             }
         } else {//is not yet registered
-            //then let them register
+            //then let them register if the class is valid
              let insertResults = await this.insertRegistration(userDetails.body[0].id, this._classIdValue);
 
                 if (insertResults.success) {

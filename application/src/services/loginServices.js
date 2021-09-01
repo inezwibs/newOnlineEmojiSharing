@@ -31,7 +31,7 @@ let handleLogin = async (email, password, reqBody, reqHeaders) => {
             if (reqBody.classId) {
                 classId = reqBody.classId;
             } else if (reqHeaders.referer) {
-                if (reqHeaders.referer.match(re).length > 2) {
+                if (reqHeaders.referer.match(re)?.length > 2) {
                     let ids = parsingService.getIdsFromUrl(reqHeaders.referer);
                     ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
                     if (ids && ids.length === 2) {

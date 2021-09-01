@@ -94,8 +94,10 @@ io.on('connection', (socket) => {
     // userSet.add({socket.request.user.user[0].id : socket.request.user.user[0]});
     // let newUser = {socketId: socket.id, socketUserCount: socket.request.user.user.length};
     // console.log(newUser);
-    userSet.add(socket.request.user.user[0].id)
-    socket.userId = socket.request.user.user[0].id;
+    if (socket.request.user.user && socket.request.user.user.length > 0){
+        userSet.add(socket.request.user.user[0].id);
+        socket.userId = socket.request.user.user[0].id;
+    }
     // let emitDataObj = {
     //     user: [...userSet],
     //     body: socket.request.user.body,
@@ -111,8 +113,10 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', (reason) => {
         console.log('A user has disconnected, reason : ', reason);
-        userSet.delete(socket.userId);
-        io.emit('user disconnected', socket.userId);
+        if (socket.userId){
+            userSet.delete(socket.userId);
+            io.emit('user disconnected', socket.userId);
+        }
         uniqueUsers = userSet.size;
         io.emit('userCount',uniqueUsers);
         io.emit('user', [...userSet])

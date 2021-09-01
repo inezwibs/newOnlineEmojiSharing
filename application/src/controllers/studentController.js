@@ -10,6 +10,8 @@ let classIdValue;
 let classLinkIdValue;
 const StudentServices = require( "../services/studentServices" );
 const studentServices = new StudentServices();
+const registerServices = require( "../services/registerServices" );
+
 
 async function getClassLinkPage (req, res, next) {
     res.render("classLinkPage");
@@ -103,7 +105,7 @@ async function getStudentRegisterPage (req, res, next) {
         });
         req.session.errors = null;
     }else{
-        if (req.headers.referer && (req.headers.referer).match(re).length > 2){
+        if (req.headers.referer && (req.headers.referer).match(re)?.length > 2){
             let ids= parsingService.getIdsFromUrl(req.headers.referer);
             ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
             if (ids && ids.length === 2) {
@@ -178,7 +180,7 @@ async function checkUserIsValid(req, res, next) {
     //guard
     if (!classIdValue){
         let classIdResult = studentServices.getClassDetailsFromReq(req.body, req.headers);
-        if (classIdResult === -1){
+        if (Object.keys(classIdResult).length === 0){
             errors.push({msg: "Failed to register. Please look up your unique class link to register."})
             return res.render('register', {
                 errors: errors,
@@ -194,7 +196,7 @@ async function checkUserIsValid(req, res, next) {
     try {
         //main query passing req.body containing doesUserExist
 
-        let rows = await studentServices.checkExistingClassRegistration(req.body, classIdValue, req.doesUserExist);
+        let rows = await studentServices.checkExistingClassRegistration(req.body, classLinkIdValue, classIdValue, req.doesUserExist);
         let isEmpty = studentServices.isEmptyObject(rows.body);
         // if user does not exist at all
         if (rows.success && isEmpty && !rows.isRegistered){

@@ -130,12 +130,12 @@ async function insertInstructor(req, res, next) {
         const result = await registerService.createNewInstructor(newInstructor);
         if (result.success){
             req.instructorId = result.body.instructorId;
-            req.alert = [result.body.message];
+            req.alert = [result.message];
         }else if (!result.success){
             //TODO need to handle empty body object
             if (typeof result.body !== "undefined" && result.body.id){
                 req.instructorId = result.body.id;
-                req.alert = [result.body.message];
+                req.alert = [result.message];
             }else{
                 throw result.message;
             }

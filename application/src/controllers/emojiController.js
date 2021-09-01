@@ -82,9 +82,8 @@ async function getSendEmojiPage(req,res) {
     let rowsObj;
     let ids;
     const re = /\d+/g;
-    https://drive.google.com/uc?export=view&id=1JCDjM9o35j3VVmcRbaetel_8KylMK7nz    let errors = [];
 
-    if (req.headers.referer && (req.headers.referer).match(re).length > 2){
+    if (req.headers.referer && (req.headers.referer).match(re)?.length > 2){
                 ids= getIdsFromUrl(req.headers.referer);
                 ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
         if (ids && ids.length === 2) {
@@ -109,36 +108,41 @@ async function getSendEmojiPage(req,res) {
 
     let errors =[];
         try{
-            rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId )
-            if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
-                let errorMsg = "This user is not a registered student to this class. Use the links below to register for this class or look up your class link."; //which means it is duplicate reg;
-                errors.push({msg: errorMsg});
-                // throw new Error(errorMsg);
+            if (req.userInfo && req.classLinkId && req.classId){
+                rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId );
+                if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
+                    let errorMsg = "This user is not a registered student to this class. Use the links below to register for this class or look up your class link."; //which means it is duplicate reg;
+                    errors.push({msg: errorMsg});
+                    // throw new Error(errorMsg);
 
-                if (errors.length > 0){
-                    return res.render('login', {
-                        errors: errors,
-                        title: "Login",
-                        classId: req.classId,
+                    if (errors.length > 0){
+                        return res.render('login', {
+                            errors: errors,
+                            title: "Login",
+                            classId: req.classId,
+                            classLinkId: req.classLinkId,
+                            isLoggedIn: req.isAuthenticated(),
+                        })
+                    }
+                }else {
+                    let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
+                    let userIdValue = rowsObj.id;
+                    let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
+                    res.render("emojiSharing", {
                         classLinkId: req.classLinkId,
-                        isLoggedIn: req.isAuthenticated(),
-                    })
+                        regId : req.classLinkId,
+                        classId: classIdValue,//id shows undefined?
+                        userId: userIdValue,
+                        userObj: rowsObj,
+                        emojiSelected: emojiValue ? emojiValue : "3",
+                        isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
+                        path: path
+                    });
                 }
-            }else {
-                let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
-                let userIdValue = rowsObj.id;
-                let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
-                res.render("emojiSharing", {
-                    classLinkId: req.classLinkId,
-                    regId : req.classLinkId,
-                    classId: classIdValue,//id shows undefined?
-                    userId: userIdValue,
-                    userObj: rowsObj,
-                    emojiSelected: emojiValue ? emojiValue : "3",
-                    isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-                    path: path
-                });
+            }else{
+                throw "One or all of the values necessary are undefined. Please look up your unique class link."
             }
+
         } catch (e) {
         console.log(e);
         errors.push({msg: e});
@@ -153,23 +157,7 @@ async function getSendEmojiPage(req,res) {
             }
         }
 
-    // if (rowsObj == null){
-    //
-    // } else{
-    //     let classIdValue = rowsObj.classes_id ? rowsObj.classes_id : req.classId;
-    //     let userIdValue = rowsObj.id;
-    //     let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
-    //     res.render("emojiSharing", {
-    //         classLinkId: req.classLinkId,
-    //         regId : req.classLinkId,
-    //         classId: classIdValue,//id shows undefined?
-    //         userId: userIdValue,
-    //         userObj: rowsObj,
-    //         emojiSelected: emojiValue ? emojiValue : "3",
-    //         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-    //         path: localPath
-    //     });
-    // }
+
 }
 function getIntegerDatetime(daysArray){
     let temp = [];

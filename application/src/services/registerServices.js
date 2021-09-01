@@ -79,8 +79,37 @@ let updateUserPassword = async (newPassword, id) => {
 
 };
 
+let validateClassLinks = async (classLinkId, classId ) => {
+    let message = "";
+    let query = `SELECT * FROM emojidatabase.registrations where id = ${classLinkId} AND classes_id = ${classId} and isInstructor = 1`;
+    let isFound = false;
+    let classRecordReturn = {};
+
+    try{
+        const [rows, err] = await db.execute(query);
+        if (rows === undefined || rows.length === 0) {
+            // when no user id and class id match is found
+            isFound = false;
+            message = "Class was not found. Please look up unique class link to find the correct class link."
+            classRecordReturn = {};
+
+        }else {
+            // this._result is assigned when there is a user id and class id match
+            isFound = true;
+            this._result = rows;
+            message = "Class is found. You can register for this class."
+            classRecordReturn = this._result[0];
+        }
+    } catch (err) {
+        // err will be what is thrown
+        message = "A system error occurred."
+        return {success: false, error: err, message: message};
+    }
+    return {success: isFound, body: classRecordReturn, message: message};
+}
 
 module.exports = {
     createNewInstructor: createNewInstructor,
-    updateUserPassword:updateUserPassword
+    updateUserPassword:updateUserPassword,
+    validateClassLinks: validateClassLinks
 };
