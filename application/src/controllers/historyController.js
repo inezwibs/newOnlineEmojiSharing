@@ -40,27 +40,14 @@ async function checkIfUserIsInstructor(req, res, next) {
   }
 
   let query;
-  req.user = req.body.userid ? req.body.userid : req.session.passport.user.user[0].id
-  if (req.user && req.body.classId){
+  // req.user = req.body.userid ? req.body.userid : req.session.passport.user.user[0].id
+  if (req.user && req.user.user && req.user.body.classId){
     query =
-        " SELECT * FROM emojidatabase.registrations where classes_id = " + req.body.classId + " and users_id = " + req.user;
-  }else if (req.query && Object.keys(req.query).length > 0 && req.user && req.user.body){
-    req.user = req.query.userId;
-    query =
-        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + req.body.classId;
-  }else if (!req.user && classId){
-    if (req.query){
-      req.user = req.query.userId;
-    }
-    query =
-        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
+        " SELECT * FROM emojidatabase.registrations where classes_id = " + req.user.body.classId + " and users_id = " + req.user.user[0].id;
+  }else if (req.session && req.session.passport?.user?.user[0].id && req.session.passport?.user?.body?.classId) {
 
-  }else if (req.user && req.user.user){
-       req.user = req.user.user[0].id;
-       req.classId = req.user.body.classId;
-       req.classLinkId = req.user.body.classLinkId;
     query =
-        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + req.classId;
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.session.passport?.user?.user[0].id + " and classes_id = " + req.session.passport?.user?.body?.classId;
 
   } else if (req.user && classId) {
     query =
@@ -70,12 +57,11 @@ async function checkIfUserIsInstructor(req, res, next) {
       const [res, err] = await db.execute(query);
       // console.log(query);
       req.isInstructor = res[0].isInstructor;
-      req.class_id = res[0].classes_id;
+      req.class_id = res[0].classes_id ;
       req.classLinkId = classLinkId ? classLinkId : '';
       next();
     } catch (e) {
         console.log("Catch an error: ", e);
-        res.redirect.back();
     }
 
 }
