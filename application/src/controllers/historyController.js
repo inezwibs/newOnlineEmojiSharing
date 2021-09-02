@@ -55,23 +55,29 @@ async function checkIfUserIsInstructor(req, res, next) {
     query =
         " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
 
-  }
-  if (req.user && classId){
+  }else if (req.user && req.user.user){
+       req.user = req.user.user[0].id;
+       req.classId = req.user.body.classId;
+       req.classLinkId = req.user.body.classLinkId;
+    query =
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + req.classId;
+
+  } else if (req.user && classId) {
     query =
         " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
+  }
     try {
       const [res, err] = await db.execute(query);
       // console.log(query);
       req.isInstructor = res[0].isInstructor;
       req.class_id = res[0].classes_id;
-      req.classLinkId = classLinkId;
+      req.classLinkId = classLinkId ? classLinkId : '';
       next();
     } catch (e) {
-      console.log("Catch an error: ", e);
+        console.log("Catch an error: ", e);
+        res.redirect.back();
     }
-  }else{
-    res.redirect.back();
-  }
+
 }
 
 async function getClassID(req, res, next) {
