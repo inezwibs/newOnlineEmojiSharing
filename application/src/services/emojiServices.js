@@ -79,7 +79,7 @@ class EmojiServices {
     async getClassRegisteredStudentsCountAndId(req) {
 
         let query =
-            " SELECT users_id  FROM emojidatabase.registrations WHERE classes_id = " + req.classId + "'";
+            " SELECT users_id  FROM emojidatabase.registrations WHERE classes_id = " + req.classId ;
 
         try {
             const [rows, err] =  await db.execute(query);
