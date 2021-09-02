@@ -51,7 +51,7 @@ async function checkIfUserIsInstructor(req, res, next) {
 
   } else if (req.user && classId) {
     query =
-        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user + " and classes_id = " + classId;
+        " SELECT * FROM emojidatabase.registrations where users_id = " + req.user.user[0].id + " and classes_id = " + classId;
   }
     try {
       const [res, err] = await db.execute(query);
@@ -64,7 +64,7 @@ async function checkIfUserIsInstructor(req, res, next) {
         console.log("Catch an error: ", e);
     }
 
-}
+ }
 
 async function getClassID(req, res, next) {
   let query =
