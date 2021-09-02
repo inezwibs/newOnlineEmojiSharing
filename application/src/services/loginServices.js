@@ -23,22 +23,21 @@ let handleLogin = async (email, password, reqBody, reqHeaders) => {
             }
         });
     } else if (user && !user[0].isInstructor) {
-        // exist or not for this class
+        // user is not an instructor and exist or not for this class
         let isRegisteredForClass;
         let classId;
 
         if (reqBody) {
             if (reqBody.classId) {
                 classId = reqBody.classId;
-            } else if (reqHeaders.referer) {
-                if (reqHeaders.referer.match(re)?.length > 2) {
+            } else if (reqHeaders.referer && reqHeaders.referer.match(re)?.length > 2) {
                     let ids = parsingService.getIdsFromUrl(reqHeaders.referer);
                     ids = ids.filter(notPort => notPort !== '4000'); // will return query params that are not the 4000 port
                     if (ids && ids.length === 2) {
                         let classLinkId = ids[0];
                         classId = ids[1];
                     }
-                }
+
             } else {
                 // else if user exists, not an instructor and reqbody has no class id,  we can't determine which class they are registered
                 message = "User exists as a student but no class info can be determined. Students should be use a unique class link. Please look up your class link and register/login there. "
@@ -59,13 +58,13 @@ let handleLogin = async (email, password, reqBody, reqHeaders) => {
                     }
                 });
             } else {
-                message = `This user is found in our records, but user with this "${email}" has not added this class. As a registered student, simply add this class.`
+                message = `This user with this "${email}"  is a student and found in our records. But class vales are missing or link to this class is not found. Please look up and use your class link to register/login.`
                 console.log(message);
                 loginResult = {success: false, user: user, body: reqBody, message: message};
             }
         } else{
         // else if user exists, not an instructor and reqbody has no class id,  we can't determine which class they are registered
-        message = "User exists as a student but no class info provided. Students should be use a unique class link. Please look up your class link and register/login there. "
+        message = "User exists as a student but class info is missing and unique class link cannot be determined. Please look up and use your class link to register/login. "
         console.log(message);
         loginResult = {success: false, user: user, body: reqBody, message: message};
         }

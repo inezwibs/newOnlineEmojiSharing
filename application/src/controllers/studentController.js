@@ -66,6 +66,7 @@ async function listClassLinks (req,res,user) {
 
 async function validateClassLinks (req, res, next) {
     //getting class id values
+    let errors = [];
     let classLinks, results;
     if (req.url && (req.url).match(re)) {
         classLinks = parsingService.getClassLinks(req.url);
@@ -80,7 +81,11 @@ async function validateClassLinks (req, res, next) {
     if (Object.keys(classLinks).length > 0){ // if success is false then not found or error
         results = await registerServices.validateClassLinks(classLinks.classLinkId, classLinks.classId);
     }else{// meaning the url or req given didn't have enough info to determine the classlinkid
-        results = {success:false, message: "Some of class id values are missing. Please look up your unique class link and use it to register."}
+        if (req.originalUrl === "/register" && req.session && req.session.flash?.error?.length > 0){
+            errors.push({msg: req.session.flash.error[req.session.flash.error.length-1]})
+        }
+        errors.push({msg:"Some of class id values are missing. Please look up your unique class link and use it to login/register." })
+        results = {success:false, message: errors}
     }
     //resolve
     if (results.success){
@@ -93,7 +98,7 @@ async function validateClassLinks (req, res, next) {
             title: "Form Validation",
             classId: "not_found",
             classLinkId: "not_found",
-            alerts: results.message,
+            errors: results.message,
             disabled: true
         });
     }
