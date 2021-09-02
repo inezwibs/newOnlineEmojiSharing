@@ -161,9 +161,7 @@ class StudentServices {
 
     //TESTED
     async doesUserExist(reqBody = this._reqBody) {
-        let query = `Select *
-                     from emojidatabase.users
-                     where email = '${reqBody.email}'`;
+        let query = `Select * from emojidatabase.users where email = '${reqBody.email}'`;
         try {
             const [rows, err] = await db.execute(query);
             if (rows !== null && rows.length > 0) {

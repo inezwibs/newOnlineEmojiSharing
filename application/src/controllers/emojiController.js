@@ -13,7 +13,13 @@ const EmojiService = require( "../services/emojiServices" );
 const emojiService = new EmojiService();
 const SocketService = require( "../services/socketServices" );
 const socketService = new SocketService();
-
+let rowsObj = {
+    full_name: "default",
+    id: "000",
+    class_name: "csc_default",
+    datetime: "not_available",
+    classes_id: "000"
+}
 
 //get sockets
 const io = require('socket.io-client');
@@ -65,9 +71,9 @@ async function getStudentClassId(req, res, next) {
 
         res.render("emojiSharing", {
             errors: errors,
-            classLinkId: req.classLinkId,
-            regId : req.classLinkId,
-            classId: req.class_id,//id shows undefined?
+            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+            regId : req.classLinkId ? req.classLinkId : 'not_found',
+            classId: req.class_id ? req.class_id : 'not_found',//id shows undefined?
             userId: '',
             userObj: '',
             emojiSelected: '',
@@ -79,7 +85,6 @@ async function getStudentClassId(req, res, next) {
 
 async function getSendEmojiPage(req,res) {
 
-    let rowsObj;
     let ids;
     const re = /\d+/g;
 
@@ -109,6 +114,7 @@ async function getSendEmojiPage(req,res) {
     let errors =[];
         try{
             if (req.userInfo && req.classLinkId && req.classId){
+
                 rowsObj = await getEmojiClassData (req.userInfo, req.classLinkId , req.classId );
                 if (rowsObj === 0 || rowsObj === undefined || rowsObj && rowsObj.length === 0) {
                     let errorMsg = "This user is not a registered student to this class. Use the links below to register for this class or look up your class link."; //which means it is duplicate reg;
@@ -119,8 +125,8 @@ async function getSendEmojiPage(req,res) {
                         return res.render('login', {
                             errors: errors,
                             title: "Login",
-                            classId: req.classId,
-                            classLinkId: req.classLinkId,
+                            classId: req.classId ? req.classId : 'not_found',
+                            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
                             isLoggedIn: req.isAuthenticated(),
                         })
                     }
@@ -129,10 +135,10 @@ async function getSendEmojiPage(req,res) {
                     let userIdValue = rowsObj.id;
                     let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
                     res.render("emojiSharing", {
-                        classLinkId: req.classLinkId,
-                        regId : req.classLinkId,
-                        classId: classIdValue,//id shows undefined?
-                        userId: userIdValue,
+                        classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+                        regId : req.classLinkId ? req.classLinkId : 'not_found',
+                        classId: classIdValue ? classIdValue : 'not_found',//id shows undefined?
+                        userId: userIdValue ? userIdValue : 'not_found',
                         userObj: rowsObj,
                         emojiSelected: emojiValue ? emojiValue : "3",
                         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
@@ -150,8 +156,8 @@ async function getSendEmojiPage(req,res) {
                 return res.render('login', {
                     errors: errors,
                     title: "Login",
-                    classId: req.classId,
-                    classLinkId: req.classLinkId,
+                    classId: req.classId ? req.classId : 'not_found',
+                    classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
                     isLoggedIn: req.isAuthenticated(),
                 })
             }
@@ -272,7 +278,7 @@ async function invalidEmojiPostBranch(req,res,next) {
     if (req.currentMinutes===0){
         if (req.query.regId || req.url) {
             let ids = getIdsFromUrl(req.url);
-            let rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
+            rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
             let message = "You have submitted an emotion outside of class time. It will not be recorded."
             if (ids && ids.length === 2 && rowsObj) {
                    res.render("emojiSharing", {
@@ -350,8 +356,8 @@ async function processContributedStudentsCount(req, res, next) {
         res.render('login', {
             errors: errors,
             title: "Login",
-            classId: req.classId,
-            classLinkId: req.classLinkId,
+            classId: req.classId ? req.classId : 'not_found',
+            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
             isLoggedIn: req.isAuthenticated(),
         })
     }
@@ -375,8 +381,8 @@ async function processRegisteredStudentsCount(req, res, next) {
         res.render('login', {
             errors: errors,
             title: "Login",
-            classId: req.classId,
-            classLinkId: req.classLinkId,
+            classId: req.classId ? req.classLinkId : 'not_found',
+            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
             isLoggedIn: req.isAuthenticated(),
         })
     }
@@ -612,11 +618,11 @@ async function studentLogOut (req, res) {
     let classId = req.body.classId;
     let classLinkId = req.body.classLinkId;
     console.log(`logout ${req.session.id}`);
-    const socketId = req.session.socketId;
-    if (socketId && io.of("/").sockets.get(socketId)) {
-        console.log(`forcefully closing socket ${socketId}`);
-        io.of("/").sockets.get(socketId).disconnect(true);
-    }
+    // const socketId = req.session.socketId;
+    // if (socketId && io.of("/").sockets.get(socketId)) {
+    //     console.log(`forcefully closing socket ${socketId}`);
+    //     io.of("/").sockets.get(socketId).disconnect(true);
+    // }
     req.session.destroy(function(err) {
         let paramString = classLinkId + '&classId=' + classId;
         return res.redirect('/login?classLinkId=' + paramString);

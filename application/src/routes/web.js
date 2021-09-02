@@ -39,13 +39,13 @@ let initWebRoutes = (app) => {
     router.get("/login", studentController.getStudentLoginPage);
     // router.post("/login", passportController.executeAuthenticate);
      router.post("/login", passport.authenticate("local", {
-        failureRedirect: "/register",
+        failureRedirect: "/register",//TODO i think this shold be /login
         failureFlash: true,
         successFlash: true,
         successRedirect: "/sendEmoji"}));
     //student get routes, they can't go directly, must get class link
-    router.get("/register", studentController.getStudentRegisterPage);
-    router.post("/register", studentController.checkUserIsValid, emojiController.getSendEmojiPage);
+    router.get("/register", studentController.validateClassLinks, studentController.getStudentRegisterPage);
+    router.post("/register", studentController.checkIfUserExists, studentController.checkUserIsValid, emojiController.getSendEmojiPage);
     router.post("/logout", emojiController.studentLogOut);
     router.get("/logout", emojiController.studentLogOut);
 

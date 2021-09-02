@@ -59,7 +59,7 @@ let handleLogin = async (email, password, reqBody, reqHeaders) => {
                     }
                 });
             } else {
-                message = `This user email "${email}" doesn't exist for this class. Please register.`
+                message = `This user is found in our records, but user with this "${email}" has not added this class. As a registered student, simply add this class.`
                 console.log(message);
                 loginResult = {success: false, user: user, body: reqBody, message: message};
             }

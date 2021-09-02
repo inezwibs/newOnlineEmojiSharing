@@ -11,7 +11,20 @@ let classLinkIdValue;
 const StudentServices = require( "../services/studentServices" );
 const studentServices = new StudentServices();
 const registerServices = require( "../services/registerServices" );
+let rowsObj = {
+    full_name: "default",
+    id: "000",
+    class_name: "csc_default",
+    datetime: "not_available",
+    classes_id: "000"
+}
 
+let classObj={
+    class_name: "csc_default",
+    datetime: "not_available",
+    id: "000",
+    classes_id: "000"
+}
 
 async function getClassLinkPage (req, res, next) {
     res.render("classLinkPage");
@@ -34,7 +47,6 @@ async function listClassLinks (req,res,user) {
             "AND c.id = r.classes_id AND r.classes_id = " + req.body.classId + " AND r.isInstructor = \'1\' ";
     }
 
-    let classObj;
     try{
         const [rows, err ] = await db.execute(classIdQuery);
         if (rows === undefined || rows.length ===0) {
@@ -50,17 +62,74 @@ async function listClassLinks (req,res,user) {
         classObj: classObj,
         path : path
     });
-};
+}
 
-async function getStudentRegisterPage (req, res, next) {
+async function validateClassLinks (req, res, next) {
+    //getting class id values
+    let classLinks, results;
     if (req.url && (req.url).match(re)) {
+        classLinks = parsingService.getClassLinks(req.url);
+    } else if (req.user && req.user.body?.classLinkId && req.user.body?.classId){
+        classLinks = {classLinkId: req.user.body?.classLinkId, classId: req.user.body?.classId};
+    } else if ( req.headers.referer && (req.headers.referer).match(re)?.length > 2) {
+        classLinks = parsingService.getClassLinks(req.headers.referer);
+    } else {
+        classLinks = {};
+    }
+    //getting results of validation
+    if (Object.keys(classLinks).length > 0){ // if success is false then not found or error
+        results = await registerServices.validateClassLinks(classLinks.classLinkId, classLinks.classId);
+    }else{// meaning the url or req given didn't have enough info to determine the classlinkid
+        results = {success:false, message: "Some of class id values are missing. Please look up your unique class link and use it to register."}
+    }
+    //resolve
+    if (results.success){
+        req.classLinkId = classLinks.classLinkId;
+        req.classId = classLinks.classId;
+        req.classValidationMessage = results.message
+        next(); // refer to getStudentRegisterPage
+    }else{ // results false or error
+        return res.render("register", {
+            title: "Form Validation",
+            classId: "not_found",
+            classLinkId: "not_found",
+            alerts: results.message,
+            disabled: true
+        });
+    }
+}
+//TODO create flowchart for register page
+async function getStudentRegisterPage (req, res, next) {
+    if (req.classLinkId && req.classId && req.classValidationMessage){
+        // successful validation , referred by validateClassLinks
+        if (req.headers.referer && req.headers.referer.indexOf("login") !== 0){ //redirected from failed login by passport
+            res.render("register", {
+                title: "Form Validation",
+                classId: req.classId,
+                classLinkId: req.classLinkId,
+                isLoggedIn: req.isAuthenticated(),
+                alerts: req.session.flash ? req.session.flash.error[req.session.flash.error.length - 1 ] : '',
+                disabled: false
+            });
+        }else {
+            res.render("register", {
+                title: "Form Validation",
+                classId: req.classId,
+                classLinkId: req.classLinkId,
+                alerts: req.classValidationMessage,
+                disabled: false
+            });
+        }
+
+    }// if it somehow went to register directly not from validation
+    else if (req.url && (req.url).match(re)) {
 
         classLinkIdValue = req.query.classLinkId && req.query.classLinkId.length < 5 ? req.query.classLinkId : emojiController.getIdsFromUrl(req.url)[0];
         classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
         res.render("register", {
             title: "Form Validation",
-            classId: classIdValue,
-            classLinkId: classLinkIdValue,
+            classId: classIdValue ? classIdValue: 'not_found',
+            classLinkId: classLinkIdValue ? classLinkIdValue :  'not_found',
             disabled: false
         });
         req.session.errors = null;
@@ -73,14 +142,14 @@ async function getStudentRegisterPage (req, res, next) {
             classLinkIdValue = req.user.body.classLinkId;
             classIdValue = req.user.body.classId;
         }
-        let rowsObj = await studentServices.getEmojiClassData (req.user.user[0].id, classLinkIdValue, classIdValue )
+         rowsObj = await studentServices.getEmojiClassData (req.user.user[0].id, classLinkIdValue, classIdValue )
 
         res.render("emojiSharing", {
             alerts: req.user.message,
-            classLinkId: classLinkIdValue,
-            regId : classLinkIdValue,
-            classId: classIdValue,//id shows undefined?
-            userId: req.user.user[0].id,
+            classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
+            regId : classLinkIdValue ? classLinkIdValue: 'not_found',
+            classId: classIdValue ? classIdValue: 'not_found',//id shows undefined?
+            userId: req.user.user[0].id ? req.user.user[0].id : 'not_found',
             userObj: rowsObj,
             emojiSelected: '3',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
@@ -146,18 +215,22 @@ async function checkIfUserExists(req,res,next){
     let rows;
     try {
         rows = await studentServices.doesUserExist(req.body);
-        if (rows.success && rows.body.length === 0) {
-            //user doesn't exist at all TESTED
+        if (rows.success && rows.body.length === 0 && req.body?.submit.toLowerCase().indexOf("sign") >= 0) {
+            //user doesn't exist at all
             res.render("register", {
                 alerts: rows.message ? rows.message : "",
                 title: "Form Validation",
-                classId: classIdValue,
-                classLinkId: classLinkIdValue,
+                classId: classIdValue ,
+                classLinkId: classLinkIdValue ,
                 disabled: true
             })
-        }else if (rows.success && rows.body.length > 0) {
+        }else if (rows.success && rows.body.length === 0 && req.body?.submit.toLowerCase().indexOf("sign") < 0) {
+            //user doesn't exist at all and needs to be fully registered
+            req.doesUserExist = false;
+            next();
+        }
+        else if (rows.success && rows.body.length > 0) {
             //user exists
-            //TODO testing in progress
             req.doesUserExist = true;
             next();
         }
@@ -166,8 +239,8 @@ async function checkIfUserExists(req,res,next){
         res.render("register", {
             alerts: rows.error,
             title: "Form Validation",
-            classId: classIdValue,
-            classLinkId: classLinkIdValue,
+            classId: classIdValue ,
+            classLinkId: classLinkIdValue ,
             disabled: true
         })
     }
@@ -178,7 +251,7 @@ async function checkUserIsValid(req, res, next) {
     //come here from signUp or from register post calls
     req.doesUserExist = req.doesUserExist ? req.doesUserExist: false;
     //guard
-    if (!classIdValue){
+    if (!classIdValue ){
         let classIdResult = studentServices.getClassDetailsFromReq(req.body, req.headers);
         if (Object.keys(classIdResult).length === 0){
             errors.push({msg: "Failed to register. Please look up your unique class link to register."})
@@ -190,7 +263,10 @@ async function checkUserIsValid(req, res, next) {
                 disabled: false
             })
         }else{
-            classIdValue = classIdResult;
+            req.classId = classIdResult.classId;
+            req.classLinkId = classIdResult.classLinkId;
+            classIdValue = req.classId;
+            classLinkIdValue = req.classLinkId;
         }
     }
     try {
@@ -231,8 +307,8 @@ async function checkUserIsValid(req, res, next) {
 
             return res.render("login", {
                 title: "Login",
-                classId: classIdValue,
-                classLinkId: classLinkIdValue,
+                classId: req.classId? req.classId : 'not_found',
+                classLinkId:  req.classLinkId ? req.classLinkId : 'not_found',
                 isLoggedIn: req.isAuthenticated(),
                 alerts: rows.message
             });
@@ -246,6 +322,7 @@ async function checkUserIsValid(req, res, next) {
 
         } else if (!rows.success) {
             let errorMessage = "";
+
 
             errors.push({msg: rows.message})
             res.render('register', {
@@ -264,8 +341,8 @@ async function checkUserIsValid(req, res, next) {
             res.render('register', {
                 errors: errors,
                 title: "Form Validation",
-                classId: classIdValue,
-                classLinkId: classLinkIdValue,
+                classId: classIdValue? classIdValue: 'not_found',
+                classLinkId: classLinkIdValue? classLinkIdValue: 'not_found',
                 disabled: false
             })
         }
@@ -273,67 +350,62 @@ async function checkUserIsValid(req, res, next) {
 }
 
 
-async function insertRegistration(req, res, next) {
-    let errors = [];
-    let query =
-      " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
-      classIdValue +
-      " ," +
-      req.user_id +
-      " , 0 )";
-     try {
-         const [res, err] = await db.execute(query);
-         req.reg_id = res.insertId;
-         req.classLinkId = classLinkIdValue;
-         req.classId = classIdValue;
-         console.log('Reg Id', req.reg_id)
-         next();
-     } catch (e) {
-         console.log("Catch an error: ", e);
-         errors.push({msg: e})
-         res.render('register', {
-             errors: errors,
-             title: "Form Validation",
-             classId: classIdValue,
-             classLinkId: classLinkIdValue
-         })
-     }
-}
+// async function insertRegistration(req, res, next) {
+//     let errors = [];
+//     let query;
+//     if (classIdValue && req.user_id){
+//         query =
+//             " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
+//             classIdValue +
+//             " ," +
+//             req.user_id +
+//             " , 0 )";
+//     }
+//
+//      try {
+//          const [res, err] = await db.execute(query);
+//          req.reg_id = res.insertId;
+//          req.classLinkId = classLinkIdValue;
+//          req.classId = classIdValue;
+//          console.log('Reg Id', req.reg_id)
+//          next();
+//      } catch (e) {
+//          console.log("Catch an error: ", e);
+//          errors.push({msg: e})
+//          res.render('register', {
+//              errors: errors,
+//              title: "Form Validation",
+//              classId: classIdValue,
+//              classLinkId: classLinkIdValue
+//          })
+//      }
+// }
 
 async function getStudentLoginPage(req,res) {
 
     console.log("Session from get student login page**", req.session);
-    let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
-    let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
+    let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : 'not_found';
+    let classIdValue = req.query.classId ? req.query.classId : 'not_found';//id shows undefined?
     let isAuthenticated = req.isAuthenticated();
     let errors = [];
     if (isAuthenticated){
         let userObj = req.session.passport.user.user[0];
         let emojiValue = req.body.optradio ? req.body.optradio  : '';
 
-        let rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue )
+        rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue )
 
-        if (rowsObj){
-            
-            full_name = "";
-            date_time =  "";
-
-        }else{
+        if (!rowsObj){
             let message= 'You are not registered for this class. Please register or look up your class link to register for a different class.';
             let classObj;
             errors.push({msg: message})
-            return res.render('register', {
+            return res.render('login', {
                 errors: errors,
-                title: "Form Validation",
+                title: "Login",
                 classId: classIdValue,
                 classLinkId: classLinkIdValue,
-                disabled: false
+                isLoggedIn: req.isAuthenticated(),
             })
-            // return res.render("classLinkPage", {
-            //     classObj: classObj ? classObj : {},
-            //     path : path,
-            //     message: message
-            // });
+
         }
         return res.render("emojiSharing", {
             classLinkId: classLinkIdValue,
@@ -361,9 +433,10 @@ module.exports = {
     getStudentLoginPage: getStudentLoginPage,
     getStudentRegisterPage: getStudentRegisterPage,
     checkUserIsValid:checkUserIsValid,
-    insertRegistration:insertRegistration,
+    // insertRegistration:insertRegistration,
     checkIfUserExists:checkIfUserExists,
     getClassLinkPage:getClassLinkPage,
-    listClassLinks:listClassLinks
+    listClassLinks:listClassLinks,
+    validateClassLinks:validateClassLinks
 }
 

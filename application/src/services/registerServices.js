@@ -1,5 +1,6 @@
 const db = require("../configs/database.js");
 const bcrypt = require("bcryptjs");
+const emojiController = require("../controllers/emojiController");
 const salt =10;
 /*
 does the user exist check if email exists
@@ -79,6 +80,7 @@ let updateUserPassword = async (newPassword, id) => {
 
 };
 
+
 let validateClassLinks = async (classLinkId, classId ) => {
     let message = "";
     let query = `SELECT * FROM emojidatabase.registrations where id = ${classLinkId} AND classes_id = ${classId} and isInstructor = 1`;
@@ -90,7 +92,7 @@ let validateClassLinks = async (classLinkId, classId ) => {
         if (rows === undefined || rows.length === 0) {
             // when no user id and class id match is found
             isFound = false;
-            message = "Class was not found. Please look up unique class link to find the correct class link."
+            message = "Class was not found. Please look up unique class link to find the correct class link and use it to create a student account or login."
             classRecordReturn = {};
 
         }else {
@@ -102,7 +104,7 @@ let validateClassLinks = async (classLinkId, classId ) => {
         }
     } catch (err) {
         // err will be what is thrown
-        message = "A system error occurred."
+        message = "A system error occurred. Please retry by looking up your class link or clearing or browser cache."
         return {success: false, error: err, message: message};
     }
     return {success: isFound, body: classRecordReturn, message: message};

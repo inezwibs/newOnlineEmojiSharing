@@ -32,6 +32,13 @@
         <div id="login-box" class="col-md-12">
 
           <h3 class="text-center text-info">Register</h3>
+          <div>
+            <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
+              <p class="alert alert-primary" alerts="alert">
+                <%= alerts %>
+              </p>
+            <% } %>
+          </div>
           <% if (typeof classId !== 'undefined' && classId.length > 0) { %>
           <div class="text-info mt-4"  >Already a registered student for another class?
             <form action="/signUp?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
@@ -65,13 +72,6 @@
             onsubmit="return checkForm(this);"
           >
 
-            <div>
-              <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
-                <p class="alert alert-primary" alerts="alert">
-                  <%= alerts %>
-                </p>
-              <% } %>
-            </div>
             <div class="form-group mt-1">
               <label for="username" class="text-info">Full Name:</label><br />
               <input
