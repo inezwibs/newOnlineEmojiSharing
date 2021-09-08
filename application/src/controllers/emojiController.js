@@ -95,7 +95,7 @@ async function getSendEmojiPage(req,res) {
             req.classLinkId = ids[0];
             req.classId = ids[1];
         }
-    } else if (req.user.body && req.user.body.classLinkId && req.user.body.classId) {
+    } else if (req.user && req.user.body && req.user.body?.classLinkId && req.user.body?.classId) {
         req.classLinkId = req.user.body.classLinkId;
         req.classId = req.user.body.classId;
     } else if (req.body && req.body.classId && req.body.classLinkId){
