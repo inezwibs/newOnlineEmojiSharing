@@ -36,7 +36,7 @@ var options = {
 };
 
 let sessionStore = new MySQLStore(options);
-const app = express();
+let app = express();
 const http = require('http').createServer(app);
 
 let io = require('socket.io')(http);
@@ -153,6 +153,26 @@ const generalRoutes = require("./src/routes/generalRoutes");
 app.use("/", generalRoutes);
 initWebRoutes(app);
 
+app.use((req, res, next) => {
+    res.status(404).send({
+        status: 404,
+        error: "Not found"
+    });
+
+});
+
+// error handler middleware
+// interface Error {
+//     status?: number;
+//     message?: string;
+// }
+// app.use((error:Error, res, next) => {
+//     console.error(error.stack);
+//     res.status(error.status || 500);
+//     res.render("errorPage",{
+//         alerts: error.stack
+//     });
+// })
 http.listen(PORT, () => console.log("server started on port", PORT));
 
 
