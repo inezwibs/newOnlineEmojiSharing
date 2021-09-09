@@ -16,7 +16,19 @@ async function handlePostForgotPasswordPage (req, res, next) {
     make sure user exists in database
     if not res.send user not registered
      */
-    const userObject = await verifyUserEmail(email);
+    let userObject;
+    try{
+        userObject = await verifyUserEmail(email);
+    }catch (e) {
+        return res.render("register", {
+            title: "Form Validation",
+            classId: req.classId? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId: '',
+            isLoggedIn: req.isAuthenticated(),
+            alerts: e.message,
+            disabled: true
+        });
+    }
     if ( Object.entries(userObject).length > 0){
         // res.send(`User with ${email} was found`);
         const secret = JWT_SECRET + userObject.password;
@@ -40,7 +52,20 @@ async function handlePostForgotPasswordPage (req, res, next) {
 async function getResetPasswordPage (req, res, next) {
     const {id, token} = req.params;
 
-    const userObject = await verifyUserId(id);
+    let userObject;
+    try{
+       userObject = await verifyUserId(id);
+    }catch (e) {
+        return res.render("register", {
+            title: "Form Validation",
+            classId: req.classId? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId: '',
+            isLoggedIn: req.isAuthenticated(),
+            alerts: e.message,
+            disabled: true
+        });
+    }
+
     if ( Object.entries(userObject).length > 0){
     // check if user is valid
         const secret = JWT_SECRET + userObject.password;
@@ -49,13 +74,26 @@ async function getResetPasswordPage (req, res, next) {
             res.render('resetPassword',{email:userObject.email})
         }catch (e) {
             console.log("**Error Message**" , e);
-            res.send(e.message);
+            return res.render("register", {
+                title: "Form Validation",
+                classId: req.classId? req.classId : '',
+                classLinkId: req.classLinkId ? req.classLinkId: '',
+                isLoggedIn: req.isAuthenticated(),
+                alerts: e.message,
+                disabled: true
+            });
         }
     } else {
     //check if user is not valid
-        res.send('No user found with this id to reset password. Please try again.');
-        res.redirect('/');
-    }
+        let message = "No user found with this id to reset password. Please try again.";
+        return res.render("register", {
+            title: "Form Validation",
+            classId: req.classId? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId: '',
+            isLoggedIn: req.isAuthenticated(),
+            alerts: message,
+            disabled: true
+        });        }
 }
 
 async function handlePostResetPasswordPage ( req,res,next) {
@@ -65,7 +103,22 @@ async function handlePostResetPasswordPage ( req,res,next) {
     make sure user exists in database
     if not res.send user not registered
      */
-    const userObject = await verifyUserId(id);
+    // const userObject = await verifyUserId(id);
+    let userObject;
+    try{
+        userObject = await verifyUserId(id);
+    }catch (e) {
+        return res.render("register", {
+            title: "Form Validation",
+            classId: req.classId? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId: '',
+            isLoggedIn: req.isAuthenticated(),
+            alerts: e.message,
+            disabled: true
+        });
+    }
+
+
     if ( Object.entries(userObject).length > 0){
         // check if user is valid
         const secret = JWT_SECRET + userObject.password;
@@ -77,12 +130,26 @@ async function handlePostResetPasswordPage ( req,res,next) {
             res.send("Your record has been updated with the new password");
         }catch (e) {
             console.log("**Error Message**" , e);
-            res.send(e.message);
+            return res.render("register", {
+                title: "Form Validation",
+                classId: req.classId? req.classId : '',
+                classLinkId: req.classLinkId ? req.classLinkId: '',
+                isLoggedIn: req.isAuthenticated(),
+                alerts: e.message,
+                disabled: true
+            });
         }
     } else {
         //check if user is not valid
-        res.send('No user found with this id to reset password. Please try again.');
-        res.redirect('/');
+       let message = "No user found with this id to reset password. Please try again.";
+        return res.render("register", {
+            title: "Form Validation",
+            classId: req.classId? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId: '',
+            isLoggedIn: req.isAuthenticated(),
+            alerts: message,
+            disabled: true
+        });
     }
 }
 
@@ -101,6 +168,7 @@ async function verifyUserEmail (email) {
         }
     } catch(e){
         console.log('error' , e)
+        throw e;
     }
 }
 
@@ -119,6 +187,7 @@ async function verifyUserId (userId) {
         }
     } catch(e){
         console.log('error' , e)
+        throw e;
     }
 }
 

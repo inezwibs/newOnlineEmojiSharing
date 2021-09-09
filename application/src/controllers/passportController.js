@@ -34,7 +34,7 @@ let initPassportLocal = () => {
                     }
             } catch (err) {
                 console.log(err);
-                return done(null, false, { message: err });
+                return done(null, false, { message: err.message });
             }
         }));
 

@@ -10,47 +10,52 @@ let path = 'http://emotionthermometer.online:4000/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
 let doesClassExist = false;
 
+
 async function getInstructorPage (req,res,user) {
     console.log(req);
     console.log(res.locals);
     console.log(instructorObj);
     if (typeof req.user === 'object' && req.user !== null){
         res.instructorId = req.user.user[0].id;
-    }else if (instructorObj){
+    }else if (instructorObj && Object.keys(instructorObj).length > 0 ){
         res.instructorId = instructorObj[0].id;
         res.instructorObj = instructorObj;
     }else if(typeof req.user === 'number' ){
         res.instructorId = req.user;
     }
-    let query =
-        " SELECT * FROM emojidatabase.users where id = '" + res.instructorId + "' and isInstructor = 1";
-
+    let instructorClassesArray;
+    let instructorClassNamesArray;
     try{
-        const [rows, err ] = await db.execute(query);
-        if (rows && rows.length == 0 || rows == null){
+        let queryResult = await instructorService.validateInstructorUser(res.instructorId);
+        if (!queryResult.success){
             //not an instructor
-            let message = "This user is not registered as an instructor."
             return res.render("classLinkPage.ejs" ,{
                 classObj: {},
                 path : path,
-                message: message
+                message: queryResult.message
             });
-        }else if (rows && rows.length > 0 ){
-            instructorObj = rows[0];
+        }else if (queryResult.success){
+            instructorObj = queryResult.body;
+            instructorClassesArray = await instructorService.getInstructorClasses(res.instructorId);
+            instructorClassNamesArray = await instructorService.getInstructorClassNames(instructorClassesArray);
+            if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
+                let message = "This user is not a registered instructor."
+                return res.render("classLinkPage.ejs" ,{
+                    classObj: {},
+                    path : path,
+                    message: message
+                });
+            }
         }
-    }catch(e){
-        console.log('error' , e)
+    }catch (e) {
+        if (e.message === undefined){
+            req.params.error = e;
+        }else{
+            req.params.error = e.message;
+        }
+        return redirectToInstructorLogin(req,res);
     }
-    let instructorClassesArray = await instructorService.getInstructorClasses(res.instructorId);
-    let instructorClassNamesArray = await instructorService.getInstructorClassNames(instructorClassesArray);
-    if (instructorClassNamesArray === 0 && instructorObj.isInstructor !== 1){
-        message = "This user is not a registered instructor."
-        return res.render("classLinkPage.ejs" ,{
-            classObj: classObj,
-            path : path,
-            message: message
-        });
-    }
+
     return res.render("instructorAccount.ejs" ,{
         instructorObject : instructorObj,
         newInstructor : instructorObj.full_name,
@@ -59,7 +64,7 @@ async function getInstructorPage (req,res,user) {
         path : path,
         alerts : res.alerts
     });
-};
+}
 
 async function checkLoggedIn (req, res, next) {
     let isAuthenticated = req.isAuthenticated();
@@ -94,6 +99,8 @@ async function checkLoggedIn (req, res, next) {
                 next();
             }
         }catch (e) {
+            req.params.error = e.message;
+            return redirectToInstructorLogin(req,res);
 
         }
     }
@@ -104,6 +111,7 @@ let getInstructorLoginPage = (req,res) => {
     if (req.session.flash && req.session.flash.error.length > 0){
         message = req.session.flash.error[req.session.flash.error.length - 1] ; // getting the latest error message in this session
     }
+
     return res.render("instructorLogin",{
         message: message
     });
@@ -156,6 +164,7 @@ async function insertInstructor(req, res, next) {
 }
 
 async function getInstructorID(req, res, next) {
+    let errors=[];
     let query =
         " SELECT * FROM emojidatabase.users where id = " + req.instructorId;
 
@@ -169,6 +178,11 @@ async function getInstructorID(req, res, next) {
         next();
     } catch (e) {
         console.log("Catch an error: ", e);
+        let message = "No instructor found with this email in the database."
+        errors.push({msg: message});
+        return res.render("instructorRegister" ,{
+            errors : errors
+        });
     }
 }
 
@@ -178,6 +192,7 @@ async function checkedInstructor(req, res, next) {
 
 //create classes
 async function insertClasses(req, res, next) {
+    let errors =[]
     req.body.instructorObject = instructorService.parseInstructorObject(req.body);
     let isClassUniqueQuery = " SELECT * FROM emojidatabase.classes where class_name = '"+req.body.className+ "'" +
         " and datetime = '" + req.body.weekday + "-" + req.body.startTime + "-" + req.body.endTime + "'";
@@ -201,15 +216,18 @@ async function insertClasses(req, res, next) {
                 next();
             } catch (e) {
                 console.log("Catch an error: ", e);
+                throw e.message;
             }
 
         }else{
             console.log('Class already exist')
             doesClassExist = true;
-            let tempResult = await instructorService.getClassID(req.body);
+            let tempResult = await instructorService.getClassID(req.body);//return error
             if (tempResult.success){
                 req.insertedClassId = tempResult.body[0].id;
                 req.insertedClass = tempResult.body[0];
+            }else{
+                throw tempResult.body;
             }
             let classIsRegisteredResult = await instructorService.getClassRegistrationID(req.body, req.insertedClassId);
             if (classIsRegisteredResult.success && classIsRegisteredResult.body.length > 0 ){
@@ -225,10 +243,21 @@ async function insertClasses(req, res, next) {
         }
     }catch (e) {
         console.log("Catch an error: ", e);
+        req.params.error = [];
+        // if (errors.length > 0){
+        //     req.params.error = errors; // add array
+        // }
+        if (e.message !== undefined) {
+            req.params.error.push({msg: e.message});
+        }else{
+            req.params.error.push({msg:e});
+        }
+        return redirectToInstructorLogin(req,res);
     }
 }
 
 async function insertToRegistration(req, res, next) {
+    let errors = [];
     let userId;
     if (typeof req.user == 'string'){
         userId = req.user.id;
@@ -240,7 +269,7 @@ async function insertToRegistration(req, res, next) {
     if ( doesClassExist && !req.classIsRegisteredResult ){
         try{
             //TODO need to go users table not registration table
-            let doesInstructorExist = await instructorService.checkExistingInstructorClasses(req.body);
+            let doesInstructorExist = await instructorService.checkExistingInstructorClasses(req.body);// return error
 
             if (doesInstructorExist.success ){
                 let query =
@@ -252,17 +281,25 @@ async function insertToRegistration(req, res, next) {
                 try{
                     const [res,err] = await db.execute(query);
                     req.insertedClassRegId = res.insertId;
+                    next();
                 }catch (e) {
                     console.log("Catch an error: ", e);
+                    throw e;
                 }
             }else{
-                throw doesInstructorExist.error;
+                errors.push({msg:doesInstructorExist.error});
+                throw errors;
             }
-            next();
-            //get the reg id from the entered classes
         }catch (e) {
+            req.params.error = [];
             console.log("Catch an error: ", e);
-            res.redirect('/instructor');
+            if (errors.length > 0){
+                req.params.error = errors; // add array
+            }
+            if (e.message !== undefined) {
+                req.params.error.push({msg: e.message});
+            }
+            return redirectToInstructorLogin(req,res);
         }
     }else {
         next();
@@ -293,7 +330,40 @@ async function generateLink(req, res, next) {
         });
     } catch (e) {
         console.log("Catch an error: ", e);
+        let errors = [];
+        errors.push({msg: e.message})
+        return res.render("instructorAccount.ejs" ,{
+            instructorObject : {},
+            newInstructor : instructorObj && instructorObj.fullName ? instructorObj.full_name : '',
+            classes : [],
+            classNames : [],
+            path : path,
+            alerts : errors
+        });
     }
+}
+
+function redirectToInstructorLogin(req,res){
+    let errors =[];
+    let message = "Unable to proceed.";
+    if (req.session.flash && req.session.flash.error.length > 0){
+        message = req.session.flash.error[req.session.flash.error.length - 1] ; // getting the latest error message in this session
+    }
+    if (req.params.error.length>0){
+        req.params.error.forEach( each => {
+            errors.push( {msg: each.msg})
+        })
+        if (message.length >0){
+            errors.push( {msg: message})
+        }
+        return res.render("instructorLogin",{
+            errors: errors
+        });
+    }
+
+    return res.render("instructorLogin",{
+        message: message
+    });
 }
 async function postLogOut (req, res) {
     req.session.destroy(function(err) {

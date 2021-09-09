@@ -8,7 +8,13 @@ is the user registered into this class
  */
 let createNewInstructor = async (data) => {
     let message="";
-    let result = await checkExistEmail(data.email);
+    let result;
+    try{
+        result = await checkExistEmail(data.email);
+    }catch (e) {
+        throw e.message;
+    }
+
     if (result.doesExist) {
         message = `This email "${data.email}" already exist in our records. Please choose an other email`;
         return { success: false, body: result.body, message: message };
@@ -56,6 +62,7 @@ let checkExistEmail = async (email) => {
         }
     } catch (err) {
         console.log("Catch an error: ", err);
+        throw err;
     }
 };
 
@@ -76,6 +83,7 @@ let updateUserPassword = async (newPassword, id) => {
         }
     } catch (err) {
         console.log("Catch an error: ", err);
+        throw err;
     }
 
 };
@@ -104,8 +112,9 @@ let validateClassLinks = async (classLinkId, classId ) => {
         }
     } catch (err) {
         // err will be what is thrown
-        message = "A system error occurred. Please retry by looking up your class link or clearing or browser cache."
-        return {success: false, error: err, message: message};
+        // message = "A system error occurred. Please retry by looking up your class link or clearing or browser cache."
+        // return {success: false, error: err, message: message};
+        throw err;
     }
     return {success: isFound, body: classRecordReturn, message: message};
 }

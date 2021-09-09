@@ -9,7 +9,7 @@ router.get("/EmojiSharing",async (req, res) => {
     let dateString = dateObj.toLocaleDateString('en-US', {timeZone: 'America/Los_Angeles'})
     let dateStringParams = (dateString.split('/')).join('-');
     const numArr = getIdFromQuery(req.url);
-    let classDetails = await studentServices.getUserAndClassDetails(numArr[0],numArr[1]);
+    let classDetails = await studentServices.getUserAndClassDetails(numArr[0],numArr[1]); // return error
     let classObj = {};
     if (classDetails.success && classDetails.body.length > 0) {
         classObj = classDetails.body[0];

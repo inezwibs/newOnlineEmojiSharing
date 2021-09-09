@@ -38,6 +38,7 @@ class InstructorServices {
             }
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
     }
 
@@ -63,6 +64,7 @@ class InstructorServices {
                     }
                 } catch (e) {
                     console.log("Catch an error: ", e);
+                    throw e.message;
                 }
 
             }
@@ -116,6 +118,33 @@ class InstructorServices {
         } catch (e) {
             console.log("Catch an error: ", e);
             return { success: false, body: e };
+        }
+    }
+
+    async validateInstructorUser(instructorId) {
+        let message;
+        let query =
+            " SELECT * FROM emojidatabase.users where id = '" + instructorId + "' and isInstructor = 1";
+
+        try{
+            const [rows, err ] = await db.execute(query);
+            if (rows && rows.length == 0 || rows == null){
+                //not an instructor
+                 message = "This user is not registered as an instructor."
+                return {success:false, body:{}, message:message};
+                // return res.render("classLinkPage.ejs" ,{
+                //     classObj: {},
+                //     path : path,
+                //     message: message
+                // });
+            }else if (rows && rows.length > 0 ){
+                // instructorObj = rows[0];
+                message = "Instructor found."
+                return {success:true, body: rows[0], message:message};
+            }
+        }catch(e){
+            console.log('error' , e)
+            throw e.message;
         }
     }
 

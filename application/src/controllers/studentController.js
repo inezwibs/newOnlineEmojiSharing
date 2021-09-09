@@ -54,7 +54,14 @@ async function listClassLinks (req,res,user) {
             classObj = rows;
         }
     }catch(e){
-        console.log('error' , e)
+        console.log('error' , e);
+        return res.render("register", {
+            title: "Form Validation",
+            classId: "",
+            classLinkId: "",
+            alerts: e.message,
+            disabled: true
+        });
     }
     return res.render("classLinkPage.ejs" ,{
         classLinkId : req.body.classLinkId,
@@ -78,7 +85,17 @@ async function validateClassLinks (req, res, next) {
     }
     //getting results of validation
     if (Object.keys(classLinks).length > 0){ // if success is false then not found or error
-        results = await registerServices.validateClassLinks(classLinks.classLinkId, classLinks.classId);
+        try{
+            results = await registerServices.validateClassLinks(classLinks.classLinkId, classLinks.classId); //return error
+        }catch (e) {
+            return res.render("register", {
+                title: "Form Validation",
+                classId: "",
+                classLinkId: "",
+                alerts: e.message,
+                disabled: true
+            });
+        }
     }else{// meaning the url or req given didn't have enough info to determine the classlinkid
         if (req.originalUrl === "/register" && req.session && req.session.flash?.error?.length > 0){
             errors.push({msg: req.session.flash.error[req.session.flash.error.length-1]})
@@ -106,7 +123,7 @@ async function validateClassLinks (req, res, next) {
 async function getStudentRegisterPage (req, res, next) {
     if (req.classLinkId && req.classId && req.classValidationMessage){
         // successful validation , referred by validateClassLinks
-        if (req.headers.referer && req.headers.referer.indexOf("login") !== 0){ //redirected from failed login by passport
+        if (req.headers.referer && req.headers.referer.indexOf("login") >= 0){ //redirected from failed login by passport
             res.render("register", {
                 title: "Form Validation",
                 classId: req.classId,
@@ -146,7 +163,17 @@ async function getStudentRegisterPage (req, res, next) {
             classLinkIdValue = req.user.body.classLinkId;
             classIdValue = req.user.body.classId;
         }
-         rowsObj = await studentServices.getEmojiClassData (req.user.user[0].id, classLinkIdValue, classIdValue )
+        try{
+            rowsObj = await studentServices.getEmojiClassData (req.user.user[0].id, classLinkIdValue, classIdValue )
+        }catch (e) {
+            res.render("register", {
+                title: "Form Validation",
+                classId: classIdValue? classIdValue: '',
+                classLinkId: classLinkIdValue? classLinkIdValue: '',
+                alerts: e.message,
+                disabled: false
+            });
+        }
 
         res.render("emojiSharing", {
             alerts: req.user.message,
@@ -209,7 +236,8 @@ async function getStudentRegisterPage (req, res, next) {
                 classId: req.classId,
                 classLinkId: req.classLinkId,
                 isLoggedIn: req.isAuthenticated(),
-                alerts: `Failed to login. Please register using links below or look up your class id to register.`
+                alerts: `Failed to login. Please register using links below or look up your class id to register.`,
+                disabled: true
             });
         }
     }
@@ -395,8 +423,18 @@ async function getStudentLoginPage(req,res) {
     if (isAuthenticated){
         let userObj = req.session.passport.user.user[0];
         let emojiValue = req.body.optradio ? req.body.optradio  : '';
-
-        rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue )
+        try{
+            rowsObj = await studentServices.getEmojiClassData (userObj.id, classLinkIdValue, classIdValue );
+        }catch (e) {
+            errors.push({msg: e.message})
+            return res.render('login', {
+                errors: errors,
+                title: "Login",
+                classId: classIdValue?classIdValue:'',
+                classLinkId: classLinkIdValue?classLinkIdValue:'',
+                isLoggedIn: req.isAuthenticated(),
+            })
+        }
 
         if (!rowsObj){
             let message= 'You are not registered for this class. Please register or look up your class link to register for a different class.';
