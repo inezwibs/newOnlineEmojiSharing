@@ -206,7 +206,6 @@ class StudentServices {
             return {success: true, body: rows};
         } catch (err) {
             return {success: false, error: err};
-
         }
     }
 

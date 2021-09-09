@@ -1,1 +1,22 @@
-<h1>Login fail</h1>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<link
+        href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        rel="stylesheet"
+        id="bootstrap-css"
+/>
+<h3 class="text-info">Sorry! Something went wrong. Please use links below to proceed.</h3>
+
+<div>
+    <% if (typeof alerts !== 'undefined' && alerts.length > 0) { %>
+        <p class="alert alert-primary" alerts="alert">
+            <%= alerts %>
+        </p>
+    <% } %>
+</div>
+<div id="class-lookup-link" >
+    <a href="/getClassLink" class="text-info">Look up your class link here</a>
+</div>
+<div>
+    Forgot password? <a href="/forget-password" class="text-info">Reset a new password here.</a>
+</div>
