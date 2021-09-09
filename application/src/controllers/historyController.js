@@ -16,6 +16,58 @@ function historySocket() {
   // })
 }
 
+
+async function historyChecks(req,res,next){
+  let errors =[];
+  try{
+    await checkIfUserIsInstructor(req,res,next);
+    await getPostedEmojiRecords(req, res, next);
+    await getText(req, res, next);
+    await getUserVisibility(req, res, next);
+    await getHistoryPage(req,res);
+  }catch (e) {
+    console.log("Catch an error: ", e);
+    errors.push( {msg: e})
+
+    res.render("emojiSharing", {
+      errors: errors,
+      classLinkId: req.classLinkId ? req.classLinkId : '',
+      regId : req.classLinkId ? req.classLinkId : '',
+      classId: req.class_id ? req.class_id : '',//id shows undefined?
+      userId: '',
+      userObj: '',
+      emojiSelected: '',
+      isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
+      path: path
+    });
+  }
+}
+async function historyChecksCurrent(req,res,next){
+  let errors =[];
+  try{
+    await checkIfUserIsInstructor(req,res,next);
+    await getPostedEmojiRecords(req, res, next);
+    await getText(req, res, next);
+    await getUserVisibility(req, res, next);
+    await updateUserVisibility(req, res, next);
+    await getHistoryPage(req,res)
+  }catch (e) {
+    console.log("Catch an error: ", e);
+    errors.push( {msg: e})
+
+    res.render("emojiSharing", {
+      errors: errors,
+      classLinkId: req.classLinkId ? req.classLinkId : '',
+      regId : req.classLinkId ? req.classLinkId : '',
+      classId: req.class_id ? req.class_id : '',//id shows undefined?
+      userId: '',
+      userObj: '',
+      emojiSelected: '',
+      isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
+      path: path
+    });
+  }
+}
 async function checkIfUserIsInstructor(req, res, next) {
   let classLinkId;
   let classId;
@@ -59,9 +111,11 @@ async function checkIfUserIsInstructor(req, res, next) {
       req.isInstructor = res[0].isInstructor;
       req.class_id = res[0].classes_id ;
       req.classLinkId = classLinkId ? classLinkId : '';
-      next();
+      // next();
     } catch (e) {
         console.log("Catch an error: ", e);
+        throw e.message;
+
     }
 
  }
@@ -90,9 +144,9 @@ async function getPostedEmojiRecords(req, res, next) {
   try {
     const [res, err] = await db.execute(query);
 
-    temp = processEmojiRecordsPerDay(res, req);
+    let temp = processEmojiRecordsPerDay(res, req);
     req.emojiRecordsPerDay = temp; // where we get the records
-    next();
+    // next();
   } catch (e) {
     console.log("Catch an error: ", e);
   }
@@ -251,9 +305,10 @@ async function getText(req, res, next) {
     const [rows, fields] = await db.execute(query);
     // console.log(query);
     req.userInfo = rows;
-    next();
+    // next();
   } catch (e) {
     console.log("Catch an error: ", e);
+    throw e.message;
   }
 }
 
@@ -275,9 +330,10 @@ async function updateUserVisibility(req, res, next) {
     req.class_id;
   try {
     await db.execute(query);
-    next();
+    // next();
   } catch (e) {
     console.log("Catch an error: ", e);
+    throw e.message;
   }
 }
 
@@ -288,9 +344,10 @@ async function getUserVisibility(req, res, next) {
     const [res, err] = await db.execute(query);
     req.history_chart_access = res[0].history_chart_access;
     req.history_text_access = res[0].history_text_access;
-    next();
+    // next();
   } catch (e) {
     console.log("Catch an error: ", e);
+    throw e.message
   }
 }
 
@@ -366,6 +423,7 @@ async function getHistoryPage(req,res) {
     req.classInfo = rows[0];
   }catch (e) {
     console.log(e)
+    throw e.message;
   }
 
   res.render('newHistory', {
@@ -398,5 +456,7 @@ module.exports = {
   getUserVisibility:getUserVisibility,
   updateUserVisibility:updateUserVisibility,
   getHistoryPage:getHistoryPage,
-  getPostedEmojiRecords:getPostedEmojiRecords
+  getPostedEmojiRecords:getPostedEmojiRecords,
+  historyChecks: historyChecks,
+  historyChecksCurrent:historyChecksCurrent
 }

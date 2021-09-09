@@ -1,14 +1,8 @@
 const db = require("../configs/database.js");
 const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
-const parsingService = require("../services/parsingServices");
-let currentEmoji;
-const {
-    Worker, isMainThread, parentPort, workerData
-} = require('worker_threads');
 let path = 'http://emotionthermometer.online:4000/sendEmoji';
 let localPath = 'http://localhost:4000/sendEmoji';
-const express = require('express');
 const EmojiService = require( "../services/emojiServices" );
 const emojiService = new EmojiService();
 const SocketService = require( "../services/socketServices" );
@@ -21,8 +15,6 @@ let rowsObj = {
     classes_id: "000"
 }
 
-//get sockets
-const io = require('socket.io-client');
 
  function getUserSocketListener(req,res,next){
     req.usersOnline = socketService.getUserSocketData();
@@ -71,9 +63,9 @@ async function getStudentClassId(req, res, next) {
 
         res.render("emojiSharing", {
             errors: errors,
-            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
-            regId : req.classLinkId ? req.classLinkId : 'not_found',
-            classId: req.class_id ? req.class_id : 'not_found',//id shows undefined?
+            classLinkId: req.classLinkId ? req.classLinkId : '',
+            regId : req.classLinkId ? req.classLinkId : '',
+            classId: req.class_id ? req.class_id : '',//id shows undefined?
             userId: '',
             userObj: '',
             emojiSelected: '',
@@ -125,8 +117,8 @@ async function getSendEmojiPage(req,res) {
                         return res.render('login', {
                             errors: errors,
                             title: "Login",
-                            classId: req.classId ? req.classId : 'not_found',
-                            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+                            classId: req.classId ? req.classId : '',
+                            classLinkId: req.classLinkId ? req.classLinkId : '',
                             isLoggedIn: req.isAuthenticated(),
                         })
                     }
@@ -135,10 +127,10 @@ async function getSendEmojiPage(req,res) {
                     let userIdValue = rowsObj.id;
                     let emojiValue = req.body.optradio ? req.body.optradio  : req.emojiSelected;
                     res.render("emojiSharing", {
-                        classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
-                        regId : req.classLinkId ? req.classLinkId : 'not_found',
-                        classId: classIdValue ? classIdValue : 'not_found',//id shows undefined?
-                        userId: userIdValue ? userIdValue : 'not_found',
+                        classLinkId: req.classLinkId ? req.classLinkId : '',
+                        regId : req.classLinkId ? req.classLinkId : '',
+                        classId: classIdValue ? classIdValue : '',//id shows undefined?
+                        userId: userIdValue ? userIdValue : '',
                         userObj: rowsObj,
                         emojiSelected: emojiValue ? emojiValue : "3",
                         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
@@ -156,8 +148,8 @@ async function getSendEmojiPage(req,res) {
                 return res.render('login', {
                     errors: errors,
                     title: "Login",
-                    classId: req.classId ? req.classId : 'not_found',
-                    classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+                    classId: req.classId ? req.classId : '',
+                    classLinkId: req.classLinkId ? req.classLinkId : '',
                     isLoggedIn: req.isAuthenticated(),
                 })
             }
@@ -237,6 +229,7 @@ async function getClassStartTime(req, res, next) {
         }
     } catch (e) {
         console.log("Catch an error: ", e);
+        throw e.message;
     }
 }
 
@@ -270,6 +263,7 @@ async function getEmojiClassData(userInfo, classLinkId, classId) {
         }
     } catch (e) {
         console.log(e);
+        throw e.message;
     }
     return result;
 }
@@ -316,28 +310,63 @@ async function checkRecordExistsInPostedEmojis(req, res, next) {
         }
     } catch (e) {
         console.log("Catch an error: ", e);
-        res.status( 500 ).send( e );
-
+        throw e.message;
     }
 }
 
 async function triageBasedOnTime(req,res,next){
-    await getClassStartTime(req,res,next);
-    if ( req.currentMinutes === 0 ){
-        await invalidEmojiPostBranch(req, res, next);
-    }else {
-        await checkRecordExistsInPostedEmojis(req,res,next);
-        await checkRecordExists(req,res,next);
-        next();
-    }
+    let errors=[];
+    try{
+        await getClassStartTime(req,res,next);
+        if ( req.currentMinutes === 0 ){
+            await invalidEmojiPostBranch(req, res, next);
+        }else { //req.currentminutes will not be 0
+            await checkRecordExistsInPostedEmojis(req,res,next);
+            await checkRecordExists(req,res,next);
+            next();
+        }
+    }catch (e) {
+        console.log("Catch an error: ", e);
+        errors.push( {msg: e})
+        //setting connection
 
+        res.render("emojiSharing", {
+            errors: errors,
+            classLinkId: req.classLinkId ? req.classLinkId : '',
+            regId : req.classLinkId ? req.classLinkId : '',
+            classId: req.class_id ? req.class_id : '',//id shows undefined?
+            userId: '',
+            userObj: '',
+            emojiSelected: '',
+            isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
+            path: path
+        });
+    }
 }
 async function insertRecords(req,res,next){
-    await insertEmojiRecord(req,res,next);
-    await processRegisteredStudentsCount(req,res,next);
-    await processContributedStudentsCount(req,res,next);
-    await insertRecordPerMinute(req,res,next);
-    await getSendEmojiPage(req,res);
+    let errors =[];
+    try{
+        await insertEmojiRecord(req,res,next);
+        await processRegisteredStudentsCount(req,res,next);
+        await processContributedStudentsCount(req,res,next);
+        await insertRecordPerMinute(req,res,next);
+        await getSendEmojiPage(req,res);
+    }catch (e) {
+        console.log("Catch an error: ", e);
+        errors.push( {msg: e})
+        res.render("emojiSharing", {
+            errors: errors,
+            classLinkId: req.classLinkId ? req.classLinkId : '',
+            regId : req.classLinkId ? req.classLinkId : '',
+            classId: classIdValue ? classIdValue : '',//id shows undefined?
+            userId: userIdValue ? userIdValue : '',
+            userObj: rowsObj,
+            emojiSelected: emojiValue ? emojiValue : "3",
+            isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
+            path: path
+        });
+    }
+
 }
 
 async function processContributedStudentsCount(req, res, next) {
@@ -356,8 +385,8 @@ async function processContributedStudentsCount(req, res, next) {
         res.render('login', {
             errors: errors,
             title: "Login",
-            classId: req.classId ? req.classId : 'not_found',
-            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+            classId: req.classId ? req.classId : '',
+            classLinkId: req.classLinkId ? req.classLinkId : '',
             isLoggedIn: req.isAuthenticated(),
         })
     }
@@ -381,8 +410,8 @@ async function processRegisteredStudentsCount(req, res, next) {
         res.render('login', {
             errors: errors,
             title: "Login",
-            classId: req.classId ? req.classLinkId : 'not_found',
-            classLinkId: req.classLinkId ? req.classLinkId : 'not_found',
+            classId: req.classId ? req.classLinkId : '',
+            classLinkId: req.classLinkId ? req.classLinkId : '',
             isLoggedIn: req.isAuthenticated(),
         })
     }
@@ -395,7 +424,7 @@ async function insertEmojiRecord(req, res, next) {
     }
     //cleaning text of any symbols
     let cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
-    // if current minutes 0 means it is not valid so we don't insert it
+    // if current minutes 0 will not come here, filtered at triage  0 means it is not valid so we don't insert it
     // if record exists already we don't insert it again for this minute for this user
     let query;
     if (req.currentMinutes > 0 && req.recordExistsInPostedEmojis === false) {
@@ -421,36 +450,35 @@ async function insertEmojiRecord(req, res, next) {
         try {
             const [rows, err] = await db.execute(query);
             req.posted_record_id = rows.insertId;
-            // next();
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
-    }else {
+    }else if (req.recordExistsInPostedEmojis === true){
         query =
             " UPDATE emojidatabase.posted_emojis SET emojis_id = " + req.body.optradio +
-            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id;
+            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id ;
 
         try {
             const [rows, err] = await db.execute(query);
-            req.posted_record_id = rows.insertId;
             // next();
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
         //2nd call to update the text
         cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
         let queryForText =
-            " UPDATE emojidatabase.posted_emojis SET text = " + cleanText +
-            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.posted_record_id; // from previous query
+            " UPDATE emojidatabase.posted_emojis SET text = '" + cleanText +
+            "' , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id; // from previous query
 
         try {
             const [rows, err] = await db.execute(queryForText);
-            req.posted_record_id = rows.insertId;
-            // next();
+            req.posted_record_id = req.existingRecordInPostedEmojis.id;
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
-        // next();
     }
 }
 
@@ -474,7 +502,7 @@ async function checkRecordExists(req, res, next) {
 
     } catch (err) {
         console.log("Catch an error: ", err);
-        res.status( 500 ).send( err );
+        throw err.message;
     }
 }
 
@@ -566,6 +594,7 @@ async function insertRecordPerMinute(req, res, next) {
             //   console.log("first: "+query);
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
     } else {
         // req.contributedStudentsCount = req.contributedStudentsCount + 1;
@@ -592,6 +621,7 @@ async function insertRecordPerMinute(req, res, next) {
                 req.insertId = res.insertId;
         } catch (e) {
             console.log("Catch an error: ", e);
+            throw e.message;
         }
     }
 

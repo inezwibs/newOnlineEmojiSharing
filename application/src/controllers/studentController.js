@@ -1,5 +1,4 @@
 const db = require("../configs/database.js");
-const {url} = require("url");
 const re = /\d+/g;
 let path = 'http://emotionthermometer.online/EmojiSharing?classLinkId=';
 let localPath = 'http://localhost:4000/EmojiSharing?classLinkId=';
@@ -96,8 +95,8 @@ async function validateClassLinks (req, res, next) {
     }else{ // results false or error
         return res.render("register", {
             title: "Form Validation",
-            classId: "not_found",
-            classLinkId: "not_found",
+            classId: "",
+            classLinkId: "",
             errors: results.message,
             disabled: true
         });
@@ -133,8 +132,8 @@ async function getStudentRegisterPage (req, res, next) {
         classIdValue = req.query.classId ? req.query.classId : emojiController.getIdsFromUrl(req.url)[1]
         res.render("register", {
             title: "Form Validation",
-            classId: classIdValue ? classIdValue: 'not_found',
-            classLinkId: classLinkIdValue ? classLinkIdValue :  'not_found',
+            classId: classIdValue ? classIdValue: '',
+            classLinkId: classLinkIdValue ? classLinkIdValue :  '',
             disabled: false
         });
         req.session.errors = null;
@@ -151,10 +150,10 @@ async function getStudentRegisterPage (req, res, next) {
 
         res.render("emojiSharing", {
             alerts: req.user.message,
-            classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
-            regId : classLinkIdValue ? classLinkIdValue: 'not_found',
-            classId: classIdValue ? classIdValue: 'not_found',//id shows undefined?
-            userId: req.user.user[0].id ? req.user.user[0].id : 'not_found',
+            classLinkId: classLinkIdValue ? classLinkIdValue: '',
+            regId : classLinkIdValue ? classLinkIdValue: '',
+            classId: classIdValue ? classIdValue: '',//id shows undefined?
+            userId: req.user.user[0].id ? req.user.user[0].id : '',
             userObj: rowsObj,
             emojiSelected: '3',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
@@ -263,8 +262,8 @@ async function checkUserIsValid(req, res, next) {
             return res.render('register', {
                 errors: errors,
                 title: "Form Validation",
-                classId: classIdValue ? classIdValue: 'not_found',
-                classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
+                classId: classIdValue ? classIdValue: '',
+                classLinkId: classLinkIdValue ? classLinkIdValue: '',
                 disabled: false
             })
         }else{
@@ -312,8 +311,8 @@ async function checkUserIsValid(req, res, next) {
 
             return res.render("login", {
                 title: "Login",
-                classId: req.classId? req.classId : 'not_found',
-                classLinkId:  req.classLinkId ? req.classLinkId : 'not_found',
+                classId: req.classId? req.classId : '',
+                classLinkId:  req.classLinkId ? req.classLinkId : '',
                 isLoggedIn: req.isAuthenticated(),
                 alerts: rows.message
             });
@@ -333,8 +332,8 @@ async function checkUserIsValid(req, res, next) {
             res.render('register', {
                 errors: errors,
                 title: "Form Validation",
-                classId: classIdValue ? classIdValue: 'not_found',
-                classLinkId: classLinkIdValue ? classLinkIdValue: 'not_found',
+                classId: classIdValue ? classIdValue: '',
+                classLinkId: classLinkIdValue ? classLinkIdValue: '',
                 disabled: false
             })
         }
@@ -346,8 +345,8 @@ async function checkUserIsValid(req, res, next) {
             res.render('register', {
                 errors: errors,
                 title: "Form Validation",
-                classId: classIdValue? classIdValue: 'not_found',
-                classLinkId: classLinkIdValue? classLinkIdValue: 'not_found',
+                classId: classIdValue? classIdValue: '',
+                classLinkId: classLinkIdValue? classLinkIdValue: '',
                 disabled: false
             })
         }
@@ -389,8 +388,8 @@ async function checkUserIsValid(req, res, next) {
 async function getStudentLoginPage(req,res) {
 
     console.log("Session from get student login page**", req.session);
-    let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : 'not_found';
-    let classIdValue = req.query.classId ? req.query.classId : 'not_found';//id shows undefined?
+    let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
+    let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
     let isAuthenticated = req.isAuthenticated();
     let errors = [];
     if (isAuthenticated){

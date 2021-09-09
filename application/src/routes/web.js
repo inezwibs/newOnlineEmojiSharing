@@ -4,10 +4,9 @@ const studentController = require("../controllers/studentController");
 const emojiController = require("../controllers/emojiController");
 const historyController = require("../controllers/historyController");
 const passwordController = require("../controllers/passwordController")
-const scriptsController = require("../controllers/scriptsController")
+// const scriptsController = require("../controllers/scriptsController")
 const passport = require('passport');
 const passportController = require( "../controllers/passportController");
-const req = require("express");
 
 // Init all passport
 passportController.initPassportLocal();
@@ -15,7 +14,7 @@ let router = express.Router();
 
 let initWebRoutes = (app) => {
 
-    router.get('/scripts', scriptsController.getIntervalWorker);
+    // router.get('/scripts', scriptsController.getIntervalWorker);
     router.get('/instructor', instructorController.getInstructorPage);
     router.post('/instructor', instructorController.insertClasses,
         instructorController.insertToRegistration, instructorController.generateLink);
@@ -67,15 +66,11 @@ let initWebRoutes = (app) => {
     router.post("/reset-password/:id/:token",passwordController.handlePostResetPasswordPage)
 
     //accessing using history routes
-    router.get("/history/:classLinkId/:classId/:date",historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords, historyController.getText,
-        historyController.getUserVisibility,historyController.getHistoryPage);
-    router.post("/history/:classLinkId/:classId/:date",historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
-        historyController.getUserVisibility,historyController.getHistoryPage);
+    router.get("/history/:classLinkId/:classId/:date", historyController.historyChecks);
+    router.post("/history/:classLinkId/:classId/:date",historyController.historyChecks);
     //accessing from other pages
-    router.get("/history", historyController.checkIfUserIsInstructor,  historyController.getPostedEmojiRecords,historyController.getText,
-        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
-    router.post("/history", historyController.checkIfUserIsInstructor, historyController.getPostedEmojiRecords, historyController.getText,
-        historyController.getUserVisibility, historyController.updateUserVisibility, historyController.getHistoryPage);
+    router.get("/history", historyController.historyChecksCurrent);
+    router.post("/history", historyController.historyChecksCurrent);
     router.post("/instructorLogout", instructorController.postLogOut);
     router.get("/instructorLogout", instructorController.postLogOut);
 
