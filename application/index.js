@@ -10,6 +10,8 @@ const cookieParser = require('cookie-parser');
 const configViewEngine = require("./src/configs/viewEngine");
 let passportSocketIo = require('passport.socketio')
 const fs = require('fs')
+let favicon = require('serve-favicon')
+let path = require('path')
 
 
 const PORT = 4000;
@@ -38,8 +40,10 @@ var options = {
 let sessionStore = new MySQLStore(options);
 let app = express();
 const http = require('http').createServer(app);
-
 let io = require('socket.io')(http);
+
+//handle get favicon/ico 404
+app.use(favicon(path.join(__dirname, '/public/icon', 'favicon.ico')))
 
 // logs requests to the backend
 const morgan = require("morgan");
