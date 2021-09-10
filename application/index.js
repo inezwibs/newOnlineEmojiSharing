@@ -44,7 +44,6 @@ let io = require('socket.io')(http);
 
 //handle get favicon/ico 404
 app.use(favicon(path.join(__dirname, '/public/icon', 'favicon.ico')))
-
 // logs requests to the backend
 const morgan = require("morgan");
 // app.use(morgan("tiny"));
