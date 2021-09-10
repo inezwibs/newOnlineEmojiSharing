@@ -14,10 +14,10 @@
 //     self.postMessage('Emoji form submitted');
 //     self.close();
 // })
-onmessage = e => {
-    console.log("[From Main]: ");
-    // const message = e.data;
-    console.log(e.data);
-    // console.log(`[From Main]: ${message}`);
-    postMessage("Polo!");
-};
+// onmessage = e => {
+//     console.log("[From Main]: ");
+//     // const message = e.data;
+//     console.log(e.data);
+//     // console.log(`[From Main]: ${message}`);
+//     postMessage("Polo!");
+// };

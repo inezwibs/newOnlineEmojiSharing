@@ -16,7 +16,7 @@ let path = require('path')
 
 const PORT = 4000;
 
-var options = {
+let options = {
     database: "emojidatabase",
     user: "publicadmin",
     port:"3307",
@@ -48,7 +48,7 @@ app.use(favicon(path.join(__dirname, '/public/icon', 'favicon.ico')))
 const morgan = require("morgan");
 // app.use(morgan("tiny"));
 const moment = require("moment-timezone");
-morgan.token('date', (req, res, tz) => {
+morgan.token("date", (req, res, tz) => {
     return moment().tz(tz).format('YYYY-MM-DD, HH:mm a');
 })
 morgan.format("dev-plus-time","[:date[America/Los_Angeles]] :method :url :status :response-time ms - :res[content-length]");
