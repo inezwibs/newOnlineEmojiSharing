@@ -17,7 +17,7 @@ async function getInstructorPage (req,res,user) {
     console.log(instructorObj);
     if (typeof req.user === 'object' && req.user !== null){
         res.instructorId = req.user.user[0].id;
-    }else if (instructorObj && Object.keys(instructorObj).length > 0 ){
+    }else if (instructorObj && Object.keys(instructorObj).length > 0 && instructorObj[0] !== undefined){
         res.instructorId = instructorObj[0].id;
         res.instructorObj = instructorObj;
     }else if(typeof req.user === 'number' ){
