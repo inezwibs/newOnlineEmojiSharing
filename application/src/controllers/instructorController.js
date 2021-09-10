@@ -265,13 +265,15 @@ async function insertToRegistration(req, res, next) {
         userId = instructorObj.id;
     }else if (typeof req.user == 'object'){
         userId = req.user.user[0].id;
+    }else if (typeof req.body.instructorObject == 'object'){
+        userId = req.body.instructorObject.id;
     }
     if ( doesClassExist && !req.classIsRegisteredResult ){
         try{
             //TODO need to go users table not registration table
             let doesInstructorExist = await instructorService.checkExistingInstructorClasses(req.body);// return error
 
-            if (doesInstructorExist.success ){
+            if (doesInstructorExist.success && req.insertedClassId && userId ){
                 let query =
                     " INSERT INTO emojidatabase.registrations (classes_id, users_id, isInstructor) VALUES ( " +
                     req.insertedClassId +
