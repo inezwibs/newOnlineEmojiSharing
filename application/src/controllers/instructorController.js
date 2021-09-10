@@ -19,14 +19,18 @@ async function getInstructorPage (req,res,user) {
         res.instructorId = req.user.user[0].id;
     }else if (instructorObj && Object.keys(instructorObj).length > 0 && instructorObj[0] !== undefined){
         res.instructorId = instructorObj[0].id;
-        res.instructorObj = instructorObj;
+        res.instructorObj = instructorObj[0];
     }else if(typeof req.user === 'number' ){
         res.instructorId = req.user;
+    }else if (typeof instructorObj === 'object' ){
+        res.instructorId = instructorObj.id;
+        res.instructorObj = instructorObj
     }
     let instructorClassesArray;
     let instructorClassNamesArray;
     try{
         let queryResult = await instructorService.validateInstructorUser(res.instructorId);
+
         if (!queryResult.success){
             //not an instructor
             return res.render("classLinkPage.ejs" ,{
