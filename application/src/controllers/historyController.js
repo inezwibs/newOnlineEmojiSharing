@@ -4,7 +4,8 @@ const path = 'http://emotionthermometer.online/history';
 const emojiController = require("../controllers/emojiController");
 const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
-
+const StudentService = require("../services/studentServices");
+const studentServices = new StudentService();
 
 function historySocket() {
   // global.io.on('connection',(socket)=> {
@@ -51,26 +52,47 @@ async function historyChecksCurrent(req,res,next){
     await getUserVisibility(req, res, next);
     await updateUserVisibility(req, res, next);
     await getHistoryPage(req,res)
-  }catch (e) {
+  } catch (e) {
     console.log("Catch an error: ", e);
     errors.push( {msg: e})
 
-    res.render("emojiSharing", {
-      errors: errors,
+    let dateStringParams = dateService.getDateStringParams();
+    let classDetails;
+    let classObj = {};
+    if (req.classLinkId && req.class_id){
+      classDetails = await studentServices.getUserAndClassDetails(req.classLinkId, req.class_id)
+    }else{
+      return res.render("errorPage", {});
+    }
+    if (classDetails.success && classDetails.body.length > 0) {
+      classObj = classDetails.body[0];
+    } else {
+      return res.render("errorPage", {});
+    }
+
+    return res.render("home", {
+      errors:errors,
       classLinkId: req.classLinkId ? req.classLinkId : '',
-      regId : req.classLinkId ? req.classLinkId : '',
-      classId: req.class_id ? req.class_id : '',//id shows undefined?
-      userId: '',
-      userObj: '',
-      emojiSelected: '',
-      isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-      path: path
+      classId: req.class_id ? req.class_id : '',
+      dateStringParams: dateStringParams ? dateStringParams : '',
+      classDetails: classObj ? classObj : '',
     });
+    // res.render("emojiSharing", {
+    //   errors: errors,
+    //   classLinkId: req.classLinkId ? req.classLinkId : '',
+    //   regId : req.classLinkId ? req.classLinkId : '',
+    //   classId: req.class_id ? req.class_id : '',//id shows undefined?
+    //   userId: '',
+    //   userObj: '',
+    //   emojiSelected: '',
+    //   isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
+    //   path: path
+    // });
   }
 }
 async function checkIfUserIsInstructor(req, res, next) {
-  let classLinkId;
-  let classId;
+  let classLinkId='';
+  let classId = '';
   if (req.params.classLinkId && req.params.classId){
     classLinkId = req.params.classLinkId;
     classId = req.params.classId;
@@ -90,6 +112,8 @@ async function checkIfUserIsInstructor(req, res, next) {
       classLinkId = numbersInUrl[1];
     }
   }
+  req.class_id = classId;
+  req.classLinkId = classLinkId;
 
   let query;
   // req.user = req.body.userid ? req.body.userid : req.session.passport.user.user[0].id
@@ -105,6 +129,7 @@ async function checkIfUserIsInstructor(req, res, next) {
     query =
         " SELECT * FROM emojidatabase.registrations where users_id = " + req.user.user[0].id + " and classes_id = " + classId;
   }
+  if (query){
     try {
       const [res, err] = await db.execute(query);
       // console.log(query);
@@ -113,11 +138,13 @@ async function checkIfUserIsInstructor(req, res, next) {
       req.classLinkId = classLinkId ? classLinkId : '';
       // next();
     } catch (e) {
-        console.log("Catch an error: ", e);
-        throw e.message;
+      console.log("Catch an error: ", e);
+      throw e.message;
 
     }
-
+  }else{
+    throw "User is unidentified. Please login."
+  }
  }
 
 async function getClassID(req, res, next) {
@@ -138,10 +165,10 @@ async function getPostedEmojiRecords(req, res, next) {
   let query =
       " SELECT * FROM emojidatabase.posted_emojis where class_id = " +
       req.class_id;
-  await emojiController.getClassRegisteredStudentsCount(req, res, next);
-  await getEmojiRecordsPerMinute(req,res,next);
 
   try {
+    await emojiController.getClassRegisteredStudentsCount(req, res, next);
+    await getEmojiRecordsPerMinute(req,res,next);
     const [res, err] = await db.execute(query);
 
     let temp = processEmojiRecordsPerDay(res, req);
@@ -149,6 +176,7 @@ async function getPostedEmojiRecords(req, res, next) {
     // next();
   } catch (e) {
     console.log("Catch an error: ", e);
+    throw e.message;
   }
 }
 
@@ -214,6 +242,7 @@ async function getEmojiRecordsPerMinute(req, res, next) {
 
   } catch (e) {
     console.log("Catch an error: ", e);
+    throw e.message;
   }
 }
 

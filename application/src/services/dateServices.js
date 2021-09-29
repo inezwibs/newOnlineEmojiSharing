@@ -11,6 +11,12 @@ class DateService {
         return dateTime.toLocaleDateString();
     }
 
+    getDateStringParams() {
+        let dateObj = new Date(Date());
+        let dateString = dateObj.toLocaleDateString('en-US', {timeZone: 'America/Los_Angeles'})
+        return (dateString.split('/')).join('-');
+    }
+
     async matchDateInDatabase(dateString, classId, thisMinute){
         let query =
             `SELECT  * FROM emojidatabase.posted_emojis WHERE class_id = ${classId} AND minute = ${thisMinute}`

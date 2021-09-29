@@ -516,6 +516,7 @@ async function checkRecordExists(req, res, next) {
         req.classRegisteredStudentsCount = rows[0].count;
     } catch (e) {
         console.log("Catch an error: ", e);
+        throw e.message;
     }
 }
 

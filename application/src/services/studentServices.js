@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const ParsingService = require("../services/parsingServices");
 const parsingService = new ParsingService();
+
 const re = /\d+/g;
 
 class StudentServices {
