@@ -169,7 +169,7 @@ async function getPostedEmojiRecords(req, res, next) {
   try {
     await emojiController.getClassRegisteredStudentsCount(req, res, next);
     await getEmojiRecordsPerMinute(req,res,next);
-    const [res, err] = await db.execute(query);
+    const [rows, err] = await db.execute(query);
 
     let temp = processEmojiRecordsPerDay(res, req);
     req.emojiRecordsPerDay = temp; // where we get the records
