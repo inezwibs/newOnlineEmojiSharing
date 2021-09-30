@@ -131,10 +131,10 @@ async function checkIfUserIsInstructor(req, res, next) {
   }
   if (query){
     try {
-      const [res, err] = await db.execute(query);
+      const [rows, err] = await db.execute(query);
       // console.log(query);
-      req.isInstructor = res[0].isInstructor;
-      req.class_id = res[0].classes_id ;
+      req.isInstructor = rows[0].isInstructor;
+      req.class_id = rows[0].classes_id ;
       req.classLinkId = classLinkId ? classLinkId : '';
       // next();
     } catch (e) {
@@ -170,7 +170,7 @@ async function getPostedEmojiRecords(req, res, next) {
     await emojiController.getClassRegisteredStudentsCount(req, res, next);
     await getEmojiRecordsPerMinute(req,res,next);
     const [rows, err] = await db.execute(query);
-
+    res = rows;
     let temp = processEmojiRecordsPerDay(res, req);
     req.emojiRecordsPerDay = temp; // where we get the records
     // next();
