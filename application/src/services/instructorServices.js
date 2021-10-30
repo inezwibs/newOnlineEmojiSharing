@@ -25,7 +25,7 @@ class InstructorServices {
 
     async getInstructorClasses(instructorId) {
         let checkExistingInstructor = "SELECT * FROM emojidatabase.registrations WHERE users_id='"+
-            instructorId + "'";
+            instructorId + "' and isInstructor=1";
         try {
             const [rows, fields] = await db.execute(checkExistingInstructor);
             if (rows.length !== 0) {
