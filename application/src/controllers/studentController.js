@@ -414,7 +414,7 @@ async function checkUserIsValid(req, res, next) {
 // }
 
 async function getStudentLoginPage(req,res) {
-
+    req.token = parsingService.getToken();
     console.log("Session from get student login page**", req.session);
     let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
     let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
@@ -457,7 +457,8 @@ async function getStudentLoginPage(req,res) {
             userObj: rowsObj,
             emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
             isAnonymousStatus: false,
-            path:path
+            path:path,
+            token: req.token
         });
 
     }else{

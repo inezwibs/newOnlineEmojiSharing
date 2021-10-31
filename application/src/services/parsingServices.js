@@ -23,5 +23,14 @@ class ParsingServices {
             return {};
         }
     }
+
+    getToken(){
+        let seed = '123456789abcdefghijklmnopqrstuvwxyz';
+        let resultToken ='';
+        for (let i = 10; i > 0 ; i--){
+            resultToken += seed[Math.floor(Math.random() * 10)];
+        }
+        return resultToken;
+    }
 }
 module.exports = ParsingServices;

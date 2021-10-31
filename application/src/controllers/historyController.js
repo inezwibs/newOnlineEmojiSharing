@@ -6,6 +6,8 @@ const DateService = require( "../services/dateServices" );
 const dateService = new DateService();
 const StudentService = require("../services/studentServices");
 const studentServices = new StudentService();
+const ParsingService = require( "../services/parsingServices" );
+const parsingService = new ParsingService();
 
 function historySocket() {
   // global.io.on('connection',(socket)=> {
@@ -20,6 +22,7 @@ function historySocket() {
 
 async function historyChecks(req,res,next){
   let errors =[];
+  req.token = parsingService.getToken();
   try{
     await checkIfUserIsInstructor(req,res,next);
     await getPostedEmojiRecords(req, res, next);
@@ -39,7 +42,8 @@ async function historyChecks(req,res,next){
       userObj: '',
       emojiSelected: '',
       isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-      path: path
+      path: path,
+      token: req.token
     });
   }
 }
@@ -100,7 +104,7 @@ async function checkIfUserIsInstructor(req, res, next) {
     const re = /\d+/g;
     if (req.query.classLinkId.match(re)){
       let numbersInUrl = emojiController.getIdsFromUrl(req.query.classLinkId);
-      if (numbersInUrl.length === 2){
+      if (numbersInUrl.length >= 2){
         classLinkId = numbersInUrl[0];
         classId = numbersInUrl[1];
       }

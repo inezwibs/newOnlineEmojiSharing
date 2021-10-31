@@ -32,7 +32,7 @@
 
     <div class="mt-1 ml-1">
         <% if ( typeof dateStringParams === 'undefined') {%>
-        <form target="_blank" id="historySubmit" action="/history?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="POST">
+        <form target="_blank" id="historySubmit" action="/history?classLinkId=<%=classLinkId%>?classId=<%=classId%>?t=<%=token%>" method="POST">
             <input  type="submit" value="History" />
             <input type="hidden" name="classId" value="<%=classId%>" />
             <input type="hidden" name="userid" value="<%=userId%>" />

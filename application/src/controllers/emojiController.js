@@ -7,6 +7,9 @@ const EmojiService = require( "../services/emojiServices" );
 const emojiService = new EmojiService();
 const SocketService = require( "../services/socketServices" );
 const socketService = new SocketService();
+const ParsingService = require( "../services/parsingServices" );
+const parsingService = new ParsingService();
+
 let rowsObj = {
     full_name: "default",
     id: "000",
@@ -21,8 +24,9 @@ let rowsObj = {
     next();
 }
 
-async function getStudentClassId(req, res, next) {
+async function getStudentClassId(req, res, next){
     let errors = [];
+    req.token = parsingService.getToken();
     try {
         // console.log(query);
         let ids;
@@ -70,13 +74,14 @@ async function getStudentClassId(req, res, next) {
             userObj: '',
             emojiSelected: '',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-            path: path
+            path: path,
+            token: req.token
         });
     }
 }
 
 async function getSendEmojiPage(req,res) {
-
+    req.token = parsingService(req.headers)
     let ids;
     const re = /\d+/g;
 
@@ -134,7 +139,8 @@ async function getSendEmojiPage(req,res) {
                         userObj: rowsObj,
                         emojiSelected: emojiValue ? emojiValue : "3",
                         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-                        path: path
+                        path: path,
+                        token: req.token
                     });
                 }
             }else{
@@ -269,6 +275,7 @@ async function getEmojiClassData(userInfo, classLinkId, classId) {
 }
 
 async function invalidEmojiPostBranch(req,res,next) {
+    req.token = parsingService.getToken();
     if (req.currentMinutes===0){
         if (req.query.regId || req.url) {
             let ids = getIdsFromUrl(req.url);
@@ -284,7 +291,8 @@ async function invalidEmojiPostBranch(req,res,next) {
                        emojiSelected: req.body ? req.body.optradio : '3',
                        isAnonymousStatus: false,
                        alerts: message,
-                       path:path
+                       path:path,
+                       token: req.token
                    });
             }
         }
@@ -315,6 +323,7 @@ async function checkRecordExistsInPostedEmojis(req, res, next) {
 }
 
 async function triageBasedOnTime(req,res,next){
+    req.token = parsingService.getToken();
     let errors=[];
     try{
         await getClassStartTime(req,res,next);
@@ -339,12 +348,14 @@ async function triageBasedOnTime(req,res,next){
             userObj: '',
             emojiSelected: '',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-            path: path
+            path: path,
+            token: req.token
         });
     }
 }
 async function insertRecords(req,res,next){
     let errors =[];
+    req.token = parsingService.getToken();
     try{
         await insertEmojiRecord(req,res,next);
         await processRegisteredStudentsCount(req,res,next);
@@ -363,7 +374,8 @@ async function insertRecords(req,res,next){
             userObj: rowsObj,
             emojiSelected: emojiValue ? emojiValue : "3",
             isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
-            path: path
+            path: path,
+            token: req.token
         });
     }
 
