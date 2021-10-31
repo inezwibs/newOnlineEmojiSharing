@@ -38,7 +38,7 @@ let initWebRoutes = (app) => {
     router.get("/login", studentController.getStudentLoginPage);
     // router.post("/login", passportController.executeAuthenticate);
      router.post("/login", passport.authenticate("local", {
-        failureRedirect: "/register",//TODO i think this shold be /login
+        failureRedirect: "/register",
         failureFlash: true,
         successFlash: true,
         successRedirect: "/sendEmoji"}));

@@ -32,6 +32,12 @@ async function historyChecks(req,res,next){
   }catch (e) {
     console.log("Catch an error: ", e);
     errors.push( {msg: e})
+    if (req.body.isThreeSecondRefresh !== "on"){
+      req.isThreeSecondRefreshChecked = false;
+    }else {
+      req.isThreeSecondRefreshChecked = true;
+    }
+    req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 
     res.render("emojiSharing", {
       errors: errors,
@@ -43,7 +49,10 @@ async function historyChecks(req,res,next){
       emojiSelected: '',
       isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
       path: path,
-      token: req.token
+      token: req.token,
+      refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+      isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
+
     });
   }
 }

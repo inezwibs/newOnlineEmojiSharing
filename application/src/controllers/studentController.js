@@ -121,6 +121,13 @@ async function validateClassLinks (req, res, next) {
 }
 //TODO create flowchart for register page
 async function getStudentRegisterPage (req, res, next) {
+    if (!req.body.isThreeSecondRefresh){
+        req.isThreeSecondRefreshChecked = false;
+    }else {
+        req.isThreeSecondRefreshChecked = true;
+    }
+    req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
+    req.token = parsingService.getToken();
     if (req.classLinkId && req.classId && req.classValidationMessage){
         // successful validation , referred by validateClassLinks
         if (req.headers.referer && req.headers.referer.indexOf("login") >= 0){ //redirected from failed login by passport
@@ -184,7 +191,10 @@ async function getStudentRegisterPage (req, res, next) {
             userObj: rowsObj,
             emojiSelected: '3',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
-            path:path
+            path:path,
+            token: req.token,
+            refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+            isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
         });
     }else if (req.user && !req.user.success && req.user.body.classLinkId && req.user.body.classLinkId.match(re)){
         let result =  parsingService.getIdsFromUrl(req.user.body.classLinkId);
@@ -415,6 +425,13 @@ async function checkUserIsValid(req, res, next) {
 
 async function getStudentLoginPage(req,res) {
     req.token = parsingService.getToken();
+    if (!req.body.isThreeSecondRefresh){
+        req.isThreeSecondRefreshChecked = false;
+    }else {
+        req.isThreeSecondRefreshChecked = true;
+    }
+    req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
+
     console.log("Session from get student login page**", req.session);
     let classLinkIdValue = req.query.classLinkId ? req.query.classLinkId : '';
     let classIdValue = req.query.classId ? req.query.classId : '';//id shows undefined?
@@ -458,7 +475,9 @@ async function getStudentLoginPage(req,res) {
             emojiSelected: emojiValue.length == 0 ? "3" : emojiValue,
             isAnonymousStatus: false,
             path:path,
-            token: req.token
+            token: req.token,
+            refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+            isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
         });
 
     }else{

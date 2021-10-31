@@ -32,5 +32,13 @@ class ParsingServices {
         }
         return resultToken;
     }
+
+    setRefreshInterval (isThreeSecondsChecked){
+        if (isThreeSecondsChecked){
+             return 3000;
+        }else{
+            return 60000;
+        }
+    }
 }
 module.exports = ParsingServices;

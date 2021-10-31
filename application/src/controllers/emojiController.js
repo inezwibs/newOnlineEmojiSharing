@@ -63,9 +63,9 @@ async function getStudentClassId(req, res, next){
     } catch (e) {
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
-        //setting connection
-
-        res.render("emojiSharing", {
+        //setting refresh
+        req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
+        res.render(" ", {
             errors: errors,
             classLinkId: req.classLinkId ? req.classLinkId : '',
             regId : req.classLinkId ? req.classLinkId : '',
@@ -75,7 +75,9 @@ async function getStudentClassId(req, res, next){
             emojiSelected: '',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
             path: path,
-            token: req.token
+            token: req.token,
+            refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+            isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
         });
     }
 }
@@ -101,6 +103,12 @@ async function getSendEmojiPage(req,res) {
     }
 
     req.isAnonymousStatus = req.query.isAnonymousStatus;
+    if (req.body.isThreeSecondRefresh !== "on"){
+        req.isThreeSecondRefreshChecked = false;
+    }else {
+        req.isThreeSecondRefreshChecked = true;
+    }
+    req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 
     if (typeof req.user === 'object'){
         req.userInfo = req.user.user[0].id;
@@ -140,7 +148,9 @@ async function getSendEmojiPage(req,res) {
                         emojiSelected: emojiValue ? emojiValue : "3",
                         isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
                         path: path,
-                        token: req.token
+                        token: req.token,
+                        refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+                        isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
                     });
                 }
             }else{
@@ -281,6 +291,7 @@ async function invalidEmojiPostBranch(req,res,next) {
             let ids = getIdsFromUrl(req.url);
             rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
             let message = "You have submitted an emotion outside of class time. It will not be recorded."
+            req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
             if (ids && ids.length === 2 && rowsObj) {
                    res.render("emojiSharing", {
                        classLinkId: ids[0],
@@ -292,7 +303,9 @@ async function invalidEmojiPostBranch(req,res,next) {
                        isAnonymousStatus: false,
                        alerts: message,
                        path:path,
-                       token: req.token
+                       token: req.token,
+                       refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+                       isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
                    });
             }
         }
@@ -338,7 +351,7 @@ async function triageBasedOnTime(req,res,next){
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
         //setting connection
-
+        req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
         res.render("emojiSharing", {
             errors: errors,
             classLinkId: req.classLinkId ? req.classLinkId : '',
@@ -349,7 +362,9 @@ async function triageBasedOnTime(req,res,next){
             emojiSelected: '',
             isAnonymousStatus: req.body.isAnonymous === "on" ? true : false,
             path: path,
-            token: req.token
+            token: req.token,
+            refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+            isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
         });
     }
 }
@@ -365,6 +380,8 @@ async function insertRecords(req,res,next){
     }catch (e) {
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
+        req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
+
         res.render("emojiSharing", {
             errors: errors,
             classLinkId: req.classLinkId ? req.classLinkId : '',
@@ -375,7 +392,9 @@ async function insertRecords(req,res,next){
             emojiSelected: emojiValue ? emojiValue : "3",
             isAnonymousStatus: req.body.isAnonymous ? req.body.isAnonymous : req.isAnonymousStatus,
             path: path,
-            token: req.token
+            token: req.token,
+            refreshInterval: req.refreshInterval ? req.refreshInterval : 60000,
+            isThreeSecondRefreshChecked: req.isThreeSecondRefreshChecked ? req.isThreeSecondRefreshChecked : false
         });
     }
 
