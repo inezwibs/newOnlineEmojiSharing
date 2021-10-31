@@ -81,7 +81,7 @@ async function getStudentClassId(req, res, next){
 }
 
 async function getSendEmojiPage(req,res) {
-    req.token = parsingService(req.headers)
+    req.token = parsingService.getToken();
     let ids;
     const re = /\d+/g;
 
@@ -439,7 +439,7 @@ async function insertEmojiRecord(req, res, next) {
     // if current minutes 0 will not come here, filtered at triage  0 means it is not valid so we don't insert it
     // if record exists already we don't insert it again for this minute for this user
     let query;
-    if (req.currentMinutes > 0 && req.recordExistsInPostedEmojis === false) {
+    // if (req.currentMinutes > 0 && req.recordExistsInPostedEmojis === false) {
         query =
             " INSERT INTO emojidatabase.posted_emojis (users_id, isAnonymous, date_time, emojis_id, registration_id, class_id, text, minute) VALUES ( " +
             req.user +
@@ -466,32 +466,32 @@ async function insertEmojiRecord(req, res, next) {
             console.log("Catch an error: ", e);
             throw e.message;
         }
-    }else if (req.recordExistsInPostedEmojis === true){
-        query =
-            " UPDATE emojidatabase.posted_emojis SET emojis_id = " + req.body.optradio +
-            " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id ;
-
-        try {
-            const [rows, err] = await db.execute(query);
-            // next();
-        } catch (e) {
-            console.log("Catch an error: ", e);
-            throw e.message;
-        }
+    // }else if (req.recordExistsInPostedEmojis === true){
+    //     query =
+    //         " UPDATE emojidatabase.posted_emojis SET emojis_id = " + req.body.optradio +
+    //         " , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id ;
+    //
+    //     try {
+    //         const [rows, err] = await db.execute(query);
+    //         // next();
+    //     } catch (e) {
+    //         console.log("Catch an error: ", e);
+    //         throw e.message;
+    //     }
         //2nd call to update the text
-        cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
-        let queryForText =
-            " UPDATE emojidatabase.posted_emojis SET text = '" + cleanText +
-            "' , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id; // from previous query
-
-        try {
-            const [rows, err] = await db.execute(queryForText);
-            req.posted_record_id = req.existingRecordInPostedEmojis.id;
-        } catch (e) {
-            console.log("Catch an error: ", e);
-            throw e.message;
-        }
-    }
+        // cleanText = (req.body.freeText).replace(/[^a-zA-Z0-9 ]/g, '');
+        // let queryForText =
+        //     " UPDATE emojidatabase.posted_emojis SET text = '" + cleanText +
+        //     "' , date_time = '"+ req.currentDate + "' WHERE id = " + req.existingRecordInPostedEmojis.id; // from previous query
+        //
+        // try {
+        //     const [rows, err] = await db.execute(queryForText);
+        //     req.posted_record_id = req.existingRecordInPostedEmojis.id;
+        // } catch (e) {
+        //     console.log("Catch an error: ", e);
+        //     throw e.message;
+        // }
+    // }
 }
 
 async function checkRecordExists(req, res, next) {
@@ -588,28 +588,28 @@ async function insertRecordPerMinute(req, res, next) {
     let query;
 
     req.thisEmoji = req.emojis_id ? req.emojis_id : req.body.optradio ;
-    if (req.recordExists === true) {
+    // if (req.recordExists === true) {
         // this query if the req user of the existing record is the same
-        await resetEmojiRecordHelper(req,res);
-        query =
-            " UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji" + req.thisEmoji +
-            " = count_emoji" +
-            req.thisEmoji  +
-            "+1, count_offline = " +
-            req.studentsOffline +
-            ", count_online_notParticipated = " +
-            req.studentOnlineNotParticipated +
-            " WHERE id = " +
-            req.existingRecord.id;
+        // await resetEmojiRecordHelper(req,res);
+        // query =
+        //     " UPDATE emojidatabase.emojiRecordsPerMinute SET count_emoji" + req.thisEmoji +
+        //     " = count_emoji" +
+        //     req.thisEmoji  +
+        //     "+1, count_offline = " +
+        //     req.studentsOffline +
+        //     ", count_online_notParticipated = " +
+        //     req.studentOnlineNotParticipated +
+        //     " WHERE id = " +
+        //     req.existingRecord.id;
 
-        try {
-            const [res, err] = await db.execute(query);
-            //   console.log("first: "+query);
-        } catch (e) {
-            console.log("Catch an error: ", e);
-            throw e.message;
-        }
-    } else {
+    //     try {
+    //         const [res, err] = await db.execute(query);
+    //         //   console.log("first: "+query);
+    //     } catch (e) {
+    //         console.log("Catch an error: ", e);
+    //         throw e.message;
+    //     }
+    // } else {
         // req.contributedStudentsCount = req.contributedStudentsCount + 1;
         // req.studentNotContributed = req.classRegisteredStudentsCount - req.contributedStudentsCount;
         query =
@@ -636,7 +636,7 @@ async function insertRecordPerMinute(req, res, next) {
             console.log("Catch an error: ", e);
             throw e.message;
         }
-    }
+    // }
 
 }
 
