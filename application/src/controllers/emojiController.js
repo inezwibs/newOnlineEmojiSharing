@@ -66,7 +66,7 @@ async function getStudentClassId(req, res, next){
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
         //setting refresh
-        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+        if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
             req.isThreeSecondRefreshChecked = true;
         }else{
             req.isThreeSecondRefreshChecked = false;
@@ -111,7 +111,7 @@ async function getSendEmojiPage(req,res) {
     req.usersRefreshInterval = socketService.getUserRefreshData();
 
     req.isAnonymousStatus = req.query.isAnonymousStatus;
-    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )){
+    if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ){
         req.isThreeSecondRefreshChecked = true;
     }else {
         req.isThreeSecondRefreshChecked = false;
@@ -299,7 +299,7 @@ async function invalidEmojiPostBranch(req,res,next) {
             let ids = getIdsFromUrl(req.url);
             rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
             let message = "You have submitted an emotion outside of class time. It will not be recorded."
-            if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+            if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
                 req.isThreeSecondRefreshChecked = true;
             }else{
                 req.isThreeSecondRefreshChecked = false;
@@ -364,7 +364,7 @@ async function triageBasedOnTime(req,res,next){
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
         //setting connection
-        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+        if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
             req.isThreeSecondRefreshChecked = true;
         }else{
             req.isThreeSecondRefreshChecked = false;
@@ -398,7 +398,7 @@ async function insertRecords(req,res,next){
     }catch (e) {
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
-        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+        if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
             req.isThreeSecondRefreshChecked = true;
         }else{
             req.isThreeSecondRefreshChecked = false;

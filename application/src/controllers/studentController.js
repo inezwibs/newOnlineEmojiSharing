@@ -125,7 +125,7 @@ async function validateClassLinks (req, res, next) {
 async function getStudentRegisterPage (req, res, next) {
     req.usersRefreshInterval = socketService.getUserRefreshData();
 
-    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+    if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
         req.isThreeSecondRefreshChecked = true;
     }else {
         req.isThreeSecondRefreshChecked = false;
@@ -431,7 +431,7 @@ async function getStudentLoginPage(req,res) {
     req.token = parsingService.getToken();
     req.usersRefreshInterval = socketService.getUserRefreshData();
 
-    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+    if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
         req.isThreeSecondRefreshChecked = true;
     }else {
         req.isThreeSecondRefreshChecked = false;

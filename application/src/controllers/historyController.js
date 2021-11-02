@@ -32,7 +32,7 @@ async function historyChecks(req,res,next){
   }catch (e) {
     console.log("Catch an error: ", e);
     errors.push( {msg: e})
-    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+    if (req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" ) {
       req.isThreeSecondRefreshChecked = true;
     }else {
       req.isThreeSecondRefreshChecked = false;
