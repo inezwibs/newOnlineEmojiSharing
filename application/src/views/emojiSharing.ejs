@@ -14,14 +14,10 @@
     <script type="text/javascript">
         <% if ( typeof refreshInterval !== 'undefined') {%>
          setInterval(function() {
-           //select the 2nd form which is emoji submit
-           // document.forms[1].submit();
            document.getElementById("emojiSubmit").submit();
          }, <%=refreshInterval%>);//every 1 minute value = 1 * 60 * 1000 = 60000
         <%} else {%>
         setInterval(function() {
-            //select the 2nd form which is emoji submit
-            // document.forms[1].submit();
             document.getElementById("emojiSubmit").submit();
         }, 60000)
         <%}%>
@@ -70,17 +66,32 @@
         <form class="form-group" id="emojiSubmit" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
             <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
             <input type="hidden" name="classId" value="<%=classId%>" />
-            <div class="anonymous-label mx-auto d-flex ">
-                <label class="switch">
-                    <input type="checkbox" name="isThreeSecondRefresh"
-                            <%= isThreeSecondRefreshChecked ? 'checked' : '' %>
-                    >
-                    <span class="slider round"></span>
-                </label>
-                <label class="switchLabel ">
-                    Refresh every 3 seconds
-                </label>
-            </div>
+            <% if (typeof userObj.isInstructor !== "undefined" && userObj.isInstructor === 1) {%>
+                <div class="anonymous-label mx-auto d-flex ">
+                    <label class="switch">
+                        <input type="checkbox" value ="on" name="isThreeSecondRefresh" id="threeSecondSwitch"
+                                <%= isThreeSecondRefreshChecked ? 'checked' : '' %>
+                        >
+                        <span class="slider round"></span>
+                    </label>
+                    <label class="switchLabel ">
+                        Refresh every 3 seconds
+                    </label>
+                </div>
+            <%} else {%>
+                <div class="anonymous-label mx-auto d-flex ">
+                    <label class="switch">
+                        <input type="checkbox" value ="on" name="isThreeSecondRefresh" id="threeSecondSwitch"
+                                <%= isThreeSecondRefreshChecked ? 'checked' : '' %>
+                        readonly>
+                        <span class="slider round"></span>
+                    </label>
+                    <label class="switchLabel ">
+                        Refresh every 3 seconds
+                    </label>
+                </div>
+            <%} %>
+
             <div class="anonymous-label mx-auto d-flex ">
                 <label class="switch">
                     <input type="checkbox" name="isAnonymous"
@@ -198,7 +209,7 @@
                 <% } %>
             </div>
             <input type="text" id="freeText" name="freeText" class="button_next" placeholder="type text here ...">
-            <input type="submit" name="emojiSubmit" class="button_next" value="Submit">
+            <input type="submit" name="submitButton" class="button_next" value="Submit">
         </form>
         <form class="ml-1" id="logout" action="/logout?classLinkId=<%=classLinkId%>&classId=<%=classId%>" method="POST">
             <input  type="submit" name="logout" value="Logout" />

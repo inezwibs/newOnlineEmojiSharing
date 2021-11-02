@@ -35,7 +35,7 @@ class ParsingServices {
 
     setRefreshInterval (isThreeSecondsChecked){
         if (isThreeSecondsChecked){
-             return 3000;
+             return 30000;
         }else{
             return 60000;
         }

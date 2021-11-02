@@ -4,7 +4,7 @@ const exportedApp = require('../../index');
 
 class SocketServices {
     currentUser;
-
+    currenUserRefresh;
     constructor() {
 
     }
@@ -24,6 +24,12 @@ class SocketServices {
         this.currentUser =  exportedApp.userOnlineData;
         // this.currentUser = exportedApp.emittedUserIdSet;
         return this.currentUser;
+    }
+
+    getUserRefreshData(){
+        this.currentUserRefresh =  exportedApp.userRefreshData;
+        // this.currentUser = exportedApp.emittedUserIdSet;
+        return this.currentUserRefresh;
     }
 }
 

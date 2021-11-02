@@ -32,10 +32,10 @@ async function historyChecks(req,res,next){
   }catch (e) {
     console.log("Catch an error: ", e);
     errors.push( {msg: e})
-    if (req.body.isThreeSecondRefresh !== "on"){
-      req.isThreeSecondRefreshChecked = false;
-    }else {
+    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
       req.isThreeSecondRefreshChecked = true;
+    }else {
+      req.isThreeSecondRefreshChecked = false;
     }
     req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 

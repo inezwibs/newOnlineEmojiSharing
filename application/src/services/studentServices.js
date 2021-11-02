@@ -244,13 +244,13 @@ class StudentServices {
         let userQuery;
         // let userInfoType = userInfo.indexOf('@');
         if (userInfo.length > 4) {
-            userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+            userQuery = "SELECT u.full_name, u.id,  u.isInstructor, c.class_name, c.datetime, r.classes_id " +
                 "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
                 "WHERE u.id = r.users_id " +
                 "AND c.id = r.classes_id " +
                 "AND u.email = '" + userInfo + "'";
         }else {
-            userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+            userQuery = "SELECT u.full_name, u.id, u.isInstructor, c.class_name, c.datetime, r.classes_id " +
                 "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
                 "WHERE u.id = r.users_id " +
                 "AND c.id = r.classes_id " +

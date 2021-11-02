@@ -118,6 +118,14 @@ io.on('connection', (socket) => {
         console.log('user data',data);
         module.exports.userOnlineData = data;
     });
+    io.on('refreshInterval', refreshData=> {
+        console.log('refresh data', refreshData);
+        module.exports.userRefreshData = refreshData;
+    })
+    socket.on('refreshInterval', refreshData=> {
+        console.log('refresh data', refreshData);
+        module.exports.userRefreshData = refreshData;
+    })
 
     socket.on('disconnect', (reason) => {
         console.log('A user has disconnected, reason : ', reason);

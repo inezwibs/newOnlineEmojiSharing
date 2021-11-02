@@ -19,12 +19,27 @@ jQuery.noConflict()(function ($) { // this was missing for me
         })
 
 
-        // // Form submittion with new message in field with id 'm'
-        // $('form').submit(function () {
-        //     let messageToSend = $('#m').val();
-        //     // Send message to server here?
-        //     $('#m').val('');
-        //     return false; // Prevent form submit from refreshing page
+        // Form submittion with new message in field with id 'm'
+        $('#threeSecondSwitch').on('change',function(){
+            let switchValue = $('#threeSecondSwitch').is(':checked') ? $('#threeSecondSwitch').val() : 'off';
+            socket.emit('refreshInterval',{
+                threeSecondSwitch: switchValue
+            });
+            console.log('user socket refresh data', switchValue);
+
+            $('#emojiSubmit')[0].submit();
+
+
+        })
+        // $('#emojiSubmit').submit(function () {
+        //     socket.emit('refreshInterval',{
+        //         threeSecondSwitch: $('#threeSecondSwitch').val()
+        //     });
+        //     console.log('user socket refresh data', $('#threeSecondSwitch').val());
+        //     // let messageToSend = $('#m').val();
+        //     // // Send message to server here?
+        //     // $('#m').val('');
+        //     // return false; // Prevent form submit from refreshing page
         // });
     });
 });

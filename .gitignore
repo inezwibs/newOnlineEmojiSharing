@@ -3,3 +3,4 @@
 /.idea
 .idea/
 ../morgan.log
+/application/morgan.log

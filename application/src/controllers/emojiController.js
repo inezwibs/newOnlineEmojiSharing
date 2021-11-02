@@ -21,8 +21,10 @@ let rowsObj = {
 
  function getUserSocketListener(req,res,next){
     req.usersOnline = socketService.getUserSocketData();
+    req.usersRefreshInterval = socketService.getUserRefreshData();
     next();
 }
+
 
 async function getStudentClassId(req, res, next){
     let errors = [];
@@ -64,8 +66,13 @@ async function getStudentClassId(req, res, next){
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
         //setting refresh
+        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+            req.isThreeSecondRefreshChecked = true;
+        }else{
+            req.isThreeSecondRefreshChecked = false;
+        }
         req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
-        res.render(" ", {
+        res.render("emojiSharing", {
             errors: errors,
             classLinkId: req.classLinkId ? req.classLinkId : '',
             regId : req.classLinkId ? req.classLinkId : '',
@@ -101,12 +108,13 @@ async function getSendEmojiPage(req,res) {
         req.classLinkId = req.body.classLinkId;
         req.classId = req.body.classId;
     }
+    req.usersRefreshInterval = socketService.getUserRefreshData();
 
     req.isAnonymousStatus = req.query.isAnonymousStatus;
-    if (req.body.isThreeSecondRefresh !== "on"){
-        req.isThreeSecondRefreshChecked = false;
-    }else {
+    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )){
         req.isThreeSecondRefreshChecked = true;
+    }else {
+        req.isThreeSecondRefreshChecked = false;
     }
     req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 
@@ -255,7 +263,7 @@ async function getEmojiClassData(userInfo, classLinkId, classId) {
 
     // let userInfoType = userInfo.indexOf('@');
     if (userInfo){
-        userQuery = "SELECT u.full_name, u.id,  c.class_name, c.datetime, r.classes_id " +
+        userQuery = "SELECT u.full_name, u.id, u.isInstructor, c.class_name, c.datetime, r.classes_id " +
             "FROM emojidatabase.users u, emojidatabase.registrations r, emojidatabase.classes c " +
             "WHERE u.id = r.users_id " +
             "AND c.id = r.classes_id " +
@@ -291,6 +299,11 @@ async function invalidEmojiPostBranch(req,res,next) {
             let ids = getIdsFromUrl(req.url);
             rowsObj = await getEmojiClassData(req.user,ids[0],ids[1]);
             let message = "You have submitted an emotion outside of class time. It will not be recorded."
+            if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+                req.isThreeSecondRefreshChecked = true;
+            }else{
+                req.isThreeSecondRefreshChecked = false;
+            }
             req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
             if (ids && ids.length === 2 && rowsObj) {
                    res.render("emojiSharing", {
@@ -351,6 +364,11 @@ async function triageBasedOnTime(req,res,next){
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
         //setting connection
+        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+            req.isThreeSecondRefreshChecked = true;
+        }else{
+            req.isThreeSecondRefreshChecked = false;
+        }
         req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
         res.render("emojiSharing", {
             errors: errors,
@@ -380,6 +398,11 @@ async function insertRecords(req,res,next){
     }catch (e) {
         console.log("Catch an error: ", e);
         errors.push( {msg: e})
+        if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
+            req.isThreeSecondRefreshChecked = true;
+        }else{
+            req.isThreeSecondRefreshChecked = false;
+        }
         req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 
         res.render("emojiSharing", {

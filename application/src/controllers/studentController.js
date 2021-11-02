@@ -10,6 +10,8 @@ let classLinkIdValue;
 const StudentServices = require( "../services/studentServices" );
 const studentServices = new StudentServices();
 const registerServices = require( "../services/registerServices" );
+const SocketService = require( "../services/socketServices" );
+const socketService = new SocketService();
 let rowsObj = {
     full_name: "default",
     id: "000",
@@ -121,10 +123,12 @@ async function validateClassLinks (req, res, next) {
 }
 //TODO create flowchart for register page
 async function getStudentRegisterPage (req, res, next) {
-    if (!req.body.isThreeSecondRefresh){
-        req.isThreeSecondRefreshChecked = false;
-    }else {
+    req.usersRefreshInterval = socketService.getUserRefreshData();
+
+    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
         req.isThreeSecondRefreshChecked = true;
+    }else {
+        req.isThreeSecondRefreshChecked = false;
     }
     req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
     req.token = parsingService.getToken();
@@ -425,10 +429,12 @@ async function checkUserIsValid(req, res, next) {
 
 async function getStudentLoginPage(req,res) {
     req.token = parsingService.getToken();
-    if (!req.body.isThreeSecondRefresh){
-        req.isThreeSecondRefreshChecked = false;
-    }else {
+    req.usersRefreshInterval = socketService.getUserRefreshData();
+
+    if ((req.usersRefreshInterval && req.usersRefreshInterval.threeSecondSwitch === "on" )|| req.body.isThreeSecondRefresh === "on"){
         req.isThreeSecondRefreshChecked = true;
+    }else {
+        req.isThreeSecondRefreshChecked = false;
     }
     req.refreshInterval = parsingService.setRefreshInterval(req.isThreeSecondRefreshChecked);
 
