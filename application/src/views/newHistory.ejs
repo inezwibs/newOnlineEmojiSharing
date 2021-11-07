@@ -46,33 +46,33 @@
 
             var dps6 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps6.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji1 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps6.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji1 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles' }) %>" });
             " <% } %>"
 
             var dps5 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps5.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji2 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps5.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji2 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
             var dps4 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps4.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji3 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps4.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji3 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
             var dps3 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps3.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji4 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps3.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji4 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
             var dps2 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps2.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji5 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps2.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_emoji5 %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
             var dps1 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps1.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_online_notParticipated %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps1.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_online_notParticipated %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
 
             var dps0 = [];
             "<% for(var i=0; i < topChartRecords.length; i++) { %>"
-            dps0.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_offline %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %>" });
+            dps0.push({ y: parseInt("<%= topChartRecords[parseInt(i)].count_offline %>"), label: "<%=(new Date(Date.parse(topChartRecords[parseInt(i)].date_time))).toLocaleTimeString('en-US',{ timeZone: 'America/Los_Angeles'}) %>" });
             " <% } %>"
 
             var chart = new CanvasJS.Chart("chartContainer",
