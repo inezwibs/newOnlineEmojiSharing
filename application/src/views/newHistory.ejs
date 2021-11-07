@@ -8,23 +8,31 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<!--    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"-->
-<!--            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"-->
-<!--            crossorigin="anonymous"></script>-->
-<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"-->
-<!--            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"-->
-<!--            crossorigin="anonymous"></script>-->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/styles.css">
-    <!--<script src="/js/my.js"></script>-->
 
     <title>Emoji History</title>
 
-    <meta http-equiv="Refresh" content="60">
-
-
     <script type="text/javascript">
-        window.onload = function () {
+        <% if ( typeof refreshInterval !== 'undefined') {%>
+        // $(document).ready(function () {
+            setInterval(function () {
+                document.getElementById("historyData").submit();
+            }, <%= refreshInterval %>);
+        // });//every 1 minute value = 1 * 60 * 1000 = 60000
+        <%} else {%>
+        // $(document).ready(function () {
+
+            setInterval(function() {
+            document.getElementById("historyData").submit();
+        }, 60000);
+        // });
+        <%}%>
+    </script>
+
+        <script type="text/javascript">
+            window.onload = function () {
             CanvasJS.addColorSet("myShades",
                 [//colorSet Array
                     "#a9a9a9",//darkgray
@@ -130,7 +138,6 @@
 
             chart.render();
         }
-
     </script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script>
@@ -188,12 +195,14 @@
 
     <body>
 
-    <form class="form-group mt-1 ml-1">
+    <form id="historyData" class="form-group mt-1 ml-1" action="/history?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
         <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
         <input type="hidden" name="classId" value="<%=classId%>" />
         <input type="hidden" name="userid" value="<%=userid%>" />
         <input type="hidden" name="isAnonymousStatus" value="<%=isAnonymousStatus%>" />
         <input type="hidden" name="emojiSelected" value="<%=emojiSelected%>" />
+        <input type="hidden" name="refreshInterval" value="<%=refreshInterval%>" />
+
     </form>
 
         <div class="container">

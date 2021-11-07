@@ -6,9 +6,25 @@ class DateService {
 
     }
 
-    parseDateTimeRecord(dateTimeRecord){
+    parseDateTimeRecord(dateTimeRecord) {
         let dateTime = new Date(Date.parse(dateTimeRecord));
+
         return dateTime.toLocaleDateString();
+    }
+
+    parseSecondsFromDate(dateTimeRecord ) {
+        let dateTime = new Date(Date.parse(dateTimeRecord));
+
+        return dateTime.getSeconds();
+    }
+
+    isTimeSmallerThanEqualTo(priorDate, currentDate, refreshInterval) {
+        let priorDateObj = new Date(Date.parse(priorDate));
+        let currentDateObj = new Date(Date.parse(currentDate));
+        let currentDateMilliseconds = currentDateObj.setSeconds(currentDateObj.getSeconds());
+        let priorDateObjIncremented = priorDateObj.setSeconds(priorDateObj.getSeconds() + refreshInterval/1000)
+        let result =  currentDateMilliseconds <= priorDateObjIncremented;
+        return result;
     }
 
     getDateStringParams() {

@@ -2,7 +2,6 @@
 <html>
 <head>
     <link rel="stylesheet" href="styles.css">
-<!--    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -42,8 +41,7 @@
             <input type="hidden" name="emojiSelected" value="<%=emojiSelected%>" />
             <input type="hidden" name="userObj" value="<%=userObj%>" />
             <input type="hidden" name="isAnonymousStatus" value="<%=isAnonymousStatus%>" />
-
-
+            <input type="hidden" name="refreshInterval" value="<%=refreshInterval%>" />
         </form>
         <%}else if (typeof dateStringParams !== 'undefined') {%>
         <form target="_blank" id="historySubmit" action="/history/<%=classLinkId%>/<%=dateStringParams%>" method="POST">
@@ -53,6 +51,7 @@
             <input type="hidden" name="emojiSelected" value="<%=emojiSelected%>" />
             <input type="hidden" name="userObj" value="<%=userObj%>" />
             <input type="hidden" name="isAnonymousStatus" value="<%=isAnonymousStatus%>" />
+            <input type="hidden" name="refreshInterval" value="<%=refreshInterval%>" />
         </form>
         <%}%>
     </div>
@@ -81,14 +80,13 @@
             <%} else {%>
                 <div class="anonymous-label mx-auto d-flex ">
                     <label class="switch">
-                        <input type="checkbox" value ="on" name="isThreeSecondRefresh" id="threeSecondSwitch"
+                        <input type="hidden" value ="on" name="isThreeSecondRefresh" id="threeSecondSwitch"
                                 <%= isThreeSecondRefreshChecked ? 'checked' : '' %>
                         readonly>
-                        <span class="slider round"></span>
                     </label>
-                    <label class="switchLabel ">
-                        Refresh every 3 seconds
-                    </label>
+<!--                    <label class="switchLabel ">-->
+<!--                        Refresh every 3 seconds-->
+<!--                    </label>-->
                 </div>
             <%} %>
 

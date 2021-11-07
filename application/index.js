@@ -99,17 +99,12 @@ io.on('connection', (socket) => {
 
     console.log('Socket info: ', socket.id);
     console.log('Socket info: ', socket.request.user);
-    // userSet.add({socket.request.user.user[0].id : socket.request.user.user[0]});
-    // let newUser = {socketId: socket.id, socketUserCount: socket.request.user.user.length};
-    // console.log(newUser);
+
     if (socket.request.user.user && socket.request.user.user.length > 0){
         userSet.add(socket.request.user.user[0].id);
         socket.userId = socket.request.user.user[0].id;
     }
-    // let emitDataObj = {
-    //     user: [...userSet],
-    //     body: socket.request.user.body,
-    // }
+
     io.emit('user', [...userSet])
     uniqueUsers = userSet.size;
     io.emit('userCount',uniqueUsers);
@@ -118,11 +113,8 @@ io.on('connection', (socket) => {
         console.log('user data',data);
         module.exports.userOnlineData = data;
     });
-    io.on('refreshInterval', refreshData=> {
-        console.log('refresh data', refreshData);
-        module.exports.userRefreshData = refreshData;
-    })
-    socket.on('refreshInterval', refreshData=> {
+
+    socket.once('refreshInterval', refreshData=> {
         console.log('refresh data', refreshData);
         module.exports.userRefreshData = refreshData;
     })
@@ -172,18 +164,6 @@ app.use((req, res, next) => {
 
 });
 
-// error handler middleware
-// interface Error {
-//     status?: number;
-//     message?: string;
-// }
-// app.use((error:Error, res, next) => {
-//     console.error(error.stack);
-//     res.status(error.status || 500);
-//     res.render("errorPage",{
-//         alerts: error.stack
-//     });
-// })
 http.listen(PORT, () => console.log("server started on port", PORT));
 
 

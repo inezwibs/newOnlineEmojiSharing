@@ -6,6 +6,7 @@ jQuery.noConflict()(function ($) { // this was missing for me
         /* Global io */
         let socket = io();
         console.log('in client js ')
+
         socket.on('user', data => {
             console.log('user socket on connect', data);
             console.log ('This is user online data: ',data);
@@ -29,17 +30,7 @@ jQuery.noConflict()(function ($) { // this was missing for me
 
             $('#emojiSubmit')[0].submit();
 
-
         })
-        // $('#emojiSubmit').submit(function () {
-        //     socket.emit('refreshInterval',{
-        //         threeSecondSwitch: $('#threeSecondSwitch').val()
-        //     });
-        //     console.log('user socket refresh data', $('#threeSecondSwitch').val());
-        //     // let messageToSend = $('#m').val();
-        //     // // Send message to server here?
-        //     // $('#m').val('');
-        //     // return false; // Prevent form submit from refreshing page
-        // });
+
     });
 });
