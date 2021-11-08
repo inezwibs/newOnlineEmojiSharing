@@ -14,8 +14,9 @@ body {
     width:fit-content !important;
     font-size:20px !important;
  }
-td.first {
-    width: auto;
+
+.table-date-min-width {
+    min-width: 100px;
 }
 input.hello[type="text"] {
     width: 80px;
@@ -192,6 +193,9 @@ input:checked+.slider:before {
      width: 120%;
      height: 190%;
      min-height: 190%;
+}
+.table-min-width {
+    min-width:350px
 }
 
 .middle {

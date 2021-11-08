@@ -277,6 +277,7 @@
                             <div class="row">
                                 <div class="ex1">
                                         <table style="width: 100%">
+
                                             <tr>
                                                 <th>Time</th>
                                                 <th>Name</th>
@@ -285,8 +286,8 @@
                                             <% for(var i=0; i < userInfo.length; i++) { %>
 
                                             <tr>
-                                               <td><h6><%=(new Date(Date.parse(userInfo[i].date_time))).toLocaleString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %></h6></td>
-                                                <td><h6>
+                                               <td class="table-date-min-width"><h6><%=(new Date(Date.parse(userInfo[i].date_time))).toLocaleString('en-US',{ timeZone: 'America/Los_Angeles', hour:'2-digit',minute:'2-digit'}) %></h6></td>
+                                                <td class="table-min-width"><h6>
                                                         <%if (userInfo[i].isAnonymous === 0) { %>
                                                             <%= userInfo[i].full_name %>
                                                         <% }else{ %>
@@ -294,7 +295,7 @@
                                                         <% } %>
                                                     </h6>
                                                 </td>
-                                                <td><h6><%= userInfo[i].text %></h6></td>
+                                                <td class="table-min-width"><h6><%= userInfo[i].text %></h6></td>
                                             </tr>
                                             <% } %>
 
