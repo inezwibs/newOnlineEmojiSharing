@@ -13,6 +13,12 @@ class ParsingServices {
         return found;
     }
 
+    getLetters(entry) {
+        const re = /[a-zA-Z]+/g;
+        let isFound =  entry.match(re);
+        return isFound;
+    }
+
     getClassLinks(url) {
         let numbersInUrl = this.getIdsFromUrl(url);
         let classId, classLinkId;
@@ -22,6 +28,16 @@ class ParsingServices {
         } else {
             return {};
         }
+    }
+
+    processDaysOnly(resultArr){
+        let daysOnly=[];
+        resultArr.forEach( result => {
+            if (this.getLetters(result)){
+                daysOnly.push(result);
+            }
+        })
+        return daysOnly;
     }
 
     getToken(){

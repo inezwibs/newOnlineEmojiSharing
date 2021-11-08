@@ -51,14 +51,7 @@ async function getStudentClassId(req, res, next){
 
         if (req.body){
             req.user = req.body.userId;
-            //most likely won't need this as the body will have user id
-            // let query =
-            //     " SELECT * FROM emojidatabase.registrations where classes_id = '" + req.class_id +"'";
-            //
-            // const [rows, fields] = await db.execute(query);
-            //
-            // // console.log('Reg Id',req.reg_id)
-            // req.user = rows[0].users_id;
+
             next();
         }
 
@@ -205,10 +198,13 @@ function getIntegerDatetime(daysArray){
     return temp;
 // monday 1, tues 2 , wed 3, thur 4 , fri 5, sat 6, sun 7
 }
-function checkValidDate(daysInIntegerArray, classStartEndTimes) {
-    var splitClassStartTime = classStartEndTimes[0].split(":");
+function checkValidDate(daysInIntegerArray, classStartEndTimes, startEndTimeArr) {
+    // var splitClassStartTime = classStartEndTimes[0].split(":");
+    var splitClassStartTime = startEndTimeArr[0].split(":");
+    // var classStartMinutes = parseFloat(parseInt(splitClassStartTime[0]) * 60) + parseFloat(splitClassStartTime[1]);
     var classStartMinutes = parseFloat(parseInt(splitClassStartTime[0]) * 60) + parseFloat(splitClassStartTime[1]);
-    var splitClassEndTime = classStartEndTimes[1].split(":");
+
+    var splitClassEndTime = startEndTimeArr[1].split(":");
     let minuteEndTime;
     splitClassEndTime[0] === "00" ? minuteEndTime = "24" : minuteEndTime = splitClassEndTime[0]
     var classEndMinutes = parseFloat(parseInt(minuteEndTime) * 60) + parseFloat(splitClassEndTime[1]);
@@ -234,16 +230,17 @@ function checkValidDate(daysInIntegerArray, classStartEndTimes) {
 }
 async function getClassStartTime(req, res, next) {
     let query =
-        " SELECT datetime as datetime FROM emojidatabase.classes where id =  " +
+        " SELECT datetime,startTime,endTime  FROM emojidatabase.classes where id =  " +
         req.class_id;
     try {
         const [res, err] = await db.execute(query);
         // var splitedClassStartTime = res[0].startTime.split(":");
         var resultArr = res[0].datetime.split(/[,-]/);
-        var lengthArr = resultArr.length;
-        var classDaysInInteger = getIntegerDatetime(resultArr.slice(0,lengthArr-2)) // -2 because we're getting all the days not the time
+        let startEndTimeArr = [res[0].startTime, res[0].endTime];
+        resultArr = parsingService.processDaysOnly(resultArr);
+        var classDaysInInteger = getIntegerDatetime(resultArr) // -2 because we're getting all the days not the time
         //check if the time mojis are posted are in the time range of the class
-        var resultDateArr = checkValidDate(classDaysInInteger,resultArr.slice(lengthArr-2));
+        var resultDateArr = checkValidDate(classDaysInInteger,resultArr,startEndTimeArr);
         if (resultDateArr.length > 0 ){
             req.currentMinutes = resultDateArr[0]; // we send even if it is 0
             req.currentDate = resultDateArr[1];
