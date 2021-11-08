@@ -65,6 +65,7 @@
         <form class="form-group" id="emojiSubmit" action="/sendEmoji?classLinkId=<%=classLinkId%>?classId=<%=classId%>" method="post">
             <input type="hidden" name="classLinkId" value="<%=classLinkId%>" />
             <input type="hidden" name="classId" value="<%=classId%>" />
+            <input type="hidden" name="isInstructor" value="<%=userObj.isInstructor%>" />
             <% if (typeof userObj.isInstructor !== "undefined" && userObj.isInstructor === 1) {%>
                 <div class="anonymous-label mx-auto d-flex ">
                     <label class="switch">
