@@ -52,8 +52,7 @@ let checkExistEmail = async (email) => {
     try {
         const [rows,fields] = await db.execute(query);
 
-        console.log(rows);
-        if (rows.length > 0){
+        if (rows && rows.length > 0){
             // return rows[0].email.length ==0 | rows[0].email.length == undefined ? false : true;
             return { doesExist: true, body: rows[0] };
 

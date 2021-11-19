@@ -104,7 +104,7 @@ class StudentServices {
                 let insertResults = await this.insertRegistration(userDetails.body[0].id, this._classIdValue); // returnerror
 
                 if (insertResults.success) {
-                    message = `You are now a user registered for this class, with class id = ${this._classIdValue}.\n` +
+                    message = `You have access this class, with class id = ${this._classIdValue}.\n` +
                         `Please login with your existing email = ${userDetails.body[0].email} and password.`
                     return {success: insertResults.success, body: insertResults.body, isRegistered: true, message: message};
                 } else {

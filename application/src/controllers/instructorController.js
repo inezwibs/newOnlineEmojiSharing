@@ -130,9 +130,9 @@ let getInstructorRegisterPage = (req,res) => {
 async function insertInstructor(req, res, next) {
     let errors = [];
     let newInstructor = {
-        fullName: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
+        fullName: req.body.name ? req.body.name: '',
+        email: req.body.email ? req.body.email : '',
+        password: req.body.password ? req.body.password : '' ,
         isInstructor: 1,
         instructorId: '',
     };

@@ -4,18 +4,26 @@
 <script>
   function checkForm(form) {
     var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (form.email.value.match(emailFormat)) {
+    if (form.email.value.match(emailFormat) && $.trim( $('#firstName').val() ) !== '' ) {
       if (form.password.value != "" && form.password.value == form.passwordMatch.value) {
         return true;
       }else {
-        alert("Error: Please check that you've entered and confirmed your passwords match!");
+        alert("Error: Please check that you've entered and confirmed your passwords match.");
         form.password.focus();
         return false;
       }
     }else{
-        alert("Error: Please check that you've entered a valid email address!");
+      if (!form.email.value.match(emailFormat)) {
+        alert("Error: Please check that you've entered a valid email address.");
         form.email.focus();
         return false;
+      }
+      if ($.trim( $('#firstName').val() ) === ''){
+        alert("Error: Please check that you've entered a name for your account.");
+        form.name.focus();
+        return false;
+      }
+
     }
   }
 </script>
